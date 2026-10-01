@@ -6,12 +6,13 @@
   <title>Pocket Hamster | 倉鼠部屋</title>
   <style>
     :root {
-      --bg-wall: #fdfaf6;
-      --floor: #dfceb7;
-      --floor-border: #b8a082;
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --text-main: #4a3b32;
-      --accent: #d97736;
+      --bg-wall: #fbf8f3;
+      --floor-base: #dfceb7;
+      --floor-line: #cfbb9f;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --main-text: #4a3b32;
+      --accent-color: #d97736;
+      --ui-border: #ebdccb;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,7 +34,7 @@
       overflow: hidden;
     }
 
-    /* 頂部輕量 HUD */
+    /* 頂部輕量狀態 HUD */
     .top-bar {
       position: absolute;
       top: env(safe-area-inset-top, 16px);
@@ -46,37 +47,35 @@
     }
     .hud-pill {
       background: var(--card-bg);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       padding: 8px 16px;
       border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 12px rgba(74, 59, 50, 0.08);
       display: flex;
-      gap: 14px;
+      gap: 16px;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--main-text);
+      border: 1px solid var(--ui-border);
     }
-    .profile-btn {
+    .profile-pill {
       background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border: none;
-      padding: 8px 14px;
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--ui-border);
+      padding: 8px 16px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
-      color: var(--text-main);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      color: var(--main-text);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      box-shadow: 0 4px 12px rgba(74, 59, 50, 0.08);
     }
 
-    /* 房間背景結構 */
+    /* 房間結構 */
     .wall-window {
       position: absolute;
       top: 14%;
-      left: 10%;
+      left: 8%;
       width: 110px;
       height: 140px;
       background: #eef7fc;
@@ -86,32 +85,60 @@
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 4px;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
       pointer-events: none;
     }
-    .wall-window div { background: rgba(255,255,255,0.4); border-radius: 4px; }
+    .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
     .floor {
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 40%;
-      background: repeating-linear-gradient(90deg, #dfceb7 0px, #dfceb7 90px, #d5c3aa 90px, #d5c3aa 92px);
-      border-top: 6px solid var(--floor-border);
+      height: 42%;
+      background: repeating-linear-gradient(90deg, var(--floor-base) 0px, var(--floor-base) 90px, var(--floor-line) 90px, var(--floor-line) 92px);
+      border-top: 6px solid #b8a082;
     }
 
-    /* 家具圖層 (可由背包放置) */
+    /* 建造模式提示條與網格感 */
+    .build-mode-banner {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(217, 119, 54, 0.9);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      z-index: 50;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    #world.build-mode .floor {
+      background-image: linear-gradient(rgba(217, 119, 54, 0.15) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(217, 119, 54, 0.15) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    /* 家具圖層 (支援拖曳放置) */
     #furniture-layer {
       position: absolute;
       inset: 0;
+      z-index: 6;
       pointer-events: none;
-      z-index: 5;
     }
     .placed-furniture {
       position: absolute;
-      transition: transform 0.2s;
+      touch-action: none;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .placed-furniture.building {
+      outline: 2px dashed var(--accent-color);
+      border-radius: 8px;
     }
 
-    /* 倉鼠容器與 SVG */
+    /* 倉鼠容器與換裝插槽 */
     #pet-container {
       position: absolute;
       width: 90px;
@@ -125,20 +152,24 @@
       justify-content: center;
       transition: transform 0.15s ease-out;
     }
-    #pet-container.held { cursor: grabbing; animation: hamsterHeld 0.14s infinite alternate; }
-    #pet-container.walking svg { animation: hamsterWalk 0.2s infinite alternate ease-in-out; }
-    @keyframes hamsterWalk { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
-    @keyframes hamsterHeld { from { transform: scale(1.06) rotate(-8deg); } to { transform: scale(1.06) rotate(8deg); } }
+    #pet-container.held { cursor: grabbing; animation: hamsterPanic 0.12s infinite alternate; }
+    #pet-container.walking svg#hamster-svg { animation: hamsterWalk 0.2s infinite alternate ease-in-out; }
+    @keyframes hamsterWalk { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+    @keyframes hamsterPanic { from { transform: scale(1.08) rotate(-8deg); } to { transform: scale(1.08) rotate(8deg); } }
 
     #pet-hat-slot {
       position: absolute;
       top: -12px;
-      font-size: 26px;
+      width: 48px;
+      height: 32px;
       z-index: 12;
       pointer-events: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* 瓜子食物手繪物件 */
+    /* 食物與粒子動態 */
     .sunflower-seed {
       position: absolute;
       width: 16px;
@@ -148,7 +179,7 @@
       border: 2px solid #5a4b3d;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
       pointer-events: none;
-      z-index: 6;
+      z-index: 5;
       animation: seedDrop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
     .sunflower-seed::after {
@@ -166,11 +197,10 @@
       0% { transform: translateY(-30px) scale(0.4); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
-
     .heart-pop {
       position: absolute;
-      color: #e76f51;
       font-size: 20px;
+      color: #e76f51;
       pointer-events: none;
       animation: floatUp 0.8s ease-out forwards;
       z-index: 30;
@@ -180,7 +210,7 @@
       100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
     }
 
-    /* 可收合寬版底部 Dock */
+    /* 寬版可收合底部 Dock */
     .dock-wrapper {
       position: absolute;
       bottom: calc(env(safe-area-inset-bottom, 14px) + 14px);
@@ -199,7 +229,7 @@
       box-shadow: 0 8px 24px rgba(74, 59, 50, 0.12);
       display: flex;
       gap: 12px;
-      border: 1px solid rgba(255,255,255,0.7);
+      border: 1px solid var(--ui-border);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .dock.collapsed {
@@ -211,26 +241,25 @@
     .dock-btn {
       background: transparent;
       border: none;
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 16px;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--main-text);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
       cursor: pointer;
-      white-space: nowrap; /* 徹底杜絕三個字換行 */
+      white-space: nowrap;
     }
-    .dock-btn svg { width: 22px; height: 22px; stroke: var(--text-main); stroke-width: 2; fill: none; }
+    .dock-btn svg { width: 22px; height: 22px; stroke: var(--main-text); stroke-width: 2; fill: none; }
     .dock-btn:active { transform: scale(0.92); }
 
-    /* 折疊收合按鈕 */
     .toggle-dock-btn {
       background: var(--card-bg);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.7);
+      border: 1px solid var(--ui-border);
       width: 44px;
       height: 44px;
       border-radius: 50%;
@@ -239,16 +268,16 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: var(--text-main);
-      font-size: 18px;
+      color: var(--main-text);
+      font-size: 13px;
       font-weight: bold;
     }
 
-    /* 彈窗全螢幕遮罩 */
+    /* 通用彈窗 Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(45, 35, 30, 0.45);
+      background: rgba(45, 35, 30, 0.5);
       backdrop-filter: blur(5px);
       display: none;
       justify-content: center;
@@ -259,15 +288,15 @@
       background: #fdfaf6;
       padding: 22px;
       border-radius: 24px;
-      width: 86%;
-      max-width: 330px;
+      width: 88%;
+      max-width: 350px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      max-height: 80vh;
+      max-height: 82vh;
       overflow-y: auto;
     }
-    .modal-title { font-size: 17px; color: var(--text-main); margin-bottom: 12px; text-align: center; }
+    .modal-title { font-size: 17px; color: var(--main-text); margin-bottom: 14px; text-align: center; }
     .btn-action {
-      background: var(--text-main);
+      background: var(--main-text);
       color: #fff;
       border: none;
       padding: 10px 16px;
@@ -278,16 +307,16 @@
       margin-top: 12px;
     }
 
-    /* 背包 / 商店 Grid */
-    .item-grid {
+    /* 網格展示 */
+    .grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 10px;
     }
-    .item-card {
+    .card-item {
       background: #fff;
-      border: 1px solid #ebdccb;
+      border: 1px solid var(--ui-border);
       border-radius: 16px;
       padding: 12px;
       text-align: center;
@@ -296,9 +325,49 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: var(--text-main);
+      color: var(--main-text);
     }
-    .item-icon { font-size: 28px; }
+    .preview-box {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 明信片專區 */
+    .postcard-item {
+      background: #fff;
+      border: 1px solid var(--ui-border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .postcard-thumb { width: 70px; height: 70px; border-radius: 10px; flex-shrink: 0; background: #faf4ed; display: flex; align-items: center; justify-content: center; }
+
+    /* 小遊戲全螢幕層 */
+    #minigame-screen {
+      position: fixed;
+      inset: 0;
+      background: #fbf6ee;
+      z-index: 150;
+      display: none;
+    }
+    #game-canvas { width: 100%; height: 100%; }
+    .game-hud {
+      position: absolute;
+      top: env(safe-area-inset-top, 20px);
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--main-text);
+    }
   </style>
 </head>
 <body>
@@ -308,12 +377,14 @@
     <div class="top-bar">
       <div class="hud-pill">
         <span>飽足 <b id="valHunger">80</b>%</span>
-        <span>金幣 💰 <b id="valCoins">100</b></span>
+        <span>金幣 🪙 <b id="valCoins">120</b></span>
       </div>
-      <button class="profile-btn" onclick="openProfile()">
+      <button class="profile-pill" onclick="openProfile()">
         <span id="topPetName">泡泡</span> 📋
       </button>
     </div>
+
+    <div class="build-mode-banner" id="buildBanner">建造模式中：點擊並拖曳家具移動位置</div>
 
     <!-- 房間與家具層 -->
     <div class="wall-window"><div></div><div></div><div></div><div></div></div>
@@ -323,30 +394,22 @@
     <!-- 手繪 SVG 倉鼠本體 -->
     <div id="pet-container">
       <div id="pet-hat-slot"></div>
-      <svg id="hamster-svg" viewBox="0 0 100 100" width="80" height="80">
-        <!-- 尾巴 -->
+      <svg id="hamster-svg" viewBox="0 0 100 100" width="85" height="85">
         <circle cx="15" cy="65" r="7" fill="#f4c2ab" />
-        <!-- 身體 -->
         <ellipse id="hamster-body" cx="50" cy="60" rx="36" ry="32" fill="#e8a86b" />
-        <!-- 肚肚白毛 -->
         <ellipse id="hamster-belly" cx="52" cy="68" rx="24" ry="20" fill="#fffdfa" />
-        <!-- 耳朵 -->
         <circle cx="30" cy="28" r="10" fill="#e8a86b" />
         <circle cx="30" cy="28" r="6" fill="#f4b7a1" />
         <circle cx="70" cy="28" r="10" fill="#e8a86b" />
         <circle cx="70" cy="28" r="6" fill="#f4b7a1" />
-        <!-- 眼睛 -->
         <circle cx="40" cy="46" r="4.5" fill="#2d2013" />
         <circle cx="38.5" cy="44.5" r="1.5" fill="#fff" />
         <circle cx="62" cy="46" r="4.5" fill="#2d2013" />
         <circle cx="60.5" cy="44.5" r="1.5" fill="#fff" />
-        <!-- 腮紅 -->
         <circle cx="32" cy="54" r="5" fill="#f79d84" opacity="0.6" />
         <circle cx="70" cy="54" r="5" fill="#f79d84" opacity="0.6" />
-        <!-- 鼻子小嘴巴 -->
         <polygon points="51,52 48,49 54,49" fill="#df7a6b" />
         <path d="M47 55 Q51 58 55 55" stroke="#4a3b32" stroke-width="1.8" fill="none" stroke-linecap="round" />
-        <!-- 兩隻小短手 -->
         <ellipse cx="40" cy="64" rx="4.5" ry="6" fill="#fffdfa" />
         <ellipse cx="62" cy="64" rx="4.5" ry="6" fill="#fffdfa" />
       </svg>
@@ -359,13 +422,21 @@
           <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           雜貨鋪
         </button>
-        <button class="dock-btn" onclick="openInventory()">
-          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
-          小背包
+        <button class="dock-btn" onclick="openWardrobe()">
+          <svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+          換衣服
         </button>
-        <button class="dock-btn" onclick="startTravel()">
-          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          外出散步
+        <button class="dock-btn" onclick="toggleBuildMode()">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span id="buildBtnText">建造模式</span>
+        </button>
+        <button class="dock-btn" onclick="startMiniGame()">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="6"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/></svg>
+          賺金幣
+        </button>
+        <button class="dock-btn" onclick="openPostcardBook()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          紀念冊
         </button>
       </div>
       <button class="toggle-dock-btn" id="dockToggleBtn" onclick="toggleDock()">收</button>
@@ -375,15 +446,24 @@
   <!-- 個人資料彈窗 -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-card">
-      <h3 class="modal-title">倉鼠身份證 🐹</h3>
-      <div style="background:#fff; padding:14px; border-radius:16px; margin-bottom:12px; font-size:13px; line-height:1.8;">
-        <div><b>名字：</b><span id="profNameDisplay">泡泡</span> <button onclick="renamePet()" style="border:none; background:none; color:var(--accent); font-weight:bold; cursor:pointer;">[修改]</button></div>
-        <div><b>年齡：</b>第 <span id="profDays">1</span> 天陪伴</div>
-        <div><b>成長階段：</b><span id="profStage">幼鼠期 🌱</span></div>
-        <div><b>累計進食：</b><span id="profFeedCount">0</span> 顆種子</div>
-        <div><b>性格：</b>活潑好動、愛嗑葵花子</div>
+      <h3 class="modal-title">倉鼠身份證 📋</h3>
+      <div style="background:#fff; padding:14px; border-radius:16px; margin-bottom:12px; font-size:13px; line-height:1.8; border:1px solid var(--ui-border);">
+        <div><b>名字：</b><span id="profNameDisplay">泡泡</span> <button onclick="renamePet()" style="border:none; background:none; color:var(--accent-color); font-weight:bold; cursor:pointer;">[改名]</button></div>
+        <div><b>成長階段：</b><span id="profStage">幼鼠期</span></div>
+        <div><b>累計嗑瓜子：</b><span id="profFeedCount">0</span> 顆</div>
+        <div><b>性格：</b>好奇寶寶、熱愛探險</div>
       </div>
-      <button class="btn-action" onclick="closeModal('profileModal')">關閉</button>
+      <button class="btn-action" onclick="closeModal('profileModal')">確定</button>
+    </div>
+  </div>
+
+  <!-- 換衣服 衣櫥彈窗 -->
+  <div class="modal-overlay" id="wardrobeModal">
+    <div class="modal-card">
+      <h3 class="modal-title">換裝衣櫥 🧣</h3>
+      <p style="font-size:12px; text-align:center; color:#888;">挑選喜歡的飾品幫倉鼠穿戴吧</p>
+      <div class="grid-container" id="wardrobeGrid"></div>
+      <button class="btn-action" onclick="closeModal('wardrobeModal')">打扮完成</button>
     </div>
   </div>
 
@@ -392,60 +472,105 @@
     <div class="modal-card">
       <h3 class="modal-title">雜貨小鋪 🛒</h3>
       <p style="font-size:12px; text-align:center; color:#888;">金幣餘額：<b id="shopCoinText">0</b></p>
-      <div class="item-grid">
-        <div class="item-card">
-          <div class="item-icon">🌱</div>
-          <b>嫩芽小葉</b>
-          <span>飾品・30 幣</span>
-          <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="buyItem('leaf', '嫩芽小葉', 'hat', '🌱', 30)">購買</button>
-        </div>
-        <div class="item-card">
-          <div class="item-icon">🎀</div>
-          <b>粉紅蝴蝶結</b>
-          <span>飾品・45 幣</span>
-          <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="buyItem('bow', '粉紅蝴蝶結', 'hat', '🎀', 45)">購買</button>
-        </div>
-        <div class="item-card">
-          <div class="item-icon">🎡</div>
-          <b>木製小滾輪</b>
-          <span>家具・60 幣</span>
-          <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="buyItem('wheel', '木製滾輪', 'furniture', '🎡', 60)">購買</button>
-        </div>
-        <div class="item-card">
-          <div class="item-icon">🍄</div>
-          <b>蘑菇小窩</b>
-          <span>家具・80 幣</span>
-          <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="buyItem('house', '蘑菇小窩', 'furniture', '🍄', 80)">購買</button>
-        </div>
-      </div>
+      <div class="grid-container" id="shopGrid"></div>
       <button class="btn-action" style="background:#8b786d;" onclick="closeModal('shopModal')">離開</button>
     </div>
   </div>
 
-  <!-- 背包彈窗 -->
-  <div class="modal-overlay" id="invModal">
+  <!-- 明信片收藏手帳彈窗 -->
+  <div class="modal-overlay" id="postcardModal">
     <div class="modal-card">
-      <h3 class="modal-title">隨身小背包 🎒</h3>
-      <div id="invEmptyNotice" style="font-size:13px; text-align:center; color:#888; padding:20px 0;">背包空空如也，去小鋪逛逛吧！</div>
-      <div class="item-grid" id="invGrid"></div>
-      <button class="btn-action" onclick="closeModal('invModal')">整理好收工</button>
+      <h3 class="modal-title">旅行紀念手帳 📖</h3>
+      <div id="postcardEmpty" style="font-size:13px; text-align:center; color:#888; padding:20px 0;">還沒有明信片，放小傢伙去散步吧！</div>
+      <div id="postcardList"></div>
+      <button class="btn-action" style="margin-bottom:8px;" onclick="sendPetToTravel()">讓小倉鼠出門散步 🎒</button>
+      <button class="btn-action" style="background:#8b786d;" onclick="closeModal('postcardModal')">合上手帳</button>
     </div>
   </div>
 
+  <!-- 賺金幣 MiniGame 畫布 -->
+  <div id="minigame-screen">
+    <div class="game-hud">
+      <div>金幣得分: <span id="gameScore">0</span></div>
+      <div>倒數: <span id="gameTimer">20</span>s</div>
+    </div>
+    <canvas id="game-canvas"></canvas>
+  </div>
+
   <script>
-    // 遊戲狀態與存檔
-    const saved = JSON.parse(localStorage.getItem('pockets_pet_save') || '{}');
+    // 向量 SVG 圖庫字典
+    const ASSETS = {
+      hats: {
+        straw_hat: {
+          name: '夏日草帽',
+          cost: 30,
+          svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>`
+        },
+        pink_bow: {
+          name: '粉櫻蝴蝶結',
+          cost: 45,
+          svg: `<svg viewBox="0 0 50 35" width="40" height="28"><polygon points="25,18 10,8 10,28" fill="#f4a5ae"/><polygon points="25,18 40,8 40,28" fill="#f4a5ae"/><ellipse cx="25" cy="18" rx="5" ry="5" fill="#e56b81"/></svg>`
+        },
+        grad_cap: {
+          name: '學士帽',
+          cost: 70,
+          svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>`
+        }
+      },
+      furniture: {
+        wheel: {
+          name: '靜音木跑輪',
+          cost: 60,
+          defaultX: 40,
+          defaultY: 0.65,
+          svg: `<svg viewBox="0 0 100 100" width="80" height="80"><circle cx="50" cy="50" r="42" fill="none" stroke="#d4a373" stroke-width="6"/><circle cx="50" cy="50" r="8" fill="#8c6239"/><line x1="50" y1="8" x2="50" y2="92" stroke="#d4a373" stroke-width="3"/><line x1="8" y1="50" x2="92" y2="50" stroke="#d4a373" stroke-width="3"/><path d="M30 92 L50 50 L70 92" stroke="#8c6239" stroke-width="6" fill="none"/></svg>`
+        },
+        mushroom_house: {
+          name: '原木蘑菇窩',
+          cost: 80,
+          defaultX: 240,
+          defaultY: 0.65,
+          svg: `<svg viewBox="0 0 100 100" width="85" height="85"><rect x="30" y="50" width="40" height="40" rx="8" fill="#f5ebe0"/><path d="M15 52 Q50 10 85 52 Z" fill="#e76f51"/><circle cx="36" cy="34" r="5" fill="#fff"/><circle cx="62" cy="30" r="6" fill="#fff"/><circle cx="50" cy="44" r="4" fill="#fff"/><path d="M40 90 A10 10 0 0 1 60 90 Z" fill="#7f5539"/></svg>`
+        },
+        rug: {
+          name: '日系棉織地毯',
+          cost: 40,
+          defaultX: 130,
+          defaultY: 0.72,
+          svg: `<svg viewBox="0 0 140 60" width="130" height="55"><ellipse cx="70" cy="30" rx="65" ry="24" fill="#faedcd" stroke="#d4a373" stroke-width="3" stroke-dasharray="6,4"/></svg>`
+        }
+      },
+      postcards: {
+        shrine: {
+          title: '京都神社之櫻',
+          desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。',
+          svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/><circle cx="68" cy="28" r="3" fill="#ffb4a2"/></svg>`
+        },
+        field: {
+          title: '陽光向日葵田',
+          desc: '置身在滿滿的向日葵海裡，偷偷摘了幾顆最新鮮飽滿的葵花子！',
+          svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/><line x1="40" y1="56" x2="40" y2="76" stroke="#718355" stroke-width="5"/></svg>`
+        }
+      }
+    };
+
+    // 狀態持久化
+    const saved = JSON.parse(localStorage.getItem('pockets_hamster_v3') || '{}');
     const state = {
       name: saved.name || '泡泡',
-      hunger: saved.hunger ?? 80,
+      hunger: saved.hunger ?? 85,
       coins: saved.coins ?? 120,
       feedCount: saved.feedCount || 0,
-      equippedHat: saved.equippedHat || null,
-      placedFurniture: saved.placedFurniture || [],
-      inventory: saved.inventory || [],
-      x: window.innerWidth / 2 - 45,
-      y: window.innerHeight * 0.65,
+      inventory: saved.inventory || ['straw_hat', 'rug'],
+      equippedHat: saved.equippedHat || 'straw_hat',
+      furnitureCoords: saved.furnitureCoords || {
+        rug: { x: window.innerWidth / 2 - 65, y: window.innerHeight * 0.72 }
+      },
+      postcards: saved.postcards || [],
+      x: window.innerWidth / 2 - 42,
+      y: window.innerHeight * 0.66,
       isHeld: false,
+      isBuilding: false,
       isTraveling: false
     };
 
@@ -455,33 +580,32 @@
     const world = document.getElementById('world');
 
     function saveGame() {
-      localStorage.setItem('pockets_pet_save', JSON.stringify({
+      localStorage.setItem('pockets_hamster_v3', JSON.stringify({
         name: state.name,
         hunger: state.hunger,
         coins: state.coins,
         feedCount: state.feedCount,
+        inventory: state.inventory,
         equippedHat: state.equippedHat,
-        placedFurniture: state.placedFurniture,
-        inventory: state.inventory
+        furnitureCoords: state.furnitureCoords,
+        postcards: state.postcards
       }));
     }
 
-    // 1. 成長階段體型渲染 (從小養到大)
+    // 1. 成長階段動態變化
     function updateHamsterGrowth() {
       const scale = state.feedCount < 10 ? 0.8 : (state.feedCount < 25 ? 1.0 : 1.25);
       petBox.style.transform = `scale(${scale})`;
 
-      const stageText = state.feedCount < 10 ? '幼鼠期 🌱' : (state.feedCount < 25 ? '亞成體 🌾' : '豐滿成年鼠 🌻');
-      document.getElementById('profStage').textContent = stageText;
+      const stage = state.feedCount < 10 ? '幼鼠期 🌱' : (state.feedCount < 25 ? '亞成體 🌾' : '豐滿成年鼠 🌻');
+      document.getElementById('profStage').textContent = stage;
       document.getElementById('profFeedCount').textContent = state.feedCount;
     }
 
-    // 2. 寵物座標與邊界限制
+    // 2. 寵物座標與手勢控制
     function setPosition(x, y) {
-      const minX = 20;
-      const maxX = window.innerWidth - 110;
-      const minY = window.innerHeight * 0.58;
-      const maxY = window.innerHeight * 0.78;
+      const minX = 15, maxX = window.innerWidth - 100;
+      const minY = window.innerHeight * 0.58, maxY = window.innerHeight * 0.78;
       state.x = Math.max(minX, Math.min(maxX, x));
       state.y = Math.max(minY, Math.min(maxY, y));
       petBox.style.left = `${state.x}px`;
@@ -489,10 +613,9 @@
     }
     setPosition(state.x, state.y);
 
-    // 3. 手勢抓起與放下
     let dragStart = { x: 0, y: 0 };
     petBox.addEventListener('pointerdown', (e) => {
-      if (state.isTraveling) return;
+      if (state.isTraveling || state.isBuilding) return;
       state.isHeld = true;
       petBox.classList.add('held');
       dragStart.x = e.clientX - state.x;
@@ -512,9 +635,10 @@
       setPosition(state.x, window.innerHeight * 0.7);
     });
 
-    // 4. 點地板隨心掉食物 (自動尋路吃瓜子)
+    // 3. 點地板隨心掉種子
     world.addEventListener('pointerdown', (e) => {
-      if (e.clientY < 90 || e.clientY > window.innerHeight - 80 || state.isHeld || state.isTraveling) return;
+      if (state.isBuilding || state.isHeld || state.isTraveling) return;
+      if (e.clientY < 90 || e.clientY > window.innerHeight - 80) return;
       dropSeed(e.clientX - 8, e.clientY - 12);
     });
 
@@ -528,23 +652,21 @@
       petBox.classList.add('walking');
       const startX = state.x;
       const targetX = x - 35;
-      let progress = 0;
+      let p = 0;
 
-      const moveLoop = setInterval(() => {
-        progress += 0.07;
-        setPosition(startX + (targetX - startX) * progress, state.y);
-        if (progress >= 1) {
-          clearInterval(moveLoop);
+      const runInterval = setInterval(() => {
+        p += 0.08;
+        setPosition(startX + (targetX - startX) * p, state.y);
+        if (p >= 1) {
+          clearInterval(runInterval);
           petBox.classList.remove('walking');
           seed.remove();
 
-          // 吃下成長
           state.hunger = Math.min(100, state.hunger + 10);
           state.feedCount++;
           updateHamsterGrowth();
           renderHUD();
 
-          // 冒愛心
           const pop = document.createElement('div');
           pop.className = 'heart-pop';
           pop.textContent = '❤️';
@@ -556,146 +678,320 @@
       }, 20);
     }
 
-    // 5. 導覽列折疊切換
-    function toggleDock() {
-      const dock = document.getElementById('mainDock');
-      const btn = document.getElementById('dockToggleBtn');
-      if (dock.classList.contains('collapsed')) {
-        dock.classList.remove('collapsed');
-        btn.textContent = '收';
+    // 4. 自由拖曳家具的「建造模式」
+    function toggleBuildMode() {
+      state.isBuilding = !state.isBuilding;
+      document.getElementById('buildBanner').style.display = state.isBuilding ? 'block' : 'none';
+      document.getElementById('buildBtnText').textContent = state.isBuilding ? '完成佈置' : '建造模式';
+      world.classList.toggle('build-mode', state.isBuilding);
+      renderFurniture();
+      if (!state.isBuilding) saveGame();
+    }
+
+    function renderFurniture() {
+      furnitureLayer.innerHTML = '';
+      Object.keys(state.furnitureCoords).forEach(id => {
+        const item = ASSETS.furniture[id];
+        if (!item) return;
+
+        const coords = state.furnitureCoords[id];
+        const el = document.createElement('div');
+        el.className = `placed-furniture ${state.isBuilding ? 'building' : ''}`;
+        el.innerHTML = item.svg;
+        el.style.left = `${coords.x}px`;
+        el.style.top = `${coords.y}px`;
+
+        if (state.isBuilding) {
+          let fDrag = false, fOffset = { x: 0, y: 0 };
+          el.addEventListener('pointerdown', (e) => {
+            fDrag = true;
+            fOffset.x = e.clientX - coords.x;
+            fOffset.y = e.clientY - coords.y;
+            el.setPointerCapture(e.pointerId);
+          });
+          el.addEventListener('pointermove', (e) => {
+            if (!fDrag) return;
+            coords.x = e.clientX - fOffset.x;
+            coords.y = Math.max(window.innerHeight * 0.55, Math.min(window.innerHeight * 0.82, e.clientY - fOffset.y));
+            el.style.left = `${coords.x}px`;
+            el.style.top = `${coords.y}px`;
+          });
+          el.addEventListener('pointerup', () => { fDrag = false; });
+        }
+        furnitureLayer.appendChild(el);
+      });
+    }
+
+    // 5. 換衣服衣櫥系統
+    function openWardrobe() {
+      const grid = document.getElementById('wardrobeGrid');
+      grid.innerHTML = '';
+      const hatIds = state.inventory.filter(id => ASSETS.hats[id]);
+
+      hatIds.forEach(id => {
+        const item = ASSETS.hats[id];
+        const isEquipped = state.equippedHat === id;
+        const card = document.createElement('div');
+        card.className = 'card-item';
+        card.innerHTML = `
+          <div class="preview-box">${item.svg}</div>
+          <b>${item.name}</b>
+          <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="toggleHat('${id}')">
+            ${isEquipped ? '卸下' : '穿上'}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+      document.getElementById('wardrobeModal').style.display = 'flex';
+    }
+
+    function toggleHat(id) {
+      state.equippedHat = (state.equippedHat === id) ? null : id;
+      renderEquippedHat();
+      saveGame();
+      openWardrobe();
+    }
+
+    function renderEquippedHat() {
+      petHat.innerHTML = state.equippedHat && ASSETS.hats[state.equippedHat] ? ASSETS.hats[state.equippedHat].svg : '';
+    }
+
+    // 6. 商店系統 (買衣服與家具)
+    function openShop() {
+      document.getElementById('shopCoinText').textContent = state.coins;
+      const grid = document.getElementById('shopGrid');
+      grid.innerHTML = '';
+
+      // 裝扮清單
+      Object.keys(ASSETS.hats).forEach(id => {
+        if (!state.inventory.includes(id)) {
+          const item = ASSETS.hats[id];
+          renderShopCard(grid, item, () => buyAsset(id, 'hat', item.cost));
+        }
+      });
+      // 家具清單
+      Object.keys(ASSETS.furniture).forEach(id => {
+        if (!state.inventory.includes(id)) {
+          const item = ASSETS.furniture[id];
+          renderShopCard(grid, item, () => buyAsset(id, 'furniture', item.cost));
+        }
+      });
+
+      document.getElementById('shopModal').style.display = 'flex';
+    }
+
+    function renderShopCard(container, item, onBuy) {
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.innerHTML = `
+        <div class="preview-box">${item.svg}</div>
+        <b>${item.name}</b>
+        <span>🪙 ${item.cost} 金幣</span>
+      `;
+      const btn = document.createElement('button');
+      btn.className = 'btn-action';
+      btn.style.cssText = 'padding:6px; margin-top:4px;';
+      btn.textContent = '購買';
+      btn.onclick = onBuy;
+      card.appendChild(btn);
+      container.appendChild(card);
+    }
+
+    function buyAsset(id, type, cost) {
+      if (state.coins < cost) {
+        alert('金幣不夠了！快點「賺金幣」去小遊戲接瓜子吧！');
+        return;
+      }
+      state.coins -= cost;
+      state.inventory.push(id);
+      if (type === 'furniture') {
+        const item = ASSETS.furniture[id];
+        state.furnitureCoords[id] = { x: item.defaultX, y: window.innerHeight * item.defaultY };
+        renderFurniture();
+      }
+      saveGame();
+      renderHUD();
+      alert('購買成功！');
+      openShop();
+    }
+
+    // 7. 外出旅行與明信片手帳
+    function openPostcardBook() {
+      const list = document.getElementById('postcardList');
+      const empty = document.getElementById('postcardEmpty');
+      list.innerHTML = '';
+
+      if (state.postcards.length === 0) {
+        empty.style.display = 'block';
       } else {
-        dock.classList.add('collapsed');
-        btn.textContent = '展';
+        empty.style.display = 'none';
+        state.postcards.forEach(card => {
+          const row = document.createElement('div');
+          row.className = 'postcard-item';
+          row.innerHTML = `
+            <div class="postcard-thumb">${card.svg}</div>
+            <div style="font-size:12px; color:var(--main-text); line-height:1.5;">
+              <b style="font-size:14px;">${card.title}</b>
+              <p>${card.desc}</p>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+      }
+      document.getElementById('postcardModal').style.display = 'flex';
+    }
+
+    function sendPetToTravel() {
+      if (state.isTraveling) return;
+      closeModal('postcardModal');
+      state.isTraveling = true;
+      petBox.style.display = 'none';
+      alert(`${state.name} 背起行囊出發旅行了！8 秒後會寄明信片回來～`);
+
+      setTimeout(() => {
+        state.isTraveling = false;
+        petBox.style.display = 'flex';
+
+        const keys = Object.keys(ASSETS.postcards);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const cardData = ASSETS.postcards[randomKey];
+
+        if (!state.postcards.some(p => p.title === cardData.title)) {
+          state.postcards.push(cardData);
+        }
+        state.coins += 40;
+        saveGame();
+        renderHUD();
+        alert(`叮咚！${state.name} 寄回了一張【${cardData.title}】明信片，還賺了 40 金幣！`);
+      }, 8000);
+    }
+
+    // 8. 賺金幣接瓜子小遊戲
+    const gameScreen = document.getElementById('minigame-screen');
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    let loopId, timerId, gScore = 0, gTime = 20;
+    let basket = { x: 0, y: 0, w: 60, h: 50 };
+    let drops = [];
+
+    function startMiniGame() {
+      gameScreen.style.display = 'block';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      basket.x = canvas.width / 2 - 30;
+      basket.y = canvas.height - 110;
+      gScore = 0;
+      gTime = 20;
+      drops = [];
+      document.getElementById('gameScore').textContent = gScore;
+      document.getElementById('gameTimer').textContent = gTime;
+
+      canvas.ontouchmove = (e) => { basket.x = e.touches[0].clientX - basket.w / 2; };
+      canvas.onmousemove = (e) => { basket.x = e.clientX - basket.w / 2; };
+
+      timerId = setInterval(() => {
+        gTime--;
+        document.getElementById('gameTimer').textContent = gTime;
+        if (gTime <= 0) finishMiniGame();
+      }, 1000);
+
+      runGame();
+    }
+
+    function runGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.08) {
+        drops.push({
+          x: Math.random() * (canvas.width - 40) + 20,
+          y: -20,
+          speed: 3 + Math.random() * 3,
+          isCoin: Math.random() < 0.4,
+          isRock: Math.random() < 0.2
+        });
+      }
+
+      // 繪製倉鼠推車
+      ctx.fillStyle = '#e8a86b';
+      ctx.beginPath();
+      ctx.arc(basket.x + 30, basket.y + 25, 24, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 掉落物繪製與碰撞
+      for (let i = drops.length - 1; i >= 0; i--) {
+        const d = drops[i];
+        d.y += d.speed;
+
+        if (d.isRock) {
+          ctx.fillStyle = '#6c757d';
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 10, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (d.isCoin) {
+          ctx.fillStyle = '#ffd166';
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 9, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = '#5a4b3d';
+          ctx.beginPath();
+          ctx.ellipse(d.x, d.y, 6, 10, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (d.y > basket.y && d.y < basket.y + basket.h && d.x > basket.x && d.x < basket.x + basket.w) {
+          if (d.isRock) {
+            gScore = Math.max(0, gScore - 10);
+          } else if (d.isCoin) {
+            gScore += 15;
+          } else {
+            gScore += 5;
+          }
+          document.getElementById('gameScore').textContent = gScore;
+          drops.splice(i, 1);
+          continue;
+        }
+        if (d.y > canvas.height) drops.splice(i, 1);
+      }
+      loopId = requestAnimationFrame(runGame);
+    }
+
+    function finishMiniGame() {
+      cancelAnimationFrame(loopId);
+      clearInterval(timerId);
+      gameScreen.style.display = 'none';
+
+      const earned = Math.floor(gScore / 2);
+      state.coins += earned;
+      renderHUD();
+      saveGame();
+      alert(`遊戲結束！小倉鼠幫你接到了 ${gScore} 分，折合獲得 🪙 ${earned} 枚金幣！`);
+    }
+
+    // 9. 導覽列與彈窗基礎控制
+    function toggleDock() {
+      const d = document.getElementById('mainDock');
+      const b = document.getElementById('dockToggleBtn');
+      if (d.classList.contains('collapsed')) {
+        d.classList.remove('collapsed');
+        b.textContent = '收';
+      } else {
+        d.classList.add('collapsed');
+        b.textContent = '展';
       }
     }
 
-    // 6. 個人資料卡
     function openProfile() {
       document.getElementById('profNameDisplay').textContent = state.name;
       document.getElementById('profileModal').style.display = 'flex';
     }
     function renamePet() {
-      const n = prompt('為你的小倉鼠取個可愛的名字吧：', state.name);
+      const n = prompt('想幫倉鼠改什麼名字？', state.name);
       if (n && n.trim()) {
         state.name = n.trim();
-        document.getElementById('topPetName').textContent = state.name;
-        document.getElementById('profNameDisplay').textContent = state.name;
-        saveGame();
-      }
-    }
-
-    // 7. 商店與背包物品管理
-    function openShop() {
-      document.getElementById('shopCoinText').textContent = state.coins;
-      document.getElementById('shopModal').style.display = 'flex';
-    }
-
-    function buyItem(id, name, type, icon, cost) {
-      if (state.coins < cost) {
-        alert('金幣不足！讓小傢伙去散步賺點錢吧。');
-        return;
-      }
-      if (state.inventory.some(i => i.id === id)) {
-        alert('背包裡已經有這個物品囉！');
-        return;
-      }
-      state.coins -= cost;
-      state.inventory.push({ id, name, type, icon });
-      saveGame();
-      renderHUD();
-      alert(`成功買下【${name}】！已放進背包。`);
-      closeModal('shopModal');
-    }
-
-    function openInventory() {
-      const grid = document.getElementById('invGrid');
-      const empty = document.getElementById('invEmptyNotice');
-      grid.innerHTML = '';
-
-      if (state.inventory.length === 0) {
-        empty.style.display = 'block';
-      } else {
-        empty.style.display = 'none';
-        state.inventory.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'item-card';
-          const isEquipped = state.equippedHat === item.icon || state.placedFurniture.includes(item.id);
-          card.innerHTML = `
-            <div class="item-icon">${item.icon}</div>
-            <b>${item.name}</b>
-            <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="toggleItem('${item.id}')">
-              ${isEquipped ? '卸下 / 收回' : (item.type === 'hat' ? '穿戴' : '擺放')}
-            </button>
-          `;
-          grid.appendChild(card);
-        });
-      }
-      document.getElementById('invModal').style.display = 'flex';
-    }
-
-    function toggleItem(id) {
-      const it = state.inventory.find(i => i.id === id);
-      if (!it) return;
-
-      if (it.type === 'hat') {
-        if (state.equippedHat === it.icon) {
-          state.equippedHat = null;
-          petHat.textContent = '';
-        } else {
-          state.equippedHat = it.icon;
-          petHat.textContent = it.icon;
-        }
-      } else if (it.type === 'furniture') {
-        const idx = state.placedFurniture.indexOf(id);
-        if (idx > -1) {
-          state.placedFurniture.splice(idx, 1);
-        } else {
-          state.placedFurniture.push(id);
-        }
-        renderFurniture();
-      }
-      saveGame();
-      openInventory(); // 重整背包按鈕狀態
-    }
-
-    function renderFurniture() {
-      furnitureLayer.innerHTML = '';
-      state.placedFurniture.forEach(id => {
-        const it = state.inventory.find(i => i.id === id);
-        if (it) {
-          const el = document.createElement('div');
-          el.className = 'placed-furniture';
-          el.textContent = it.icon;
-          el.style.fontSize = '48px';
-          // 滾輪放右側，小窩放左側
-          if (id === 'wheel') {
-            el.style.right = '40px';
-            el.style.bottom = '18%';
-          } else {
-            el.style.left = '40px';
-            el.style.bottom = '20%';
-          }
-          furnitureLayer.appendChild(el);
-        }
-      });
-    }
-
-    // 8. 外出旅行
-    function startTravel() {
-      if (state.isTraveling) return;
-      state.isTraveling = true;
-      petBox.style.display = 'none';
-      alert(`${state.name} 跑出門探險了！大約 8 秒後會帶小禮物回來。`);
-
-      setTimeout(() => {
-        state.isTraveling = false;
-        petBox.style.display = 'flex';
-        const gain = Math.floor(Math.random() * 30) + 20;
-        state.coins += gain;
-        saveGame();
         renderHUD();
-        alert(`${state.name} 散步回來了！在草叢裡挖到了 ${gain} 枚金幣！🌸`);
-      }, 8000);
+        document.getElementById('profNameDisplay').textContent = state.name;
+      }
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -704,22 +1000,21 @@
       document.getElementById('valHunger').textContent = Math.round(state.hunger);
       document.getElementById('valCoins').textContent = state.coins;
       document.getElementById('topPetName').textContent = state.name;
-      saveGame();
     }
 
     // 初始化渲染
-    if (state.equippedHat) petHat.textContent = state.equippedHat;
+    renderEquippedHat();
     renderFurniture();
     updateHamsterGrowth();
     renderHUD();
 
     // 飽足自然消耗
     setInterval(() => {
-      if (!state.isTraveling) {
+      if (!state.isTraveling && !state.isBuilding) {
         state.hunger = Math.max(0, state.hunger - 1);
         renderHUD();
       }
-    }, 5000);
+    }, 6000);
   </script>
 </body>
 </html>
