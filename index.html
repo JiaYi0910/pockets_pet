@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Pocket Hamsters | 倉鼠生活大世界</title>
+  <title>Pocket Hamsters | 倉鼠大莊園</title>
   <style>
     :root {
-      --bg-wall: #fbf8f3;
-      --floor-base: #dfceb7;
-      --floor-line: #cfbb9f;
-      --card-bg: rgba(255, 255, 255, 0.95);
       --main-text: #4a3b32;
       --accent: #d97736;
       --border-color: #ebdccb;
+      --card-bg: rgba(255, 255, 255, 0.94);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,14 +21,119 @@
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
-      background: var(--bg-wall);
+      background: #fbf8f3;
     }
 
-    #world {
-      width: 100%;
-      height: 100%;
+    /* 視界舞台與滑動軌道 (支援多房間) */
+    #viewport {
+      width: 100vw;
+      height: 100vh;
       position: relative;
       overflow: hidden;
+    }
+    #world-slider {
+      display: flex;
+      width: 300vw;
+      height: 100%;
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .room-scene {
+      width: 100vw;
+      height: 100%;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* 房間 1: 溫馨主客廳 */
+    #room-living {
+      background: #fbf8f3;
+    }
+    #room-living .floor {
+      background: repeating-linear-gradient(90deg, #dfceb7 0px, #dfceb7 90px, #cfbb9f 90px, #cfbb9f 92px);
+      border-top: 6px solid #b8a082;
+    }
+
+    /* 房間 2: 玩樂活動室 */
+    #room-play {
+      background: #f0f7f4;
+    }
+    #room-play .floor {
+      background: repeating-linear-gradient(90deg, #d8e2dc 0px, #d8e2dc 80px, #b2c9bd 80px, #b2c9bd 82px);
+      border-top: 6px solid #9cb3a5;
+    }
+
+    /* 房間 3: 綠意露天庭院 */
+    #room-garden {
+      background: linear-gradient(180deg, #d8f3dc 0%, #b7e4c7 60%, #95d5b2 100%);
+    }
+    #room-garden .floor {
+      background: repeating-linear-gradient(90deg, #74c69d 0px, #74c69d 70px, #52b788 70px, #52b788 72px);
+      border-top: 8px solid #40916c;
+    }
+
+    .floor {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 44%;
+    }
+
+    .wall-window {
+      position: absolute;
+      top: 10%;
+      left: 8%;
+      width: 110px;
+      height: 135px;
+      background: #eef7fc;
+      border: 5px solid #fff;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 4px;
+      pointer-events: none;
+    }
+    .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
+
+    /* 空間切換箭頭指示 */
+    .room-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 14px rgba(74, 59, 50, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 40;
+    }
+    .room-nav-btn svg { width: 22px; height: 22px; stroke: var(--main-text); stroke-width: 2.5; fill: none; }
+    #btn-prev-room { left: 12px; }
+    #btn-next-room { right: 12px; }
+
+    /* 當前房間名稱標籤 */
+    .room-indicator {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      padding: 4px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--main-text);
+      z-index: 20;
     }
 
     /* 頂部 HUD */
@@ -43,7 +145,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 20;
+      z-index: 30;
     }
     .hud-pill {
       background: var(--card-bg);
@@ -71,35 +173,10 @@
       box-shadow: 0 4px 12px rgba(74, 59, 50, 0.08);
     }
 
-    /* 房間布景 */
-    .wall-window {
-      position: absolute;
-      top: 10%;
-      left: 6%;
-      width: 110px;
-      height: 135px;
-      background: #eef7fc;
-      border: 5px solid #fff;
-      border-radius: 12px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 4px;
-      pointer-events: none;
-    }
-    .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
-    .floor {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 44%;
-      background: repeating-linear-gradient(90deg, var(--floor-base) 0px, var(--floor-base) 90px, var(--floor-line) 90px, var(--floor-line) 92px);
-      border-top: 6px solid #b8a082;
-    }
-
+    /* 建造模式提示 */
     .build-banner {
       position: absolute;
-      top: 70px;
+      top: 104px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(217, 119, 54, 0.9);
@@ -111,14 +188,9 @@
       z-index: 50;
       display: none;
     }
-    #world.build-mode .floor {
-      background-image: linear-gradient(rgba(217, 119, 54, 0.15) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(217, 119, 54, 0.15) 1px, transparent 1px);
-      background-size: 30px 30px;
-    }
 
     /* 家具層 */
-    #furniture-layer {
+    .furniture-layer {
       position: absolute;
       inset: 0;
       z-index: 6;
@@ -129,7 +201,6 @@
       touch-action: none;
       cursor: pointer;
       pointer-events: auto;
-      transition: filter 0.2s;
     }
     .placed-furniture.building {
       outline: 2px dashed var(--accent);
@@ -141,14 +212,20 @@
     }
     @keyframes spinWheel { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* 倉鼠容器與動作 */
+    /* 倉鼠與動作容器 */
+    .hamster-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
     .hamster-entity {
       position: absolute;
       width: 80px;
       height: 80px;
-      z-index: 10;
       cursor: grab;
       touch-action: none;
+      pointer-events: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -187,7 +264,80 @@
     .badge-male { background: #3a86ff; }
     .badge-female { background: #ff006e; }
 
-    /* 食物與特效 */
+    /* 底部美化 Dock 與圖示收合鈕 */
+    .dock-wrapper {
+      position: absolute;
+      bottom: calc(env(safe-area-inset-bottom, 14px) + 14px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dock {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      padding: 8px 14px;
+      border-radius: 26px;
+      box-shadow: 0 8px 24px rgba(74, 59, 50, 0.12);
+      display: flex;
+      gap: 10px;
+      border: 1px solid var(--border-color);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dock.collapsed {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.8) translateY(24px);
+      position: absolute;
+    }
+    .dock-btn {
+      background: transparent;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--main-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .dock-btn svg { width: 22px; height: 22px; stroke: var(--main-text); stroke-width: 2; fill: none; }
+    .dock-btn:active { transform: scale(0.92); }
+
+    /* 質感圖案收合按鈕 (無直觀中文字) */
+    .toggle-dock-btn {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      box-shadow: 0 6px 16px rgba(74, 59, 50, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+    .toggle-dock-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--main-text);
+      stroke-width: 2.2;
+      fill: none;
+      transition: transform 0.3s ease;
+    }
+    .toggle-dock-btn.is-collapsed svg {
+      transform: rotate(180deg);
+    }
+
+    /* 食物與粒子 */
     .sunflower-seed {
       position: absolute;
       width: 16px;
@@ -197,7 +347,7 @@
       border: 2px solid #5a4b3d;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
       pointer-events: none;
-      z-index: 5;
+      z-index: 8;
       animation: seedDrop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
     .sunflower-seed::after {
@@ -225,69 +375,6 @@
     @keyframes floatUp {
       0% { opacity: 1; transform: translateY(0) scale(0.8); }
       100% { opacity: 0; transform: translateY(-36px) scale(1.2); }
-    }
-
-    /* 底部收合 Dock */
-    .dock-wrapper {
-      position: absolute;
-      bottom: calc(env(safe-area-inset-bottom, 14px) + 14px);
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 25;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .dock {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      padding: 8px 14px;
-      border-radius: 26px;
-      box-shadow: 0 8px 24px rgba(74, 59, 50, 0.12);
-      display: flex;
-      gap: 10px;
-      border: 1px solid var(--border-color);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .dock.collapsed {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.8) translateY(20px);
-      position: absolute;
-    }
-    .dock-btn {
-      background: transparent;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--main-text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .dock-btn svg { width: 22px; height: 22px; stroke: var(--main-text); stroke-width: 2; fill: none; }
-    .dock-btn:active { transform: scale(0.92); }
-
-    .toggle-dock-btn {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--main-text);
-      font-size: 13px;
-      font-weight: bold;
     }
 
     /* 彈窗 UI */
@@ -374,11 +461,11 @@
 </head>
 <body>
 
-  <div id="world">
+  <div id="viewport">
     <!-- 頂部 HUD -->
     <div class="top-bar">
       <div class="hud-pill">
-        <span>金幣 🪙 <b id="valCoins">180</b></span>
+        <span>金幣 🪙 <b id="valCoins">200</b></span>
         <span>成員 🐹 <b id="valHamsterCount">1</b>隻</span>
       </div>
       <div style="display:flex; gap:8px;">
@@ -387,17 +474,44 @@
       </div>
     </div>
 
+    <!-- 空間名稱指示與箭頭 -->
+    <div class="room-indicator" id="roomIndicatorText">客廳 🛋️</div>
+    <button class="room-nav-btn" id="btn-prev-room" onclick="changeRoom(-1)">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="room-nav-btn" id="btn-next-room" onclick="changeRoom(1)">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
     <div class="build-banner" id="buildBanner">建造模式中：點擊並拖曳家具移動位置</div>
 
-    <!-- 房間與家具 -->
-    <div class="wall-window"><div></div><div></div><div></div><div></div></div>
-    <div class="floor"></div>
-    <div id="furniture-layer"></div>
+    <!-- 跨房間滑動軌道 -->
+    <div id="world-slider">
+      <!-- 房間 0: 主客廳 -->
+      <div class="room-scene" id="room-living" data-room-index="0">
+        <div class="wall-window"><div></div><div></div><div></div><div></div></div>
+        <div class="floor"></div>
+        <div class="furniture-layer" id="furniture-living"></div>
+      </div>
 
-    <!-- 倉鼠活動層 -->
-    <div id="hamster-layer"></div>
+      <!-- 房間 1: 活動室 -->
+      <div class="room-scene" id="room-play" data-room-index="1">
+        <div class="wall-window" style="left:auto; right:8%;"><div></div><div></div><div></div><div></div></div>
+        <div class="floor"></div>
+        <div class="furniture-layer" id="furniture-play"></div>
+      </div>
 
-    <!-- 底部 Dock -->
+      <!-- 房間 2: 露天庭院 -->
+      <div class="room-scene" id="room-garden" data-room-index="2">
+        <div class="floor"></div>
+        <div class="furniture-layer" id="furniture-garden"></div>
+      </div>
+    </div>
+
+    <!-- 全域倉鼠層 -->
+    <div class="hamster-layer" id="hamster-layer"></div>
+
+    <!-- 底部 Dock 工具列 -->
     <div class="dock-wrapper">
       <div class="dock" id="mainDock">
         <button class="dock-btn" onclick="openShop()">
@@ -421,11 +535,17 @@
           旅行手帳
         </button>
       </div>
-      <button class="toggle-dock-btn" id="dockToggleBtn" onclick="toggleDock()">收</button>
+
+      <!-- 美化圖標收合鈕 -->
+      <button class="toggle-dock-btn" id="dockToggleBtn" onclick="toggleDock()" title="收合選單">
+        <svg viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <!-- 領養中心 -->
+  <!-- 領養中心 (7 大品種) -->
   <div class="modal-overlay" id="adoptModal">
     <div class="modal-card">
       <h3 class="modal-title">倉鼠領養中心 🏡</h3>
@@ -444,7 +564,7 @@
     </div>
   </div>
 
-  <!-- 換裝選鼠 -->
+  <!-- 換衣服選擇 -->
   <div class="modal-overlay" id="wardrobeSelectModal">
     <div class="modal-card">
       <h3 class="modal-title">選擇要換裝的倉鼠 🧣</h3>
@@ -453,7 +573,7 @@
     </div>
   </div>
 
-  <!-- 換衣服衣櫥 -->
+  <!-- 換衣服配件庫 -->
   <div class="modal-overlay" id="wardrobeModal">
     <div class="modal-card">
       <h3 class="modal-title">衣櫥配件庫 👒</h3>
@@ -463,7 +583,7 @@
     </div>
   </div>
 
-  <!-- 雜貨小鋪 (大量全新物品) -->
+  <!-- 雜貨小鋪 (大量新品) -->
   <div class="modal-overlay" id="shopModal">
     <div class="modal-card">
       <h3 class="modal-title">森之雜貨鋪 🛒</h3>
@@ -473,7 +593,7 @@
     </div>
   </div>
 
-  <!-- 8 景點旅行紀念手帳 -->
+  <!-- 旅行手帳 -->
   <div class="modal-overlay" id="postcardModal">
     <div class="modal-card">
       <h3 class="modal-title">旅行紀念手帳 📖</h3>
@@ -482,7 +602,6 @@
         <select id="selectTraveler" style="width:100%; padding:8px; border-radius:12px; border:1px solid var(--border-color); margin-top:6px; font-size:13px; background:#fff;"></select>
       </div>
       <button class="btn-action" style="margin-bottom:14px; background:var(--accent);" onclick="sendSelectedPetToTravel()">讓牠出發去探險 🎒</button>
-      
       <div style="font-size:13px; font-weight:bold; margin-bottom:8px;">🌸 收集到的明信片 (<span id="postcardCount">0</span>/8)：</div>
       <div id="postcardEmpty" style="font-size:12px; text-align:center; color:#888; padding:10px 0;">還沒有明信片，快派鼠鼠出門吧！</div>
       <div id="postcardList"></div>
@@ -495,17 +614,17 @@
     <div class="modal-card">
       <h3 class="modal-title">接瓜子大作戰 🎮</h3>
       <div style="background:#fff; border:1px solid var(--border-color); border-radius:16px; padding:14px; font-size:13px; line-height:1.8; color:var(--main-text);">
-        <p><b>規則玩法：</b>滑動手指接住落下的寶物，限時 20 秒！</p>
+        <p><b>玩法說明：</b>用手指左右拖動接住落下的寶物，限時 20 秒！</p>
         <p style="margin-top:6px;">🪙 <b>金色金幣</b>：+15 分（直接變現）</p>
         <p>🌻 <b>葵花子</b>：+5 分</p>
-        <p>🪨 <b>落石</b>：扣 10 分（注意閃躲！）</p>
+        <p>🪨 <b>落石</b>：扣 10 分（小心避開！）</p>
       </div>
       <button class="btn-action" style="background:var(--accent);" onclick="reallyStartMiniGame()">開始挑戰！</button>
       <button class="btn-action" style="background:#8b786d; margin-top:6px;" onclick="closeModal('rulesModal')">取消</button>
     </div>
   </div>
 
-  <!-- 小遊戲畫布 -->
+  <!-- 小遊戲全螢幕 -->
   <div id="minigame-screen">
     <div class="game-hud">
       <div>金幣得分: <span id="gameScore">0</span></div>
@@ -515,19 +634,39 @@
   </div>
 
   <script>
-    // 品種定義
+    // 房間定義
+    const ROOMS = [
+      { name: '客廳 🛋️', id: 'living' },
+      { name: '活動室 🎡', id: 'play' },
+      { name: '露天庭院 🌿', id: 'garden' }
+    ];
+    let currentRoomIndex = 0;
+
+    // 7 大倉鼠品種定義 (加入紫倉、三線楓葉、奶牛花斑)
     const SPECIES = {
       golden: { name: '金絲熊', cost: 0, body: '#e8a86b', belly: '#fffdfa', ear: '#f4b7a1' },
       silver: { name: '銀狐鼠', cost: 100, body: '#e9ecef', belly: '#ffffff', ear: '#adb5bd' },
       bear: { name: '黑熊鼠', cost: 150, body: '#495057', belly: '#ced4da', ear: '#343a40' },
-      pudding: { name: '布丁鼠', cost: 180, body: '#ffd166', belly: '#fff3b0', ear: '#f4a261' }
+      pudding: { name: '布丁鼠', cost: 180, body: '#ffd166', belly: '#fff3b0', ear: '#f4a261' },
+      violet: { name: '紫倉鼠', cost: 220, body: '#c8b6ff', belly: '#f8f7ff', ear: '#b8c0ff' },
+      maple: { name: '三線楓葉鼠', cost: 240, body: '#b08968', belly: '#ede0d4', ear: '#7f5539', stripe: '#4a3b32' },
+      cow: { name: '奶牛花斑鼠', cost: 260, body: '#fdfbf7', belly: '#ffffff', ear: '#4a3b32', spots: true }
     };
 
     function generateHamsterSVG(speciesKey) {
       const s = SPECIES[speciesKey] || SPECIES.golden;
+      let extraDetails = '';
+      if (s.stripe) {
+        extraDetails += `<path d="M50 34 L50 72" stroke="${s.stripe}" stroke-width="4.5" stroke-linecap="round"/>`;
+      }
+      if (s.spots) {
+        extraDetails += `<ellipse cx="38" cy="54" rx="12" ry="8" fill="#333" /><ellipse cx="64" cy="62" rx="9" ry="7" fill="#333" />`;
+      }
+
       return `<svg class="hamster-svg" viewBox="0 0 100 100" width="80" height="80">
         <circle cx="15" cy="65" r="7" fill="${s.ear}" />
         <ellipse cx="50" cy="60" rx="36" ry="32" fill="${s.body}" />
+        ${extraDetails}
         <ellipse cx="52" cy="68" rx="24" ry="20" fill="${s.belly}" />
         <circle cx="30" cy="28" r="10" fill="${s.body}" />
         <circle cx="30" cy="28" r="6" fill="${s.ear}" />
@@ -546,7 +685,7 @@
       </svg>`;
     }
 
-    // 大量手繪向量圖庫（8 帽子、7 家具、8 明信片）
+    // 向量圖庫 (海量商品)
     const ASSETS = {
       hats: {
         straw_hat: { name: '夏日草帽', cost: 30, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>` },
@@ -554,9 +693,8 @@
         grad_cap: { name: '學士帽', cost: 70, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>` },
         detective_hat: { name: '福爾摩斯帽', cost: 85, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M10 26 Q30 8 50 26 Z" fill="#7f5539"/><ellipse cx="30" cy="26" rx="26" ry="6" fill="#9c6644"/><rect x="26" y="10" width="8" height="4" fill="#582f0e"/></svg>` },
         crown: { name: '國王金皇冠', cost: 110, svg: `<svg viewBox="0 0 50 35" width="42" height="30"><polygon points="8,26 12,12 25,18 38,12 42,26" fill="#ffd166" stroke="#f4a261" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#e76f51"/><circle cx="25" cy="18" r="3" fill="#2a9d8f"/><circle cx="38" cy="12" r="3" fill="#e76f51"/></svg>` },
-        chef_hat: { name: '大廚高帽', cost: 65, svg: `<svg viewBox="0 0 50 40" width="40" height="32"><path d="M14 26 C8 16 20 6 25 12 C30 6 42 16 36 26 Z" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><rect x="14" y="24" width="22" height="6" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.5"/></svg>` },
-        party_cone: { name: '彩帶派對帽', cost: 50, svg: `<svg viewBox="0 0 40 45" width="34" height="38"><polygon points="20,6 8,36 32,36" fill="#48cae4"/><circle cx="20" cy="6" r="4" fill="#ffd166"/><line x1="12" y1="26" x2="28" y2="26" stroke="#ff006e" stroke-width="3"/></svg>` },
-        red_hood: { name: '小紅帽斗篷', cost: 60, svg: `<svg viewBox="0 0 50 35" width="42" height="28"><path d="M12 28 Q25 8 38 28 Z" fill="#d90429"/><circle cx="25" cy="8" r="3" fill="#ef233c"/></svg>` }
+        ghost_hood: { name: '小幽靈頭套', cost: 95, svg: `<svg viewBox="0 0 50 40" width="40" height="32"><path d="M15 32 C10 12 40 12 35 32 Q25 28 15 32 Z" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><circle cx="22" cy="20" r="2" fill="#333"/><circle cx="28" cy="20" r="2" fill="#333"/></svg>` },
+        daisy_clip: { name: '小雛菊髮夾', cost: 40, svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="6" fill="#ffd166"/><circle cx="20" cy="10" r="4" fill="#ffffff"/><circle cx="28" cy="15" r="4" fill="#ffffff"/><circle cx="28" cy="25" r="4" fill="#ffffff"/><circle cx="20" cy="30" r="4" fill="#ffffff"/><circle cx="12" cy="25" r="4" fill="#ffffff"/><circle cx="12" cy="15" r="4" fill="#ffffff"/></svg>` }
       },
       furniture: {
         wheel: {
@@ -564,101 +702,50 @@
           cost: 60,
           w: 125,
           h: 125,
+          defaultRoom: 'living',
           defaultX: 20,
           defaultY: 0.58,
-          svg: `<svg viewBox="0 0 100 100" width="125" height="125">
-            <g id="wheel-rotor">
-              <circle cx="50" cy="50" r="44" fill="none" stroke="#d4a373" stroke-width="6"/>
-              <circle cx="50" cy="50" r="8" fill="#8c6239"/>
-              <line x1="50" y1="6" x2="50" y2="94" stroke="#d4a373" stroke-width="4"/>
-              <line x1="6" y1="50" x2="94" y2="50" stroke="#d4a373" stroke-width="4"/>
-              <line x1="18" y1="18" x2="82" y2="82" stroke="#d4a373" stroke-width="3"/>
-              <line x1="18" y1="82" x2="82" y2="18" stroke="#d4a373" stroke-width="3"/>
-            </g>
-            <path d="M25 94 L50 50 L75 94" stroke="#8c6239" stroke-width="7" fill="none"/>
-          </svg>`
+          svg: `<svg viewBox="0 0 100 100" width="125" height="125"><g id="wheel-rotor"><circle cx="50" cy="50" r="44" fill="none" stroke="#d4a373" stroke-width="6"/><circle cx="50" cy="50" r="8" fill="#8c6239"/><line x1="50" y1="6" x2="50" y2="94" stroke="#d4a373" stroke-width="4"/><line x1="6" y1="50" x2="94" y2="50" stroke="#d4a373" stroke-width="4"/></g><path d="M25 94 L50 50 L75 94" stroke="#8c6239" stroke-width="7" fill="none"/></svg>`
         },
         mushroom_house: {
           name: '原木蘑菇窩',
           cost: 80,
           w: 130,
           h: 130,
+          defaultRoom: 'living',
           defaultX: 230,
           defaultY: 0.58,
-          svg: `<svg viewBox="0 0 100 100" width="130" height="130">
-            <rect x="25" y="48" width="50" height="48" rx="10" fill="#f5ebe0"/>
-            <path d="M8 50 Q50 6 92 50 Z" fill="#e76f51"/>
-            <circle cx="32" cy="30" r="6" fill="#fff"/>
-            <circle cx="68" cy="25" r="7" fill="#fff"/>
-            <circle cx="50" cy="40" r="5" fill="#fff"/>
-            <path d="M38 96 A12 12 0 0 1 62 96 Z" fill="#582f0e"/>
-          </svg>`
+          svg: `<svg viewBox="0 0 100 100" width="130" height="130"><rect x="25" y="48" width="50" height="48" rx="10" fill="#f5ebe0"/><path d="M8 50 Q50 6 92 50 Z" fill="#e76f51"/><circle cx="32" cy="30" r="6" fill="#fff"/><circle cx="68" cy="25" r="7" fill="#fff"/><circle cx="50" cy="40" r="5" fill="#fff"/><path d="M38 96 A12 12 0 0 1 62 96 Z" fill="#582f0e"/></svg>`
         },
         water_bottle: {
           name: '水滴飲水器',
           cost: 40,
           w: 60,
           h: 100,
+          defaultRoom: 'living',
           defaultX: 160,
           defaultY: 0.55,
-          svg: `<svg viewBox="0 0 60 100" width="60" height="100">
-            <rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/>
-            <rect x="22" y="70" width="16" height="8" fill="#adb5bd"/>
-            <line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="14" cy="96" r="3" fill="#00b4d8"/>
-          </svg>`
+          svg: `<svg viewBox="0 0 60 100" width="60" height="100"><rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/><rect x="22" y="70" width="16" height="8" fill="#adb5bd"/><line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="96" r="3" fill="#00b4d8"/></svg>`
         },
-        food_bowl: {
-          name: '向日葵食盆',
-          cost: 45,
-          w: 80,
-          h: 60,
-          defaultX: 110,
-          defaultY: 0.70,
-          svg: `<svg viewBox="0 0 80 60" width="80" height="60">
-            <ellipse cx="40" cy="35" rx="36" ry="18" fill="#f4a261" stroke="#e76f51" stroke-width="3"/>
-            <circle cx="32" cy="33" r="5" fill="#5a4b3d"/>
-            <circle cx="48" cy="35" r="5" fill="#5a4b3d"/>
-            <circle cx="40" cy="30" r="5" fill="#5a4b3d"/>
-          </svg>`
+        slide: {
+          name: '雙層木製滑梯',
+          cost: 90,
+          w: 140,
+          h: 100,
+          defaultRoom: 'play',
+          defaultX: 60,
+          defaultY: 0.60,
+          svg: `<svg viewBox="0 0 140 100" width="140" height="100"><rect x="10" y="30" width="30" height="60" rx="4" fill="#d4a373"/><path d="M40 35 L120 85 L120 90 L40 45 Z" fill="#e76f51"/><line x1="25" y1="30" x2="25" y2="90" stroke="#8c6239" stroke-width="4"/></svg>`
         },
-        apple_wood: {
-          name: '磨牙蘋果枝',
-          cost: 35,
-          w: 85,
-          h: 50,
-          defaultX: 70,
-          defaultY: 0.72,
-          svg: `<svg viewBox="0 0 85 50" width="85" height="50">
-            <path d="M10 25 Q45 15 75 25 Q45 35 10 25" fill="#8c6239"/>
-            <circle cx="45" cy="18" r="8" fill="#e63946"/>
-            <path d="M45 10 Q50 6 52 10" stroke="#2a9d8f" stroke-width="2" fill="none"/>
-          </svg>`
-        },
-        tunnel: {
-          name: '草編拱門隧道',
-          cost: 65,
-          w: 110,
-          h: 80,
-          defaultX: 180,
-          defaultY: 0.68,
-          svg: `<svg viewBox="0 0 110 80" width="110" height="80">
-            <path d="M15 70 C15 20 95 20 95 70 Z" fill="#ddb892" stroke="#b08968" stroke-width="4"/>
-            <path d="M30 70 C30 35 80 35 80 70 Z" fill="#7f5539"/>
-          </svg>`
-        },
-        tatami: {
-          name: '日式和風榻榻米',
-          cost: 55,
-          w: 130,
-          h: 60,
-          defaultX: 130,
-          defaultY: 0.73,
-          svg: `<svg viewBox="0 0 130 60" width="130" height="60">
-            <rect x="5" y="10" width="120" height="45" rx="6" fill="#e9edc9" stroke="#ccd5ae" stroke-width="3"/>
-            <line x1="5" y1="18" x2="125" y2="18" stroke="#333" stroke-width="4"/>
-            <line x1="5" y1="48" x2="125" y2="48" stroke="#333" stroke-width="4"/>
-          </svg>`
+        hammock: {
+          name: '向日葵軟吊床',
+          cost: 75,
+          w: 120,
+          h: 70,
+          defaultRoom: 'garden',
+          defaultX: 80,
+          defaultY: 0.64,
+          svg: `<svg viewBox="0 0 120 70" width="120" height="70"><path d="M10 20 Q60 65 110 20" stroke="#8c6239" stroke-width="4" fill="none"/><path d="M20 28 Q60 60 100 28" fill="#ffd166"/></svg>`
         }
       },
       postcards: {
@@ -667,33 +754,34 @@
         beach: { title: '黃金海岸浪花', desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/></svg>` },
         fuji: { title: '富士山雪見溫泉', desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>` },
         maple: { title: '秋色落楓步道', desc: '踩在嘎吱作響的紅葉地毯上，品嚐香甜的糖炒栗子。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#faedcd"/><path d="M40 20 L44 32 L56 34 L46 42 L48 54 L40 46 L32 54 L34 42 L24 34 L36 32 Z" fill="#bc4749"/><line x1="40" y1="46" x2="40" y2="65" stroke="#7f5539" stroke-width="4"/></svg>` },
-        camping: { title: '星空森林露營', desc: '夜幕低垂，圍著營火烤棉花糖，數著天空中閃爍的繁星。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#1b263b"/><polygon points="40,25 20,65 60,65" fill="#e0a96d"/><polygon points="40,40 32,65 48,65" fill="#7f5539"/><circle cx="20" cy="18" r="2" fill="#fff"/><circle cx="62" cy="14" r="2.5" fill="#fff"/><circle cx="45" cy="10" r="1.5" fill="#fff"/></svg>` },
+        camping: { title: '星空森林露營', desc: '夜幕低垂，圍著營火烤棉花糖，數著天空中閃爍的繁星。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#1b263b"/><polygon points="40,25 20,65 60,65" fill="#e0a96d"/><polygon points="40,40 32,65 48,65" fill="#7f5539"/><circle cx="20" cy="18" r="2" fill="#fff"/><circle cx="62" cy="14" r="2.5" fill="#fff"/></svg>` },
         bamboo: { title: '嵐山清幽竹林', desc: '穿梭在筆直翠綠的竹林密道，聆聽微風沙沙的寧靜樂章。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e8f5e9"/><rect x="22" y="10" width="6" height="60" fill="#2d6a4f"/><rect x="42" y="8" width="8" height="64" fill="#40916c"/><rect x="62" y="15" width="5" height="55" fill="#52b788"/><line x1="40" y1="30" x2="52" y2="30" stroke="#1b4332" stroke-width="2"/></svg>` },
         cafe: { title: '巴黎露天小咖啡', desc: '在轉角的遮陽棚下喝一杯香濃熱奶泡，配上一塊剛出爐的可頌。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fefae0"/><path d="M15 25 L65 25 L58 40 L22 40 Z" fill="#d4a373"/><rect x="30" y="42" width="20" height="15" rx="3" fill="#6f4e37"/><path d="M50 46 C55 46 55 52 50 52" stroke="#6f4e37" stroke-width="2" fill="none"/></svg>` }
       }
     };
 
     // 狀態持久化
-    const STORAGE_KEY = 'pocket_hamster_save_v6';
+    const STORAGE_KEY = 'pocket_hamster_save_v7';
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { saved = {}; }
 
     const state = {
-      coins: saved.coins ?? 180,
+      coins: saved.coins ?? 200,
       hamsters: saved.hamsters || [
-        { id: 'h_1', name: '泡泡', gender: '♂', species: 'golden', feedCount: 22, equippedHat: 'straw_hat', x: 80, y: window.innerHeight * 0.70 }
+        { id: 'h_1', name: '泡泡', gender: '♂', species: 'golden', feedCount: 22, equippedHat: 'straw_hat', room: 'living', x: 80, y: window.innerHeight * 0.70 }
       ],
       inventory: saved.inventory || ['straw_hat', 'wheel', 'mushroom_house', 'water_bottle'],
       furnitureCoords: saved.furnitureCoords || {
-        wheel: { x: 25, y: window.innerHeight * 0.58 },
-        mushroom_house: { x: window.innerWidth - 150, y: window.innerHeight * 0.58 },
-        water_bottle: { x: 170, y: window.innerHeight * 0.55 }
+        wheel: { room: 'living', x: 25, y: window.innerHeight * 0.58 },
+        mushroom_house: { room: 'living', x: window.innerWidth - 150, y: window.innerHeight * 0.58 },
+        water_bottle: { room: 'living', x: 170, y: window.innerHeight * 0.55 },
+        slide: { room: 'play', x: 80, y: window.innerHeight * 0.60 }
       },
       postcards: saved.postcards || [],
       isBuilding: false,
       travelingIds: [],
       wardrobeTargetId: null,
-      furnitureOccupant: {} // 記錄家具當前被哪隻鼠佔用：{ wheel: 'h_1', ... }
+      furnitureOccupant: {}
     };
 
     function saveGame() {
@@ -706,15 +794,24 @@
       }));
     }
 
-    const world = document.getElementById('world');
-    const furnitureLayer = document.getElementById('furniture-layer');
-    const hamsterLayer = document.getElementById('hamster-layer');
+    // 1. 空間切換邏輯 (客廳、活動室、庭院)
+    function changeRoom(direction) {
+      currentRoomIndex = (currentRoomIndex + direction + ROOMS.length) % ROOMS.length;
+      document.getElementById('world-slider').style.transform = `translateX(-${currentRoomIndex * 100}vw)`;
+      document.getElementById('roomIndicatorText').textContent = ROOMS[currentRoomIndex].name;
+      renderHamsters();
+      renderFurniture();
+    }
 
-    // 1. 倉鼠實體渲染
+    // 2. 倉鼠實體渲染 (跨空間定位)
+    const hamsterLayer = document.getElementById('hamster-layer');
     function renderHamsters() {
       hamsterLayer.innerHTML = '';
+      const curRoom = ROOMS[currentRoomIndex].id;
+
       state.hamsters.forEach(h => {
         if (state.travelingIds.includes(h.id)) return;
+        if (h.room !== curRoom) return; // 只在目前所在的房間顯示
 
         const wrap = document.createElement('div');
         wrap.className = 'hamster-entity';
@@ -768,43 +865,90 @@
       });
     }
 
-    // 2. 家具渲染
+    // 3. 家具渲染 (按房間劃分)
     function renderFurniture() {
-      furnitureLayer.innerHTML = '';
-      Object.keys(state.furnitureCoords).forEach(id => {
-        const item = ASSETS.furniture[id];
-        if (!item) return;
+      ['living', 'play', 'garden'].forEach(roomId => {
+        const con = document.getElementById(`furniture-${roomId}`);
+        if (!con) return;
+        con.innerHTML = '';
 
-        const coords = state.furnitureCoords[id];
-        const el = document.createElement('div');
-        el.className = `placed-furniture ${state.isBuilding ? 'building' : ''}`;
-        el.id = `furni-${id}`;
-        el.innerHTML = item.svg;
-        el.style.left = `${coords.x}px`;
-        el.style.top = `${coords.y}px`;
+        Object.keys(state.furnitureCoords).forEach(id => {
+          const item = ASSETS.furniture[id];
+          const coords = state.furnitureCoords[id];
+          if (!item || coords.room !== roomId) return;
 
-        if (state.isBuilding) {
-          let fDrag = false, fOffset = { x: 0, y: 0 };
-          el.addEventListener('pointerdown', (e) => {
-            fDrag = true;
-            fOffset.x = e.clientX - coords.x;
-            fOffset.y = e.clientY - coords.y;
-            el.setPointerCapture(e.pointerId);
-          });
-          el.addEventListener('pointermove', (e) => {
-            if (!fDrag) return;
-            coords.x = e.clientX - fOffset.x;
-            coords.y = Math.max(window.innerHeight * 0.50, Math.min(window.innerHeight * 0.80, e.clientY - fOffset.y));
-            el.style.left = `${coords.x}px`;
-            el.style.top = `${coords.y}px`;
-          });
-          el.addEventListener('pointerup', () => { fDrag = false; saveGame(); });
-        }
-        furnitureLayer.appendChild(el);
+          const el = document.createElement('div');
+          el.className = `placed-furniture ${state.isBuilding ? 'building' : ''}`;
+          el.id = `furni-${id}`;
+          el.innerHTML = item.svg;
+          el.style.left = `${coords.x}px`;
+          el.style.top = `${coords.y}px`;
+
+          if (state.isBuilding) {
+            let fDrag = false, fOffset = { x: 0, y: 0 };
+            el.addEventListener('pointerdown', (e) => {
+              fDrag = true;
+              fOffset.x = e.clientX - coords.x;
+              fOffset.y = e.clientY - coords.y;
+              el.setPointerCapture(e.pointerId);
+            });
+            el.addEventListener('pointermove', (e) => {
+              if (!fDrag) return;
+              coords.x = e.clientX - fOffset.x;
+              coords.y = Math.max(window.innerHeight * 0.50, Math.min(window.innerHeight * 0.80, e.clientY - fOffset.y));
+              el.style.left = `${coords.x}px`;
+              el.style.top = `${coords.y}px`;
+            });
+            el.addEventListener('pointerup', () => { fDrag = false; saveGame(); });
+          }
+          con.appendChild(el);
+        });
       });
     }
 
-    // 3. 家具搶奪打架系統與互斥機制
+    // 4. 自主活動與跨房間串門子
+    setInterval(() => {
+      if (state.isBuilding) return;
+
+      state.hamsters.forEach(h => {
+        if (state.travelingIds.includes(h.id)) return;
+
+        // 15% 機率自動串門子換房間
+        if (Math.random() < 0.15) {
+          const otherRooms = ROOMS.map(r => r.id).filter(id => id !== h.room);
+          h.room = otherRooms[Math.floor(Math.random() * otherRooms.length)];
+          h.x = Math.random() * (window.innerWidth - 120) + 40;
+          renderHamsters();
+          return;
+        }
+
+        const wrap = document.getElementById(`entity-${h.id}`);
+        if (!wrap || wrap.classList.contains('held') || wrap.classList.contains('fighting')) return;
+
+        const curRoomFurnis = Object.keys(state.furnitureCoords).filter(id => state.furnitureCoords[id].room === h.room);
+        if (curRoomFurnis.length > 0 && Math.random() < 0.65) {
+          const targetFurni = curRoomFurnis[Math.floor(Math.random() * curRoomFurnis.length)];
+          const fCoords = state.furnitureCoords[targetFurni];
+
+          walkTo(h, wrap, fCoords.x + 20, fCoords.y + 20, () => {
+            const currentOccupantId = state.furnitureOccupant[targetFurni];
+            if (currentOccupantId && currentOccupantId !== h.id) {
+              const other = state.hamsters.find(item => item.id === currentOccupantId);
+              if (other && other.room === h.room) {
+                triggerDuel(targetFurni, other, h, (winner) => useFurniture(targetFurni, winner));
+                return;
+              }
+            }
+            state.furnitureOccupant[targetFurni] = h.id;
+            useFurniture(targetFurni, h);
+          });
+        } else {
+          const destX = Math.random() * (window.innerWidth - 120) + 40;
+          walkTo(h, wrap, destX, window.innerHeight * 0.70, () => checkProximityAndMate(h));
+        }
+      });
+    }, 6500);
+
     function triggerDuel(furniId, userA, userB, onDone) {
       const wrapA = document.getElementById(`entity-${userA.id}`);
       const wrapB = document.getElementById(`entity-${userB.id}`);
@@ -819,66 +963,19 @@
         wrapA.classList.remove('fighting');
         wrapB.classList.remove('fighting');
 
-        // 隨機決定勝負（體型大有微小優勢）
         const winA = (userA.feedCount + Math.random() * 20) >= (userB.feedCount + Math.random() * 20);
         const winner = winA ? userA : userB;
         const loser = winA ? userB : userA;
         const loserWrap = document.getElementById(`entity-${loser.id}`);
 
-        // 輸家被彈開哭泣
         spawnBubble('🥺', loser.x + 25, loser.y - 15);
         walkTo(loser, loserWrap, loser.x + (winA ? 60 : -60), window.innerHeight * 0.72);
 
-        // 贏家順利佔領
         state.furnitureOccupant[furniId] = winner.id;
         spawnBubble('👑', winner.x + 25, winner.y - 20);
         if (onDone) onDone(winner);
       }, 1600);
     }
-
-    // 4. 自主活動與家具使用感知
-    setInterval(() => {
-      if (state.isBuilding) return;
-
-      state.hamsters.forEach(h => {
-        if (state.travelingIds.includes(h.id)) return;
-        const wrap = document.getElementById(`entity-${h.id}`);
-        if (!wrap || wrap.classList.contains('held') || wrap.classList.contains('fighting')) return;
-
-        const keys = Object.keys(state.furnitureCoords);
-        if (keys.length === 0) return;
-
-        // 70% 機率去互動家具，30% 機率閒晃
-        if (Math.random() < 0.7) {
-          const targetFurni = keys[Math.floor(Math.random() * keys.length)];
-          const fCoords = state.furnitureCoords[targetFurni];
-
-          walkTo(h, wrap, fCoords.x + 20, fCoords.y + 20, () => {
-            const currentOccupantId = state.furnitureOccupant[targetFurni];
-            
-            // 如果家具已經有別的鼠在用，觸發打架爭奪！
-            if (currentOccupantId && currentOccupantId !== h.id) {
-              const otherHamster = state.hamsters.find(item => item.id === currentOccupantId);
-              if (otherHamster) {
-                triggerDuel(targetFurni, otherHamster, h, (winner) => {
-                  useFurniture(targetFurni, winner);
-                });
-                return;
-              }
-            }
-
-            // 無人使用，直接佔用
-            state.furnitureOccupant[targetFurni] = h.id;
-            useFurniture(targetFurni, h);
-          });
-        } else {
-          const destX = Math.random() * (window.innerWidth - 120) + 40;
-          walkTo(h, wrap, destX, window.innerHeight * 0.70, () => {
-            checkProximityAndMate(h);
-          });
-        }
-      });
-    }, 6500);
 
     function useFurniture(furniId, h) {
       const wrap = document.getElementById(`entity-${h.id}`);
@@ -901,11 +998,6 @@
           wrap.classList.remove('sleeping');
           if (state.furnitureOccupant['mushroom_house'] === h.id) delete state.furnitureOccupant['mushroom_house'];
         }, 4500);
-      } else if (furniId === 'water_bottle') {
-        spawnBubble('💧', h.x + 30, h.y - 15);
-        setTimeout(() => {
-          if (state.furnitureOccupant['water_bottle'] === h.id) delete state.furnitureOccupant['water_bottle'];
-        }, 2500);
       } else {
         spawnBubble('✨', h.x + 30, h.y - 15);
         setTimeout(() => {
@@ -946,7 +1038,7 @@
 
       state.hamsters.forEach(hamsterB => {
         if (hamsterA.id === hamsterB.id || hamsterB.feedCount < 20) return;
-        if (hamsterA.gender === hamsterB.gender) return;
+        if (hamsterA.gender === hamsterB.gender || hamsterA.room !== hamsterB.room) return;
 
         const dist = Math.hypot(hamsterA.x - hamsterB.x, hamsterA.y - hamsterB.y);
         if (dist < 40) {
@@ -965,8 +1057,9 @@
 
       setTimeout(() => {
         const babyGender = Math.random() < 0.5 ? '♂' : '♀';
-        const babySpecies = Math.random() < 0.5 ? male.species : female.species;
-        const babyName = `小${babySpecies === 'golden' ? '金' : (babySpecies === 'silver' ? '銀' : (babySpecies === 'pudding' ? '布' : '黑'))}`;
+        const speciesKeys = Object.keys(SPECIES);
+        const babySpecies = Math.random() < 0.5 ? male.species : speciesKeys[Math.floor(Math.random() * speciesKeys.length)];
+        const babyName = `小${SPECIES[babySpecies].name[0]}`;
         
         state.hamsters.push({
           id: `h_${Date.now()}`,
@@ -975,6 +1068,7 @@
           species: babySpecies,
           feedCount: 0,
           equippedHat: null,
+          room: female.room,
           x: female.x + 30,
           y: female.y
         });
@@ -982,14 +1076,15 @@
         renderHamsters();
         renderHUD();
         isBreeding = false;
-        alert(`🎉 恭喜！${male.name}(♂) 與 ${female.name}(♀) 誕下了幼鼠：【${babyName} (${babyGender})】！`);
+        alert(`🎉 恭喜！${male.name}(♂) 與 ${female.name}(♀) 誕下了寶寶：【${babyName} (${babyGender}) - ${SPECIES[babySpecies].name}】！`);
       }, 3000);
     }
 
-    // 點地板丟瓜子
-    world.addEventListener('pointerdown', (e) => {
-      if (state.isBuilding || state.travelingIds.length === state.hamsters.length) return;
-      if (e.clientY < 90 || e.clientY > window.innerHeight - 80) return;
+    // 點擊地板丟瓜子
+    document.getElementById('viewport').addEventListener('pointerdown', (e) => {
+      if (state.isBuilding) return;
+      if (e.clientY < 110 || e.clientY > window.innerHeight - 90) return;
+      if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn')) return;
       dropSeed(e.clientX - 8, e.clientY - 12);
     });
 
@@ -998,15 +1093,19 @@
       seed.className = 'sunflower-seed';
       seed.style.left = `${x}px`;
       seed.style.top = `${y}px`;
-      world.appendChild(seed);
+      document.getElementById('viewport').appendChild(seed);
 
+      const curRoom = ROOMS[currentRoomIndex].id;
       let closest = null, minDist = Infinity;
       state.hamsters.forEach(h => {
-        if (state.travelingIds.includes(h.id)) return;
+        if (state.travelingIds.includes(h.id) || h.room !== curRoom) return;
         const d = Math.hypot(h.x - x, h.y - y);
         if (d < minDist) { minDist = d; closest = h; }
       });
-      if (!closest) return;
+      if (!closest) {
+        setTimeout(() => seed.remove(), 2500);
+        return;
+      }
 
       const wrap = document.getElementById(`entity-${closest.id}`);
       if (!wrap) return;
@@ -1025,7 +1124,7 @@
       b.textContent = emoji;
       b.style.left = `${x}px`;
       b.style.top = `${y}px`;
-      world.appendChild(b);
+      document.getElementById('viewport').appendChild(b);
       setTimeout(() => b.remove(), 800);
     }
 
@@ -1060,6 +1159,7 @@
             species: key,
             feedCount: 0,
             equippedHat: null,
+            room: ROOMS[currentRoomIndex].id,
             x: window.innerWidth / 2 - 40,
             y: window.innerHeight * 0.70
           });
@@ -1082,13 +1182,14 @@
       state.hamsters.forEach(h => {
         const sp = SPECIES[h.species] || SPECIES.golden;
         const stage = h.feedCount < 10 ? '幼鼠期 🌱' : (h.feedCount < 20 ? '亞成體 🌾' : '成熟可繁育 🌻');
+        const roomName = ROOMS.find(r => r.id === h.room)?.name || '客廳';
         const box = document.createElement('div');
         box.style.cssText = 'background:#fff; border:1px solid var(--border-color); border-radius:16px; padding:12px; margin-bottom:10px; font-size:13px; line-height:1.6; display:flex; align-items:center; gap:12px;';
         box.innerHTML = `
           <div style="flex-shrink:0;">${generateHamsterSVG(h.species)}</div>
           <div style="flex-grow:1;">
             <div><b>${h.name}</b> <span style="font-weight:bold; color:${h.gender==='♂'?'#3a86ff':'#ff006e'};">${h.gender}</span></div>
-            <div>品種：${sp.name}</div>
+            <div>品種：${sp.name}｜位置：${roomName}</div>
             <div>狀態：${stage} (嗑瓜子 ${h.feedCount} 顆)</div>
           </div>
         `;
@@ -1097,7 +1198,7 @@
       document.getElementById('profileModal').style.display = 'flex';
     }
 
-    // 8. 換衣服系統
+    // 8. 換裝系統
     function openWardrobeSelect() {
       const list = document.getElementById('wardrobeSelectList');
       list.innerHTML = '';
@@ -1148,7 +1249,7 @@
       openWardrobeActual(h);
     }
 
-    // 9. 散步與明信片手帳 (8款景點)
+    // 9. 旅行手帳
     function openTravelSelect() {
       const sel = document.getElementById('selectTraveler');
       sel.innerHTML = '';
@@ -1180,7 +1281,6 @@
         renderHamsters();
 
         const keys = Object.keys(ASSETS.postcards);
-        // 優先抽選未解鎖的景點
         const uncollectedKeys = keys.filter(k => !state.postcards.some(p => p.title === ASSETS.postcards[k].title));
         const chosenKey = uncollectedKeys.length > 0 ? uncollectedKeys[Math.floor(Math.random() * uncollectedKeys.length)] : keys[Math.floor(Math.random() * keys.length)];
         const cardData = ASSETS.postcards[chosenKey];
@@ -1251,7 +1351,7 @@
       state.inventory.push(id);
       if (type === 'furniture') {
         const item = ASSETS.furniture[id];
-        state.furnitureCoords[id] = { x: item.defaultX, y: window.innerHeight * item.defaultY };
+        state.furnitureCoords[id] = { room: item.defaultRoom, x: item.defaultX, y: window.innerHeight * item.defaultY };
         renderFurniture();
       }
       saveGame();
@@ -1264,12 +1364,11 @@
       state.isBuilding = !state.isBuilding;
       document.getElementById('buildBanner').style.display = state.isBuilding ? 'block' : 'none';
       document.getElementById('buildBtnText').textContent = state.isBuilding ? '完成佈置' : '建造模式';
-      world.classList.toggle('build-mode', state.isBuilding);
       renderFurniture();
       if (!state.isBuilding) saveGame();
     }
 
-    // 11. 接瓜子 MiniGame
+    // 11. 小遊戲 MiniGame
     function showMiniGameIntro() { document.getElementById('rulesModal').style.display = 'flex'; }
     const gameScreen = document.getElementById('minigame-screen');
     const canvas = document.getElementById('game-canvas');
@@ -1349,11 +1448,17 @@
       alert(`挑戰結束！總得分 ${gScore}，折算獲得 🪙 ${earned} 金幣！`);
     }
 
+    // 12. 美化圖示折疊切換
     function toggleDock() {
       const d = document.getElementById('mainDock');
       const b = document.getElementById('dockToggleBtn');
-      if (d.classList.contains('collapsed')) { d.classList.remove('collapsed'); b.textContent = '收'; }
-      else { d.classList.add('collapsed'); b.textContent = '展'; }
+      if (d.classList.contains('collapsed')) {
+        d.classList.remove('collapsed');
+        b.classList.remove('is-collapsed');
+      } else {
+        d.classList.add('collapsed');
+        b.classList.add('is-collapsed');
+      }
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
