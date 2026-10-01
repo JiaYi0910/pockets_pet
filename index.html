@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Pocket Pet | 桌面小寵物</title>
+  <style>
+    :root {
+      --bg-color: #fdfbf7;
+      --card-bg: #ffffff;
+      --text-main: #4a3b32;
+      --accent: #e76f51;
+      --bar-bg: #eee6dc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    .tamagotchi {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(74, 59, 50, 0.08);
+      width: 320px;
+      text-align: center;
+      border: 2px solid #f0eae1;
+      position: relative;
+    }
+
+    .room {
+      height: 180px;
+      background: #faf6f0;
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+      border: 1px dashed #e2d7c7;
+    }
+
+    /* 寵物外觀與跳動動畫 */
+    .pet {
+      font-size: 72px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    .pet:active { transform: scale(0.85); }
+    .pet.bounce { animation: bounce 0.4s ease infinite alternate; }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    /* 愛心/文字漂浮特效 */
+    .floating-heart {
+      position: absolute;
+      color: var(--accent);
+      font-size: 20px;
+      animation: floatUp 0.8s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+    }
+
+    /* 狀態條 */
+    .status-group { margin-bottom: 20px; }
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .bar-container {
+      width: 180px;
+      height: 10px;
+      background: var(--bar-bg);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: #8ab17d;
+      width: 100%;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    /* 操作按鈕 */
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button {
+      background: #fff;
+      border: 1.5px solid #d8cbbe;
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #fdfbf7;
+      border-color: #baa493;
+      transform: translateY(-1px);
+    }
+    button:active { transform: translateY(1px); }
+
+    .sleep-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 30, 45, 0.7);
+      border-radius: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tamagotchi">
+    <div class="room" id="room">
+      <div class="sleep-overlay" id="sleepOverlay">💤 呼呼大睡中...</div>
+      <div class="pet bounce" id="pet" title="摸摸我！">🐹</div>
+    </div>
+
+    <div class="status-group">
+      <div class="status-item">
+        <span>飽足 🍙</span>
+        <div class="bar-container"><div class="bar-fill" id="hungerBar"></div></div>
+      </div>
+      <div class="status-item">
+        <span>心情 ✨</span>
+        <div class="bar-container"><div class="bar-fill" id="happyBar"></div></div>
+      </div>
+      <div class="status-item">
+        <span>體力 ⚡</span>
+        <div class="bar-container"><div class="bar-fill" id="energyBar"></div></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button onclick="feed()">餵葵花子 🌻</button>
+      <button onclick="play()">玩滾輪 🎡</button>
+      <button onclick="toggleSleep()">睡覺 🌙</button>
+      <button onclick="clean()">打掃環境 🧹</button>
+    </div>
+  </div>
+
+  <script>
+    // 遊戲狀態
+    const state = {
+      hunger: 80,
+      happy: 80,
+      energy: 90,
+      isSleeping: false
+    };
+
+    const petEl = document.getElementById('pet');
+    const roomEl = document.getElementById('room');
+    const sleepOverlay = document.getElementById('sleepOverlay');
+
+    // 更新進度條
+    function updateBars() {
+      const renderBar = (id, val) => {
+        const el = document.getElementById(id);
+        el.style.width = `${val}%`;
+        if (val < 25) el.style.background = '#e76f51';
+        else if (val < 50) el.style.background = '#f4a261';
+        else el.style.background = '#8ab17d';
+      };
+
+      renderBar('hungerBar', state.hunger);
+      renderBar('happyBar', state.happy);
+      renderBar('energyBar', state.energy);
+
+      // 根據狀態切換表情
+      if (state.isSleeping) {
+        petEl.textContent = '😴';
+      } else if (state.hunger < 20 || state.happy < 20) {
+        petEl.textContent = '🥺';
+      } else if (state.happy > 80) {
+        petEl.textContent = '🐹';
+      } else {
+        petEl.textContent = '🐭';
+      }
+    }
+
+    // 漂浮特效生成器
+    function spawnPop(emoji) {
+      const pop = document.createElement('div');
+      pop.className = 'floating-heart';
+      pop.textContent = emoji;
+      pop.style.left = `${petEl.offsetLeft + 20 + (Math.random() * 20 - 10)}px`;
+      pop.style.top = `${petEl.offsetTop}px`;
+      roomEl.appendChild(pop);
+      setTimeout(() => pop.remove(), 800);
+    }
+
+    // 摸摸互動
+    petEl.addEventListener('click', () => {
+      if (state.isSleeping) return;
+      state.happy = Math.min(100, state.happy + 5);
+      spawnPop('❤️');
+      updateBars();
+    });
+
+    // 餵食
+    function feed() {
+      if (state.isSleeping) return;
+      state.hunger = Math.min(100, state.hunger + 15);
+      spawnPop('🌻');
+      updateBars();
+    }
+
+    // 玩耍
+    function play() {
+      if (state.isSleeping || state.energy < 15) return;
+      state.happy = Math.min(100, state.happy + 20);
+      state.energy = Math.max(0, state.energy - 15);
+      state.hunger = Math.max(0, state.hunger - 5);
+      spawnPop('✨');
+      updateBars();
+    }
+
+    // 睡覺切換
+    function toggleSleep() {
+      state.isSleeping = !state.isSleeping;
+      sleepOverlay.style.display = state.isSleeping ? 'flex' : 'none';
+      updateBars();
+    }
+
+    // 打掃
+    function clean() {
+      spawnPop('🧼');
+    }
+
+    // 時間流逝迴圈 (每 3 秒衰減/回復)
+    setInterval(() => {
+      if (state.isSleeping) {
+        state.energy = Math.min(100, state.energy + 5);
+        state.hunger = Math.max(0, state.hunger - 1);
+        if (state.energy >= 100) toggleSleep(); // 睡飽自動醒來
+      } else {
+        state.hunger = Math.max(0, state.hunger - 2);
+        state.happy = Math.max(0, state.happy - 1);
+        state.energy = Math.max(0, state.energy - 1);
+      }
+      updateBars();
+    }, 3000);
+
+    updateBars();
+  </script>
+</body>
+</html>
