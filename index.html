@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Pocket Hamsters | 倉鼠大莊園</title>
+  <title>Pocket Hamsters | 倉鼠大莊園 Online</title>
   <style>
     :root {
       --main-text: #4a3b32;
@@ -91,7 +91,7 @@
     }
     .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
 
-    /* 左右導覽箭頭 */
+    /* 空間指示與導覽按鈕 */
     .room-nav-btn {
       position: absolute;
       top: 45%;
@@ -115,7 +115,7 @@
 
     .room-indicator {
       position: absolute;
-      top: 68px;
+      top: 66px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--card-bg);
@@ -130,7 +130,7 @@
       white-space: nowrap;
     }
 
-    /* 頂部 HUD */
+    /* 頂部 HUD (防止折行) */
     .top-bar {
       position: absolute;
       top: env(safe-area-inset-top, 14px);
@@ -174,14 +174,14 @@
 
     .build-banner {
       position: absolute;
-      top: 100px;
+      top: 96px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(217, 119, 54, 0.95);
       color: #fff;
-      padding: 6px 14px;
+      padding: 5px 14px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       z-index: 50;
       display: none;
@@ -211,7 +211,7 @@
     }
     @keyframes spinWheel { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* 倉鼠與動作容器 */
+    /* 倉鼠容器與動作 */
     .hamster-layer {
       position: absolute;
       inset: 0;
@@ -234,13 +234,13 @@
     .hamster-entity.held { cursor: grabbing; animation: panicShake 0.12s infinite alternate; }
     .hamster-entity.walking svg.hamster-svg { animation: walkWaddle 0.2s infinite alternate ease-in-out; }
     .hamster-entity.sleeping { opacity: 0.25; filter: blur(0.5px); }
+    .hamster-entity.sand-bathing svg.hamster-svg { animation: sandRoll 0.22s infinite alternate ease-in-out; }
     .hamster-entity.fighting { animation: fightShake 0.08s infinite alternate !important; }
-    .hamster-entity.sand-bathing svg.hamster-svg { animation: sandRoll 0.25s infinite alternate ease-in-out; }
 
     @keyframes walkWaddle { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
     @keyframes panicShake { from { transform: scale(1.08) rotate(-8deg); } to { transform: scale(1.08) rotate(8deg); } }
-    @keyframes fightShake { from { transform: translate(-4px, -2px) scale(1.1); } to { transform: translate(4px, 2px) scale(1.1); } }
     @keyframes sandRoll { from { transform: rotate(-35deg) scale(0.9); } to { transform: rotate(35deg) scale(0.9); } }
+    @keyframes fightShake { from { transform: translate(-4px, -2px) scale(1.1); } to { transform: translate(4px, 2px) scale(1.1); } }
 
     .hamster-hat-slot {
       position: absolute;
@@ -334,7 +334,7 @@
     }
     .toggle-dock-btn.is-collapsed svg { transform: rotate(180deg); }
 
-    /* 瓜子食物與動態 */
+    /* 食物與粒子 */
     .sunflower-seed {
       position: absolute;
       width: 16px;
@@ -365,7 +365,7 @@
     }
     .action-bubble {
       position: absolute;
-      font-size: 22px;
+      font-size: 20px;
       pointer-events: none;
       animation: floatUp 0.8s ease-out forwards;
       z-index: 30;
@@ -375,7 +375,6 @@
       100% { opacity: 0; transform: translateY(-36px) scale(1.2); }
     }
 
-    /* 便便顆粒 (真實排泄清理機制) */
     .poop-pellet {
       position: absolute;
       width: 10px;
@@ -389,7 +388,7 @@
     }
     @keyframes poopPop { from { transform: scale(0); } to { transform: scale(1); } }
 
-    /* 彈窗 UI */
+    /* 通用彈窗 Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -450,7 +449,19 @@
       justify-content: center;
     }
 
-    /* 小遊戲全螢幕 */
+    /* 登入輸入框 */
+    .auth-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 10px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+
+    /* MiniGame */
     #minigame-screen {
       position: fixed;
       inset: 0;
@@ -482,12 +493,13 @@
         <span>成員 🐹 <b id="valHamsterCount">1</b></span>
       </div>
       <div style="display:flex; gap:6px;">
-        <button class="btn-pill" onclick="openAdoptCenter()">領養中心 🏡</button>
-        <button class="btn-pill" onclick="openProfile()">鼠鼠家族 📋</button>
+        <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
+        <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
+        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">登入 👤</button>
       </div>
     </div>
 
-    <!-- 空間指示與導覽按鈕 -->
+    <!-- 空間名稱指示與箭頭 -->
     <div class="room-indicator" id="roomIndicatorText">客廳 🛋️</div>
     <button class="room-nav-btn" id="btn-prev-room" onclick="changeRoom(-1)">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -557,6 +569,24 @@
     </div>
   </div>
 
+  <!-- 帳號登入/註冊 Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="authTitle">雲端存檔帳號 ☁️</h3>
+      <div id="authFormArea">
+        <input type="email" class="auth-input" id="authEmail" placeholder="電子信箱 (Email)">
+        <input type="password" class="auth-input" id="authPassword" placeholder="密碼 (最少 6 位數)">
+        <button class="btn-action" style="background:var(--accent);" onclick="handleAuthLogin()">登入現有帳號</button>
+        <button class="btn-action" style="background:#52b788; margin-top:6px;" onclick="handleAuthRegister()">註冊新帳號</button>
+      </div>
+      <div id="authLoggedInArea" style="display:none; text-align:center;">
+        <p style="font-size:13px; color:#555; margin-bottom:12px;">已登入：<b id="currentUserEmail"></b></p>
+        <button class="btn-action" style="background:#e63946;" onclick="handleAuthLogout()">登出帳號</button>
+      </div>
+      <button class="btn-action" style="background:#8b786d; margin-top:8px;" onclick="closeModal('authModal')">關閉</button>
+    </div>
+  </div>
+
   <!-- 領養中心 -->
   <div class="modal-overlay" id="adoptModal">
     <div class="modal-card">
@@ -567,7 +597,7 @@
     </div>
   </div>
 
-  <!-- 家族手帳 (支援改名) -->
+  <!-- 家族手帳 (完整支援改名) -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-card">
       <h3 class="modal-title">倉鼠家族手帳 📋</h3>
@@ -576,7 +606,7 @@
     </div>
   </div>
 
-  <!-- 換裝選鼠 -->
+  <!-- 換衣服選擇 -->
   <div class="modal-overlay" id="wardrobeSelectModal">
     <div class="modal-card">
       <h3 class="modal-title">選擇要換裝的倉鼠 🧣</h3>
@@ -585,7 +615,7 @@
     </div>
   </div>
 
-  <!-- 換裝配件庫 -->
+  <!-- 換衣服配件庫 -->
   <div class="modal-overlay" id="wardrobeModal">
     <div class="modal-card">
       <h3 class="modal-title">衣櫥配件庫 👒</h3>
@@ -595,7 +625,7 @@
     </div>
   </div>
 
-  <!-- 雜貨小鋪 (真實倉鼠習性用品) -->
+  <!-- 雜貨小鋪 (完整海量道具) -->
   <div class="modal-overlay" id="shopModal">
     <div class="modal-card">
       <h3 class="modal-title">森之雜貨鋪 🛒</h3>
@@ -645,6 +675,111 @@
     <canvas id="game-canvas"></canvas>
   </div>
 
+  <!-- Firebase SDK (ESM Module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdBydWhi8nAK_B0dzuILmdr7WbQZxIiCU",
+      authDomain: "pocketpet-387f6.firebaseapp.com",
+      projectId: "pocketpet-387f6",
+      storageBucket: "pocketpet-387f6.firebasestorage.app",
+      messagingSenderId: "94204277326",
+      appId: "1:94204277326:web:8e509eee37815049d2891f",
+      measurementId: "G-ZWGZHTN32X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    // 監聽登入狀態切換
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      const statusBtn = document.getElementById('btnUserStatus');
+      const formArea = document.getElementById('authFormArea');
+      const loggedArea = document.getElementById('authLoggedInArea');
+
+      if (user) {
+        statusBtn.textContent = '已連線 ☁️';
+        formArea.style.display = 'none';
+        loggedArea.style.display = 'block';
+        document.getElementById('currentUserEmail').textContent = user.email;
+
+        // 從雲端下載存檔
+        const userDocRef = doc(db, 'saves', user.uid);
+        const snap = await getDoc(userDocRef);
+        if (snap.exists()) {
+          const cloudData = snap.data();
+          state.coins = cloudData.coins ?? state.coins;
+          state.hamsters = cloudData.hamsters ?? state.hamsters;
+          state.inventory = cloudData.inventory ?? state.inventory;
+          state.furnitureCoords = cloudData.furnitureCoords ?? state.furnitureCoords;
+          state.postcards = cloudData.postcards ?? state.postcards;
+          renderHUD();
+          renderHamsters();
+          renderFurniture();
+        } else {
+          // 首次登入，將當前進度上傳建立雲端檔案
+          window.saveGame();
+        }
+      } else {
+        statusBtn.textContent = '登入 👤';
+        formArea.style.display = 'block';
+        loggedArea.style.display = 'none';
+      }
+    });
+
+    // 雲端存檔同步方法
+    window.saveGameCloud = async function() {
+      if (!currentUser) return;
+      try {
+        const userDocRef = doc(db, 'saves', currentUser.uid);
+        await setDoc(userDocRef, {
+          coins: state.coins,
+          hamsters: state.hamsters,
+          inventory: state.inventory,
+          furnitureCoords: state.furnitureCoords,
+          postcards: state.postcards
+        });
+      } catch (err) {
+        console.error("雲端存檔失敗:", err);
+      }
+    };
+
+    // 帳號認證操作
+    window.handleAuthLogin = async () => {
+      const em = document.getElementById('authEmail').value;
+      const pw = document.getElementById('authPassword').value;
+      try {
+        await signInWithEmailAndPassword(auth, em, pw);
+        window.closeModal('authModal');
+        alert('🎉 雲端登入成功！存檔已同步。');
+      } catch (e) { alert('登入失敗: ' + e.message); }
+    };
+
+    window.handleAuthRegister = async () => {
+      const em = document.getElementById('authEmail').value;
+      const pw = document.getElementById('authPassword').value;
+      try {
+        await createUserWithEmailAndPassword(auth, em, pw);
+        window.closeModal('authModal');
+        alert('🎉 帳號註冊成功！已開啟雲端備份。');
+      } catch (e) { alert('註冊失敗: ' + e.message); }
+    };
+
+    window.handleAuthLogout = async () => {
+      await signOut(auth);
+      window.closeModal('authModal');
+      alert('已登出帳號。');
+    };
+  </script>
+
+  <!-- 遊戲本體主腳本 -->
   <script>
     const ROOMS = [
       { name: '客廳 🛋️', id: 'living' },
@@ -663,14 +798,12 @@
       cow: { name: '奶牛花斑鼠', cost: 260, body: '#fdfbf7', belly: '#ffffff', ear: '#4a3b32', spots: true }
     };
 
-    // 向量繪製倉鼠 (支援頰囊鼓起狀態)
     function generateHamsterSVG(speciesKey, isCheekFull = false) {
       const s = SPECIES[speciesKey] || SPECIES.golden;
       let extraDetails = '';
       if (s.stripe) extraDetails += `<path d="M50 34 L50 72" stroke="${s.stripe}" stroke-width="4.5" stroke-linecap="round"/>`;
       if (s.spots) extraDetails += `<ellipse cx="38" cy="54" rx="12" ry="8" fill="#333" /><ellipse cx="64" cy="62" rx="9" ry="7" fill="#333" />`;
 
-      // 頰囊鼓起時身體圓形橫向撐大
       const rx = isCheekFull ? 43 : 36;
       const cheekL = isCheekFull ? `<circle cx="24" cy="56" r="10" fill="${s.body}" /><circle cx="24" cy="56" r="6" fill="#f79d84" opacity="0.6"/>` : `<circle cx="32" cy="54" r="5" fill="#f79d84" opacity="0.6" />`;
       const cheekR = isCheekFull ? `<circle cx="76" cy="56" r="10" fill="${s.body}" /><circle cx="76" cy="56" r="6" fill="#f79d84" opacity="0.6"/>` : `<circle cx="70" cy="54" r="5" fill="#f79d84" opacity="0.6" />`;
@@ -697,7 +830,6 @@
       </svg>`;
     }
 
-    // 道具庫 (新增真實倉鼠習性：砂浴盆、刨花、蘋果枝等)
     const ASSETS = {
       hats: {
         straw_hat: { name: '夏日草帽', cost: 30, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>` },
@@ -717,10 +849,6 @@
           name: '鼠砂沐浴盆', cost: 70, w: 110, h: 75, defaultRoom: 'play', defaultX: 40, defaultY: 0.65,
           svg: `<svg viewBox="0 0 110 75" width="110" height="75"><rect x="10" y="25" width="90" height="45" rx="14" fill="#edf2f4" stroke="#8d99ae" stroke-width="3"/><ellipse cx="55" cy="50" rx="40" ry="14" fill="#faedcd"/><circle cx="35" cy="48" r="2" fill="#d4a373"/><circle cx="70" cy="52" r="2.5" fill="#d4a373"/><circle cx="52" cy="54" r="1.5" fill="#d4a373"/></svg>`
         },
-        bedding_pile: {
-          name: '厚鋪白楊木屑', cost: 50, w: 120, h: 65, defaultRoom: 'play', defaultX: 180, defaultY: 0.68,
-          svg: `<svg viewBox="0 0 120 65" width="120" height="65"><ellipse cx="60" cy="45" rx="55" ry="18" fill="#f3dfbf"/><path d="M25 40 Q40 25 55 42 Q70 20 85 45 Q100 30 110 50 Z" fill="#e6ccb2"/><circle cx="45" cy="38" r="3" fill="#ddb892"/><circle cx="75" cy="36" r="3" fill="#ddb892"/></svg>`
-        },
         water_bottle: {
           name: '滾珠飲水器', cost: 40, w: 60, h: 100, defaultRoom: 'living', defaultX: 160, defaultY: 0.55,
           svg: `<svg viewBox="0 0 60 100" width="60" height="100"><rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/><rect x="22" y="70" width="16" height="8" fill="#adb5bd"/><line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="96" r="3" fill="#00b4d8"/></svg>`
@@ -728,15 +856,13 @@
       },
       postcards: {
         shrine: { title: '京都神社之櫻', desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>` },
-        field: { title: '陽光向日葵田', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>` },
-        beach: { title: '黃金海岸浪花', desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/></svg>` },
-        fuji: { title: '富士山雪見溫泉', desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>` }
+        field: { title: '陽光向日葵田', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>` }
       }
     };
 
-    const STORAGE_KEY = 'pocket_hamster_save_v9';
+    const LOCAL_KEY = 'pocket_hamster_save_v10';
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { saved = {}; }
+    try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
 
     const state = {
       coins: saved.coins ?? 200,
@@ -758,15 +884,17 @@
       isDraggingHamster: false
     };
 
-    function saveGame() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    // 本地與雲端雙重備份
+    window.saveGame = function() {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify({
         coins: state.coins,
         hamsters: state.hamsters,
         inventory: state.inventory,
         furnitureCoords: state.furnitureCoords,
         postcards: state.postcards
       }));
-    }
+      if (window.saveGameCloud) window.saveGameCloud();
+    };
 
     function changeRoom(direction) {
       currentRoomIndex = (currentRoomIndex + direction + ROOMS.length) % ROOMS.length;
@@ -778,26 +906,19 @@
 
     function hamsterRunToRoom(h, targetRoomId) {
       const wrap = document.getElementById(`entity-${h.id}`);
-      if (!wrap) {
-        h.room = targetRoomId;
-        return;
-      }
-
+      if (!wrap) { h.room = targetRoomId; return; }
       const curRoomIdx = ROOMS.findIndex(r => r.id === h.room);
       const targetRoomIdx = ROOMS.findIndex(r => r.id === targetRoomId);
       const goingRight = targetRoomIdx > curRoomIdx;
-
       const exitX = goingRight ? window.innerWidth + 20 : -80;
+
       walkTo(h, wrap, exitX, h.y, () => {
         h.room = targetRoomId;
         h.x = goingRight ? -60 : window.innerWidth + 20;
-
         if (ROOMS[currentRoomIndex].id === targetRoomId) {
           renderHamsters();
           const newWrap = document.getElementById(`entity-${h.id}`);
-          if (newWrap) {
-            walkTo(h, newWrap, goingRight ? 60 : window.innerWidth - 120, h.y);
-          }
+          if (newWrap) walkTo(h, newWrap, goingRight ? 60 : window.innerWidth - 120, h.y);
         } else {
           renderHamsters();
         }
@@ -862,7 +983,6 @@
           h.y = window.innerHeight * 0.70;
           wrap.style.top = `${h.y}px`;
           setTimeout(() => { state.isDraggingHamster = false; }, 80);
-          checkProximityAndMate(h);
           saveGame();
         });
 
@@ -910,14 +1030,14 @@
       });
     }
 
-    // 真實習性排程迴圈 (囤糧、洗砂浴、刨木屑、排泄)
+    // 習性排程迴圈 (吐糧、洗砂浴、排泄)
     setInterval(() => {
       if (state.isBuilding || state.isDraggingHamster) return;
 
       state.hamsters.forEach(h => {
         if (state.travelingIds.includes(h.id)) return;
 
-        // 習性 1：頰囊有瓜子時，主動找小窩吐出來囤積！
+        // 習性：回窩吐糧
         if ((h.cheekPouch || 0) >= 2 && state.furnitureCoords.mushroom_house && h.room === state.furnitureCoords.mushroom_house.room) {
           const home = state.furnitureCoords.mushroom_house;
           const wrap = document.getElementById(`entity-${h.id}`);
@@ -931,16 +1051,13 @@
           return;
         }
 
-        // 習性 2：在角落留下小黑便便 (點擊清理加金幣)
-        if (Math.random() < 0.12) {
-          spawnPoopPellet(h.x + (Math.random()*20-10), h.y + 25, h.room);
-        }
+        // 習性：排泄小便便
+        if (Math.random() < 0.12) spawnPoopPellet(h.x + (Math.random()*20-10), h.y + 25, h.room);
 
-        // 習性 3：跑去鄰近房間探索
+        // 換房
         if (Math.random() < 0.15) {
           const otherRooms = ROOMS.map(r => r.id).filter(id => id !== h.room);
-          const targetRoom = otherRooms[Math.floor(Math.random() * otherRooms.length)];
-          hamsterRunToRoom(h, targetRoom);
+          hamsterRunToRoom(h, otherRooms[Math.floor(Math.random() * otherRooms.length)]);
           return;
         }
 
@@ -953,20 +1070,12 @@
           const fCoords = state.furnitureCoords[targetFurni];
 
           walkTo(h, wrap, fCoords.x + 20, fCoords.y + 20, () => {
-            const currentOccupantId = state.furnitureOccupant[targetFurni];
-            if (currentOccupantId && currentOccupantId !== h.id) {
-              const other = state.hamsters.find(item => item.id === currentOccupantId);
-              if (other && other.room === h.room) {
-                triggerDuel(targetFurni, other, h, (winner) => useFurniture(targetFurni, winner));
-                return;
-              }
-            }
             state.furnitureOccupant[targetFurni] = h.id;
             useFurniture(targetFurni, h);
           });
         } else {
           const destX = Math.random() * (window.innerWidth - 120) + 40;
-          walkTo(h, wrap, destX, window.innerHeight * 0.70, () => checkProximityAndMate(h));
+          walkTo(h, wrap, destX, window.innerHeight * 0.70);
         }
       });
     }, 6500);
@@ -977,7 +1086,6 @@
       poop.className = 'poop-pellet';
       poop.style.left = `${x}px`;
       poop.style.top = `${y}px`;
-      poop.title = '點擊清掃角落小便便！';
       poop.onclick = () => {
         poop.remove();
         state.coins += 5;
@@ -988,35 +1096,6 @@
       setTimeout(() => poop.remove(), 18000);
     }
 
-    function triggerDuel(furniId, userA, userB, onDone) {
-      const wrapA = document.getElementById(`entity-${userA.id}`);
-      const wrapB = document.getElementById(`entity-${userB.id}`);
-      if (!wrapA || !wrapB) return;
-
-      wrapA.classList.add('fighting');
-      wrapB.classList.add('fighting');
-      spawnBubble('💢', userA.x + 20, userA.y - 20);
-      spawnBubble('💥', userB.x + 20, userB.y - 20);
-
-      setTimeout(() => {
-        wrapA.classList.remove('fighting');
-        wrapB.classList.remove('fighting');
-
-        const winA = (userA.feedCount + Math.random() * 20) >= (userB.feedCount + Math.random() * 20);
-        const winner = winA ? userA : userB;
-        const loser = winA ? userB : userA;
-        const loserWrap = document.getElementById(`entity-${loser.id}`);
-
-        spawnBubble('🥺', loser.x + 25, loser.y - 15);
-        walkTo(loser, loserWrap, loser.x + (winA ? 60 : -60), window.innerHeight * 0.72);
-
-        state.furnitureOccupant[furniId] = winner.id;
-        spawnBubble('👑', winner.x + 25, winner.y - 20);
-        if (onDone) onDone(winner);
-      }, 1600);
-    }
-
-    // 習性行為動畫觸發 (滾沙、跑輪、刨木屑)
     function useFurniture(furniId, h) {
       const wrap = document.getElementById(`entity-${h.id}`);
       if (!wrap) return;
@@ -1026,7 +1105,7 @@
         spawnBubble('✨', h.x + 25, h.y - 15);
         setTimeout(() => {
           wrap.classList.remove('sand-bathing');
-          if (state.furnitureOccupant['sand_bath'] === h.id) delete state.furnitureOccupant['sand_bath'];
+          delete state.furnitureOccupant['sand_bath'];
         }, 3600);
       } else if (furniId === 'wheel') {
         const rotor = document.getElementById('wheel-rotor');
@@ -1036,20 +1115,18 @@
         renderHUD();
         setTimeout(() => {
           if (rotor) rotor.classList.remove('spinning-wheel');
-          if (state.furnitureOccupant['wheel'] === h.id) delete state.furnitureOccupant['wheel'];
+          delete state.furnitureOccupant['wheel'];
         }, 3800);
       } else if (furniId === 'mushroom_house') {
         wrap.classList.add('sleeping');
         spawnBubble('💤', h.x + 30, h.y - 15);
         setTimeout(() => {
           wrap.classList.remove('sleeping');
-          if (state.furnitureOccupant['mushroom_house'] === h.id) delete state.furnitureOccupant['mushroom_house'];
+          delete state.furnitureOccupant['mushroom_house'];
         }, 4500);
       } else {
         spawnBubble('✨', h.x + 30, h.y - 15);
-        setTimeout(() => {
-          if (state.furnitureOccupant[furniId] === h.id) delete state.furnitureOccupant[furniId];
-        }, 3000);
+        setTimeout(() => { delete state.furnitureOccupant[furniId]; }, 3000);
       }
     }
 
@@ -1060,7 +1137,7 @@
       const startY = h.y;
       let p = 0;
       const step = () => {
-        if (el.classList.contains('held') || el.classList.contains('fighting') || state.isBuilding) {
+        if (el.classList.contains('held') || state.isBuilding) {
           el.classList.remove('walking');
           return;
         }
@@ -1078,54 +1155,7 @@
       requestAnimationFrame(step);
     }
 
-    let isBreeding = false;
-    function checkProximityAndMate(hamsterA) {
-      if (isBreeding || hamsterA.feedCount < 20) return;
-
-      state.hamsters.forEach(hamsterB => {
-        if (hamsterA.id === hamsterB.id || hamsterB.feedCount < 20) return;
-        if (hamsterA.gender === hamsterB.gender || hamsterA.room !== hamsterB.room) return;
-
-        const dist = Math.hypot(hamsterA.x - hamsterB.x, hamsterA.y - hamsterB.y);
-        if (dist < 40) triggerBreeding(hamsterA, hamsterB);
-      });
-    }
-
-    function triggerBreeding(father, mother) {
-      isBreeding = true;
-      const male = father.gender === '♂' ? father : mother;
-      const female = father.gender === '♀' ? father : mother;
-
-      spawnBubble('💖', male.x + 30, male.y - 20);
-      spawnBubble('💖', female.x + 30, female.y - 20);
-
-      setTimeout(() => {
-        const babyGender = Math.random() < 0.5 ? '♂' : '♀';
-        const speciesKeys = Object.keys(SPECIES);
-        const babySpecies = Math.random() < 0.5 ? male.species : speciesKeys[Math.floor(Math.random() * speciesKeys.length)];
-        const babyName = `小${SPECIES[babySpecies].name[0]}`;
-        
-        state.hamsters.push({
-          id: `h_${Date.now()}`,
-          name: babyName,
-          gender: babyGender,
-          species: babySpecies,
-          feedCount: 0,
-          cheekPouch: 0,
-          equippedHat: null,
-          room: female.room,
-          x: female.x + 30,
-          y: female.y
-        });
-        saveGame();
-        renderHamsters();
-        renderHUD();
-        isBreeding = false;
-        alert(`🎉 恭喜！${male.name}(♂) 與 ${female.name}(♀) 誕下了寶寶：【${babyName} (${babyGender}) - ${SPECIES[babySpecies].name}】！`);
-      }, 3000);
-    }
-
-    // 點地板丟瓜子 (塞進腮幫子藏食)
+    // 點地板丟瓜子 (塞入腮幫子)
     document.getElementById('viewport').addEventListener('pointerdown', (e) => {
       if (state.isBuilding || state.isDraggingHamster) return;
       if (e.clientY < 110 || e.clientY > window.innerHeight - 85) return;
@@ -1160,7 +1190,7 @@
         clearTimeout(expireTimer);
         seed.remove();
         closest.feedCount++;
-        closest.cheekPouch = (closest.cheekPouch || 0) + 1; // 塞進頰囊！
+        closest.cheekPouch = (closest.cheekPouch || 0) + 1;
         saveGame();
         renderHamsters();
         spawnBubble('🐹', closest.x + 35, closest.y);
@@ -1177,6 +1207,7 @@
       setTimeout(() => b.remove(), 800);
     }
 
+    // 領養中心
     function openAdoptCenter() {
       document.getElementById('adoptCoinVal').textContent = state.coins;
       const grid = document.getElementById('adoptGrid');
@@ -1224,7 +1255,7 @@
       document.getElementById('adoptModal').style.display = 'flex';
     }
 
-    // 家族手帳 (完整支援即時改名)
+    // 手帳與改名
     function openProfile() {
       const list = document.getElementById('hamsterCardList');
       list.innerHTML = '';
@@ -1251,7 +1282,6 @@
       document.getElementById('profileModal').style.display = 'flex';
     }
 
-    // 改名處理函數
     function renameHamster(id) {
       const h = state.hamsters.find(item => item.id === id);
       if (!h) return;
@@ -1332,30 +1362,26 @@
       const targetId = sel.value;
       const traveler = state.hamsters.find(h => h.id === targetId);
       if (!traveler) return;
-
       if (state.travelingIds.includes(targetId)) return alert('牠已經在散步路上囉！');
 
       state.travelingIds.push(targetId);
       closeModal('postcardModal');
       renderHamsters();
-      alert(`${traveler.name} 背起書包出發探險了！大約 8 秒後帶明信片回來～`);
+      alert(`${traveler.name} 出門旅行了！8 秒後會寄明信片回來～`);
 
       setTimeout(() => {
         state.travelingIds = state.travelingIds.filter(id => id !== targetId);
         renderHamsters();
 
         const keys = Object.keys(ASSETS.postcards);
-        const uncollectedKeys = keys.filter(k => !state.postcards.some(p => p.title === ASSETS.postcards[k].title));
-        const chosenKey = uncollectedKeys.length > 0 ? uncollectedKeys[Math.floor(Math.random() * uncollectedKeys.length)] : keys[Math.floor(Math.random() * keys.length)];
-        const cardData = ASSETS.postcards[chosenKey];
-
+        const cardData = ASSETS.postcards[keys[Math.floor(Math.random() * keys.length)]];
         if (!state.postcards.some(p => p.title === cardData.title)) {
           state.postcards.push(cardData);
         }
         state.coins += 50;
         saveGame();
         renderHUD();
-        alert(`🌸 ${traveler.name} 散步回來了！寄回了【${cardData.title}】，並賺了 50 金幣！`);
+        alert(`🌸 ${traveler.name} 散步回來了！寄回了【${cardData.title}】，賺了 50 金幣！`);
       }, 8000);
     }
 
@@ -1522,7 +1548,8 @@
       }
     }
 
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
     function renderHUD() {
       document.getElementById('valCoins').textContent = state.coins;
       document.getElementById('valHamsterCount').textContent = state.hamsters.length;
