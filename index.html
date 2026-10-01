@@ -2,275 +2,584 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Pocket Pet | 桌面小寵物</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Pocket World | 寵物日常</title>
   <style>
     :root {
-      --bg-color: #fdfbf7;
-      --card-bg: #ffffff;
-      --text-main: #4a3b32;
-      --accent: #e76f51;
-      --bar-bg: #eee6dc;
+      --sky-day: linear-gradient(180deg, #d4f0fc 0%, #fdfbf7 75%);
+      --sky-sunset: linear-gradient(180deg, #fbc28b 0%, #fef6e4 75%);
+      --sky-night: linear-gradient(180deg, #1b263b 0%, #0d1b2a 75%);
+      --wood-floor: #d8c29d;
+      --wood-dark: #6e503e;
+      --card-bg: rgba(255, 255, 255, 0.88);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg-color);
-      color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      user-select: none;
-    }
-
-    .tamagotchi {
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 28px;
-      box-shadow: 0 10px 30px rgba(74, 59, 50, 0.08);
-      width: 320px;
-      text-align: center;
-      border: 2px solid #f0eae1;
-      position: relative;
-    }
-
-    .room {
-      height: 180px;
-      background: #faf6f0;
-      border-radius: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 20px;
-      border: 1px dashed #e2d7c7;
-    }
-
-    /* 寵物外觀與跳動動畫 */
-    .pet {
-      font-size: 72px;
-      cursor: pointer;
-      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
-    }
-    .pet:active { transform: scale(0.85); }
-    .pet.bounce { animation: bounce 0.4s ease infinite alternate; }
-    @keyframes bounce {
-      from { transform: translateY(0); }
-      to { transform: translateY(-8px); }
-    }
-
-    /* 愛心/文字漂浮特效 */
-    .floating-heart {
-      position: absolute;
-      color: var(--accent);
-      font-size: 20px;
-      animation: floatUp 0.8s ease-out forwards;
-      pointer-events: none;
-    }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(0.8); }
-      100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
-    }
-
-    /* 狀態條 */
-    .status-group { margin-bottom: 20px; }
-    .status-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .bar-container {
-      width: 180px;
-      height: 10px;
-      background: var(--bar-bg);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      background: #8ab17d;
+    html, body {
       width: 100%;
-      transition: width 0.3s ease, background 0.3s ease;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    /* 操作按鈕 */
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button {
-      background: #fff;
-      border: 1.5px solid #d8cbbe;
-      color: var(--text-main);
-      padding: 10px 14px;
+    /* 滿版動態房間 */
+    #world {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      transition: background 1.5s ease;
+      background: var(--sky-day);
+      overflow: hidden;
+    }
+
+    /* 地板與室內裝飾 */
+    .floor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 38%;
+      background: repeating-linear-gradient(90deg, #d2bfa6 0px, #d2bfa6 110px, #c5b095 110px, #c5b095 112px);
+      border-top: 8px solid #b8a287;
+      box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+    .rug {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 120px;
+      border-radius: 60px;
+      background: #e9dac4;
+      border: 3px dashed #baa493;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    }
+    .window {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      width: 130px;
+      height: 160px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 6px solid #fefefe;
       border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 4px;
+      backdrop-filter: blur(2px);
+    }
+    .window-pane { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+
+    /* 頂部資訊與控制列 */
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .status-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      padding: 10px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      gap: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       font-size: 14px;
       font-weight: 600;
+      color: #4a3b32;
+    }
+    .clock-badge {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      padding: 10px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #4a3b32;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* 寵物本體與物理動畫 */
+    #pet {
+      width: 80px;
+      height: 80px;
+      font-size: 64px;
+      line-height: 80px;
+      text-align: center;
+      position: absolute;
+      cursor: grab;
+      touch-action: none;
+      z-index: 5;
+      transition: transform 0.1s linear;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.12));
+    }
+    #pet.walking { animation: waddle 0.25s infinite alternate ease-in-out; }
+    #pet.held { cursor: grabbing; animation: panic 0.15s infinite alternate; }
+    @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+    @keyframes panic { from { transform: scale(1.08) rotate(-12deg); } to { transform: scale(1.08) rotate(12deg); } }
+
+    /* 掉落食物 */
+    .food-item {
+      position: absolute;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 4;
+      animation: dropIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes dropIn {
+      0% { transform: scale(0.3) translateY(-30px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* 底部操作面板 */
+    .bottom-bar {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .action-btn {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #4a3b32;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
-      transition: all 0.2s;
+      transition: transform 0.15s, background 0.15s;
     }
-    button:hover {
-      background: #fdfbf7;
-      border-color: #baa493;
-      transform: translateY(-1px);
-    }
-    button:active { transform: translateY(1px); }
+    .action-btn:hover { transform: translateY(-2px); background: #ffffff; }
+    .action-btn:active { transform: translateY(1px); }
 
-    .sleep-overlay {
+    /* 冒險外出覆蓋層 */
+    #travel-banner {
       position: absolute;
-      inset: 0;
-      background: rgba(30, 30, 45, 0.7);
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 16px 24px;
       border-radius: 20px;
       display: none;
+      flex-direction: column;
       align-items: center;
+      gap: 8px;
+      z-index: 20;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .progress-track {
+      width: 200px;
+      height: 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #8ab17d;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /* 彈窗對話框 (明信片/商店) */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
       justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-card {
+      background: #fdfbf7;
+      border-radius: 24px;
+      padding: 24px;
+      width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .modal-title { font-size: 18px; margin-bottom: 14px; color: #4a3b32; }
+    .postcard-img { font-size: 72px; margin: 15px 0; }
+    .close-btn {
+      margin-top: 18px;
+      background: #4a3b32;
       color: #fff;
-      font-size: 14px;
-      letter-spacing: 2px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <div class="tamagotchi">
-    <div class="room" id="room">
-      <div class="sleep-overlay" id="sleepOverlay">💤 呼呼大睡中...</div>
-      <div class="pet bounce" id="pet" title="摸摸我！">🐹</div>
+  <div id="world">
+    <!-- 房間物件 -->
+    <div class="window">
+      <div class="window-pane"></div>
+      <div class="window-pane"></div>
+      <div class="window-pane"></div>
+      <div class="window-pane"></div>
+    </div>
+    <div class="floor"></div>
+    <div class="rug"></div>
+
+    <!-- 頂部即時儀表 -->
+    <div class="top-bar">
+      <div class="status-panel">
+        <div>🍙 <span id="valHunger">80</span>%</div>
+        <div>✨ <span id="valHappy">80</span>%</div>
+        <div>💰 <span id="valCoins">50</span></div>
+      </div>
+      <div class="clock-badge">
+        <span id="ambientTime">12:00</span>
+        <button id="btnNoise" style="background:none; border:none; cursor:pointer; font-size:16px;" title="微風白噪音">🍃</button>
+      </div>
     </div>
 
-    <div class="status-group">
-      <div class="status-item">
-        <span>飽足 🍙</span>
-        <div class="bar-container"><div class="bar-fill" id="hungerBar"></div></div>
-      </div>
-      <div class="status-item">
-        <span>心情 ✨</span>
-        <div class="bar-container"><div class="bar-fill" id="happyBar"></div></div>
-      </div>
-      <div class="status-item">
-        <span>體力 ⚡</span>
-        <div class="bar-container"><div class="bar-fill" id="energyBar"></div></div>
-      </div>
+    <!-- 旅行狀態提示 -->
+    <div id="travel-banner">
+      <div id="travel-text">小傢伙在神社散步中... ⛩️</div>
+      <div class="progress-track"><div class="progress-fill" id="travelProgress"></div></div>
     </div>
 
-    <div class="actions">
-      <button onclick="feed()">餵葵花子 🌻</button>
-      <button onclick="play()">玩滾輪 🎡</button>
-      <button onclick="toggleSleep()">睡覺 🌙</button>
-      <button onclick="clean()">打掃環境 🧹</button>
+    <!-- 寵物實體 -->
+    <div id="pet">🐹</div>
+
+    <!-- 底部功能列 -->
+    <div class="bottom-bar">
+      <button class="action-btn" onclick="tossFood()">投擲葵花子 🌻</button>
+      <button class="action-btn" onclick="startTravel()">出門散步 🎒</button>
+      <button class="action-btn" onclick="openShop()">小雜貨店 🛒</button>
+    </div>
+  </div>
+
+  <!-- 明信片彈窗 -->
+  <div class="modal" id="modalPostcard">
+    <div class="modal-card">
+      <h3 class="modal-title">小傢伙寄了一張明信片！</h3>
+      <div class="postcard-img" id="postcardIcon">🌸</div>
+      <p id="postcardMsg" style="font-size: 14px; line-height: 1.6; color:#6e503e;"></p>
+      <button class="close-btn" onclick="closeModal('modalPostcard')">好好收進紀念冊</button>
+    </div>
+  </div>
+
+  <!-- 商店彈窗 -->
+  <div class="modal" id="modalShop">
+    <div class="modal-card">
+      <h3 class="modal-title">森之雜貨屋</h3>
+      <p style="font-size: 13px; color:#777; margin-bottom: 16px;">目前持有：<span id="shopCoins">0</span> 金幣</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="action-btn" style="justify-content:space-between;" onclick="buyItem('hat', 30)">
+          <span>小草帽 👒</span><span>30 幣</span>
+        </button>
+        <button class="action-btn" style="justify-content:space-between;" onclick="buyItem('glasses', 50)">
+          <span>潮酷墨鏡 🕶️</span><span>50 幣</span>
+        </button>
+        <button class="action-btn" style="justify-content:space-between;" onclick="buyItem('deluxe', 80)">
+          <span>特級草莓布丁 🍮</span><span>80 幣</span>
+        </button>
+      </div>
+      <button class="close-btn" onclick="closeModal('modalShop')">關閉</button>
     </div>
   </div>
 
   <script>
-    // 遊戲狀態
+    // 遊戲狀態與存檔
+    const saved = JSON.parse(localStorage.getItem('pet_game_state') || '{}');
     const state = {
-      hunger: 80,
-      happy: 80,
-      energy: 90,
-      isSleeping: false
+      hunger: saved.hunger ?? 85,
+      happy: saved.happy ?? 85,
+      coins: saved.coins ?? 60,
+      x: window.innerWidth / 2 - 40,
+      y: window.innerHeight * 0.75,
+      isHeld: false,
+      isTraveling: false,
+      equipped: saved.equipped || null
     };
 
     const petEl = document.getElementById('pet');
-    const roomEl = document.getElementById('room');
-    const sleepOverlay = document.getElementById('sleepOverlay');
+    const worldEl = document.getElementById('world');
+    let foodList = [];
+    let wanderTimer = null;
 
-    // 更新進度條
-    function updateBars() {
-      const renderBar = (id, val) => {
-        const el = document.getElementById(id);
-        el.style.width = `${val}%`;
-        if (val < 25) el.style.background = '#e76f51';
-        else if (val < 50) el.style.background = '#f4a261';
-        else el.style.background = '#8ab17d';
-      };
-
-      renderBar('hungerBar', state.hunger);
-      renderBar('happyBar', state.happy);
-      renderBar('energyBar', state.energy);
-
-      // 根據狀態切換表情
-      if (state.isSleeping) {
-        petEl.textContent = '😴';
-      } else if (state.hunger < 20 || state.happy < 20) {
-        petEl.textContent = '🥺';
-      } else if (state.happy > 80) {
-        petEl.textContent = '🐹';
-      } else {
-        petEl.textContent = '🐭';
-      }
+    function saveState() {
+      localStorage.setItem('pet_game_state', JSON.stringify({
+        hunger: state.hunger,
+        happy: state.happy,
+        coins: state.coins,
+        equipped: state.equipped
+      }));
     }
 
-    // 漂浮特效生成器
-    function spawnPop(emoji) {
-      const pop = document.createElement('div');
-      pop.className = 'floating-heart';
-      pop.textContent = emoji;
-      pop.style.left = `${petEl.offsetLeft + 20 + (Math.random() * 20 - 10)}px`;
-      pop.style.top = `${petEl.offsetTop}px`;
-      roomEl.appendChild(pop);
-      setTimeout(() => pop.remove(), 800);
+    // 1. 物理位置與跟隨
+    function setPetPosition(x, y) {
+      const minX = 20, maxX = window.innerWidth - 100;
+      const minY = window.innerHeight * 0.6, maxY = window.innerHeight - 120;
+      state.x = Math.max(minX, Math.min(maxX, x));
+      state.y = Math.max(minY, Math.min(maxY, y));
+      petEl.style.left = `${state.x}px`;
+      petEl.style.top = `${state.y}px`;
     }
+    setPetPosition(state.x, state.y);
 
-    // 摸摸互動
-    petEl.addEventListener('click', () => {
-      if (state.isSleeping) return;
-      state.happy = Math.min(100, state.happy + 5);
-      spawnPop('❤️');
-      updateBars();
+    // 拖曳寵物交互
+    let dragOffset = { x: 0, y: 0 };
+    petEl.addEventListener('pointerdown', (e) => {
+      if (state.isTraveling) return;
+      state.isHeld = true;
+      petEl.classList.add('held');
+      dragOffset.x = e.clientX - state.x;
+      dragOffset.y = e.clientY - state.y;
+      petEl.setPointerCapture(e.pointerId);
     });
 
-    // 餵食
-    function feed() {
-      if (state.isSleeping) return;
-      state.hunger = Math.min(100, state.hunger + 15);
-      spawnPop('🌻');
-      updateBars();
+    petEl.addEventListener('pointermove', (e) => {
+      if (!state.isHeld) return;
+      setPetPosition(e.clientX - dragOffset.x, e.clientY - dragOffset.y);
+    });
+
+    petEl.addEventListener('pointerup', () => {
+      if (!state.isHeld) return;
+      state.isHeld = false;
+      petEl.classList.remove('held');
+      // 放開時落回地板安全高度
+      const floorTarget = window.innerHeight * 0.72;
+      setPetPosition(state.x, floorTarget);
+      state.happy = Math.min(100, state.happy + 2);
+      updateUI();
+    });
+
+    // 2. 丟食物與自動進食尋路
+    function tossFood() {
+      if (state.isTraveling) return;
+      const targetX = Math.random() * (window.innerWidth - 120) + 60;
+      const targetY = window.innerHeight * 0.75 + (Math.random() * 40 - 20);
+
+      const food = document.createElement('div');
+      food.className = 'food-item';
+      food.textContent = '🌻';
+      food.style.left = `${targetX}px`;
+      food.style.top = `${targetY}px`;
+      worldEl.appendChild(food);
+
+      foodList.push({ el: food, x: targetX, y: targetY });
+      checkFoodChase();
     }
 
-    // 玩耍
-    function play() {
-      if (state.isSleeping || state.energy < 15) return;
-      state.happy = Math.min(100, state.happy + 20);
-      state.energy = Math.max(0, state.energy - 15);
-      state.hunger = Math.max(0, state.hunger - 5);
-      spawnPop('✨');
-      updateBars();
+    function checkFoodChase() {
+      if (state.isHeld || state.isTraveling || foodList.length === 0) return;
+      const target = foodList[0];
+      petEl.classList.add('walking');
+
+      const moveStep = () => {
+        if (state.isHeld || foodList.length === 0) {
+          petEl.classList.remove('walking');
+          return;
+        }
+        const dx = target.x - state.x;
+        const dy = target.y - state.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 15) {
+          // 吃掉食物
+          target.el.remove();
+          foodList.shift();
+          petEl.classList.remove('walking');
+          state.hunger = Math.min(100, state.hunger + 15);
+          state.happy = Math.min(100, state.happy + 5);
+          updateUI();
+          if (foodList.length > 0) setTimeout(checkFoodChase, 300);
+        } else {
+          setPetPosition(state.x + (dx / dist) * 4, state.y + (dy / dist) * 4);
+          requestAnimationFrame(moveStep);
+        }
+      };
+      requestAnimationFrame(moveStep);
     }
 
-    // 睡覺切換
-    function toggleSleep() {
-      state.isSleeping = !state.isSleeping;
-      sleepOverlay.style.display = state.isSleeping ? 'flex' : 'none';
-      updateBars();
-    }
-
-    // 打掃
-    function clean() {
-      spawnPop('🧼');
-    }
-
-    // 時間流逝迴圈 (每 3 秒衰減/回復)
-    setInterval(() => {
-      if (state.isSleeping) {
-        state.energy = Math.min(100, state.energy + 5);
-        state.hunger = Math.max(0, state.hunger - 1);
-        if (state.energy >= 100) toggleSleep(); // 睡飽自動醒來
-      } else {
-        state.hunger = Math.max(0, state.hunger - 2);
-        state.happy = Math.max(0, state.happy - 1);
-        state.energy = Math.max(0, state.energy - 1);
+    // 3. 隨機閒晃巡邏
+    function randomWander() {
+      if (state.isHeld || state.isTraveling || foodList.length > 0) return;
+      if (Math.random() > 0.4) {
+        const destX = Math.random() * (window.innerWidth - 120) + 60;
+        petEl.classList.add('walking');
+        const wanderStep = () => {
+          if (state.isHeld || foodList.length > 0 || state.isTraveling) {
+            petEl.classList.remove('walking');
+            return;
+          }
+          const dx = destX - state.x;
+          if (Math.abs(dx) < 6) {
+            petEl.classList.remove('walking');
+          } else {
+            setPetPosition(state.x + Math.sign(dx) * 1.5, state.y);
+            requestAnimationFrame(wanderStep);
+          }
+        };
+        requestAnimationFrame(wanderStep);
       }
-      updateBars();
-    }, 3000);
+    }
+    setInterval(randomWander, 4000);
 
-    updateBars();
+    // 4. 旅行與明信片系統
+    const POSTCARDS = [
+      { icon: '⛩️', text: '在京都石板路散步時，看見落英繽紛，還撿到了幾枚亮晶晶的金幣！', reward: 25 },
+      { icon: '🌲', text: '去後山的森林深處探險，遇到了一隻友善的黑貓並交換了松果。', reward: 30 },
+      { icon: '🌊', text: '抵達了海邊小木屋，吹著鹹鹹的海風，撿拾了許多漂亮的貝殼！', reward: 40 }
+    ];
+
+    function startTravel() {
+      if (state.isTraveling) return;
+      state.isTraveling = true;
+      petEl.style.display = 'none';
+      document.getElementById('travel-banner').style.display = 'flex';
+
+      const progressEl = document.getElementById('travelProgress');
+      let progress = 0;
+      const travelInterval = setInterval(() => {
+        progress += 10;
+        progressEl.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(travelInterval);
+          endTravel();
+        }
+      }, 700);
+    }
+
+    function endTravel() {
+      state.isTraveling = false;
+      petEl.style.display = 'block';
+      document.getElementById('travel-banner').style.display = 'none';
+      document.getElementById('travelProgress').style.width = '0%';
+
+      const trip = POSTCARDS[Math.floor(Math.random() * POSTCARDS.length)];
+      state.coins += trip.reward;
+      state.happy = Math.min(100, state.happy + 20);
+      state.hunger = Math.max(10, state.hunger - 25);
+
+      document.getElementById('postcardIcon').textContent = trip.icon;
+      document.getElementById('postcardMsg').textContent = `${trip.text}（帶回了 ${trip.reward} 金幣）`;
+      document.getElementById('modalPostcard').style.display = 'flex';
+      updateUI();
+    }
+
+    // 5. 商店系統
+    function openShop() {
+      document.getElementById('shopCoins').textContent = state.coins;
+      document.getElementById('modalShop').style.display = 'flex';
+    }
+    function buyItem(item, cost) {
+      if (state.coins < cost) {
+        alert('金幣不夠了！讓小傢伙去散步賺點零用錢吧。');
+        return;
+      }
+      state.coins -= cost;
+      if (item === 'hat') petEl.textContent = '🤠';
+      if (item === 'glasses') petEl.textContent = '😎';
+      if (item === 'deluxe') {
+        state.hunger = 100;
+        state.happy = 100;
+      }
+      closeModal('modalShop');
+      updateUI();
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // 6. 日夜時間與真實光影
+    function updateClockAndEnvironment() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('ambientTime').textContent = `${h}:${m}`;
+
+      if (h >= 6 && h < 16) {
+        worldEl.style.background = 'var(--sky-day)';
+      } else if (h >= 16 && h < 19) {
+        worldEl.style.background = 'var(--sky-sunset)';
+      } else {
+        worldEl.style.background = 'var(--sky-night)';
+      }
+    }
+    setInterval(updateClockAndEnvironment, 1000);
+    updateClockAndEnvironment();
+
+    // 7. 輕量白噪音 (Web Audio)
+    let audioCtx = null;
+    document.getElementById('btnNoise').addEventListener('click', () => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = audioCtx.sampleRate * 2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 0.05 - 0.025; // 柔和白噪音
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400; // 模擬風聲/雨聲低通濾波
+
+        noise.connect(filter);
+        filter.connect(audioCtx.destination);
+        noise.start();
+        document.getElementById('btnNoise').style.opacity = '1';
+      } else {
+        audioCtx.close();
+        audioCtx = null;
+        document.getElementById('btnNoise').style.opacity = '0.5';
+      }
+    });
+
+    function updateUI() {
+      document.getElementById('valHunger').textContent = Math.round(state.hunger);
+      document.getElementById('valHappy').textContent = Math.round(state.happy);
+      document.getElementById('valCoins').textContent = state.coins;
+      saveState();
+    }
+
+    // 自然消退迴圈
+    setInterval(() => {
+      if (!state.isTraveling) {
+        state.hunger = Math.max(0, state.hunger - 1);
+        state.happy = Math.max(0, state.happy - 1);
+        updateUI();
+      }
+    }, 6000);
+
+    updateUI();
   </script>
 </body>
 </html>
