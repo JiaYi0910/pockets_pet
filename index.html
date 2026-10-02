@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <!-- 原生背景音樂播放器 (自動循環) -->
+  <audio id="bgmAudio" loop preload="auto" src="https://ia800508.us.archive.org/15/items/HamsterDanceSong_201603/HamsterDanceSong.mp3"></audio>
+
   <!-- 強制登入閘門 -->
   <div id="authGate">
     <div class="modal-card" style="box-shadow: 0 15px 35px rgba(74, 59, 50, 0.15);">
@@ -30,22 +33,21 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD -->
-  <div class="top-bar">
-    <div class="hud-pill">
-      <span>🪙 <b id="valCoins">200</b></span>
-      <span>🌻 <b id="valFeedStock">30</b></span>
-      <span>🐹 <b id="valHamsterCount">1</b></span>
+    <!-- 頂部 HUD (包含音樂開關按鈕) -->
+    <div class="top-bar">
+      <div class="hud-pill">
+        <span>🪙 <b id="valCoins">200</b></span>
+        <span>🌻 <b id="valFeedStock">30</b></span>
+        <span>🐹 <b id="valHamsterCount">1</b></span>
+      </div>
+      
+      <div style="display:flex; gap:6px;">
+        <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgm()">🎵</button>
+        <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
+        <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
+        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
+      </div>
     </div>
-    
-    <div style="display:flex; gap:6px;">
-      <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgm()">🎵</button>
-      <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
-      <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
-      <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
-    </div>
-  </div>
-
 
     <!-- 空間指示與導覽按鈕 -->
     <div class="room-indicator" id="roomIndicatorText">客廳 🛋️</div>
@@ -356,17 +358,16 @@
 
     window.unlockGame = () => {
       authGate.classList.add('unlocked');
+      // 使用者互動時自動播放背景音樂 (音量小聲 15%)
+      const bgm = document.getElementById('bgmAudio');
+      if (bgm) {
+        bgm.volume = 0.15;
+        bgm.play().then(() => {
+          const btn = document.getElementById('btnBgmToggle');
+          if (btn) btn.textContent = '🎵';
+        }).catch(() => {});
+      }
     };
   </script>
-  
-  <!-- 隱藏的 YouTube 背景音樂容器 -->
-<div style="position:fixed; width:1px; height:1px; left:-9999px; top:-9999px; pointer-events:none;">
-  <div id="yt-player"></div>
-</div>
-
-<!-- 載入 YouTube IFrame Player API -->
-<script src="https://www.youtube.com/iframe_api"></script>
-
-  
 </body>
 </html>
