@@ -33,7 +33,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD (極致緊湊：金幣、葵花子、鼠口與完整自適應按鈕組) -->
+    <!-- 頂部 HUD (乾淨優雅：左側資源，右側音樂與選單) -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -42,12 +42,17 @@
       </div>
       
       <div class="hud-actions">
-        <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgmPlayer()" title="音樂開關">🎵</button>
-        <button class="btn-pill" onclick="openGameHelp()" title="遊戲說明">說明 📖</button>
-        <button class="btn-pill" onclick="openSocialModal()" title="好友與主人名片">好友 👥</button>
-        <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
-        <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
-        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
+        <button class="btn-pill-icon" id="btnBgmToggle" onclick="toggleBgmPlayer()" title="音樂開關">🎵</button>
+        <button class="btn-pill-icon" onclick="toggleDropdownMenu()" title="功能選單">☰</button>
+
+        <!-- 下拉式功能選單 -->
+        <div id="dropdownMenu">
+          <button class="dropdown-item" onclick="openGameHelp(); toggleDropdownMenu();">📖 遊戲說明</button>
+          <button class="dropdown-item" onclick="openOwnerProfileModal(); toggleDropdownMenu();">🪪 主人名片</button>
+          <button class="dropdown-item" onclick="openFriendsModal(); toggleDropdownMenu();">🤝 莊園好友</button>
+          <button class="dropdown-item" onclick="openAdoptCenter(); toggleDropdownMenu();">🏡 領養中心</button>
+          <button class="dropdown-item" onclick="openProfile(); toggleDropdownMenu();">📋 倉鼠手帳</button>
+        </div>
       </div>
     </div>
 
@@ -141,31 +146,50 @@
     <div id="yt-audio-player"></div>
   </div>
 
-  <!-- 好友與主人名片 Modal -->
-  <div class="modal-overlay" id="socialModal">
+  <!-- 主人名片專屬視窗 -->
+  <div class="modal-overlay" id="ownerProfileModal">
     <div class="modal-card">
-      <button class="modal-close-x" onclick="closeModal('socialModal')">✕</button>
-      <h3 class="modal-title">莊園主人社交 👥</h3>
-      
-      <!-- 主人名片資訊 -->
-      <div style="background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px; margin-bottom:12px; font-size:12px; line-height:1.7;">
+      <button class="modal-close-x" onclick="closeModal('ownerProfileModal')">✕</button>
+      <h3 class="modal-title">主人名片 🪪</h3>
+      <div style="background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px; font-size:12px; line-height:1.8; color:var(--main-text); margin-bottom:10px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <b>莊園主人：<span id="ownerNameDisplay">新手莊園主</span></b>
-          <button onclick="editOwnerProfile()" style="border:none; background:none; color:var(--accent); font-weight:bold; cursor:pointer;">[編輯]</button>
+          <span>莊園專屬 ID：</span>
+          <b id="cardOwnerId" style="color:var(--accent); font-family:monospace; font-size:13px;"></b>
+          <button onclick="copyOwnerId()" style="border:none; background:var(--border-color); color:var(--main-text); font-size:10px; padding:2px 6px; border-radius:6px; cursor:pointer;">複製</button>
         </div>
-        <div>專屬莊園 ID：<b id="ownerIdDisplay" style="color:var(--accent); font-family:monospace; font-size:13px;"></b> <button onclick="copyOwnerId()" style="border:none; background:#ede0d4; color:var(--main-text); padding:1px 6px; border-radius:6px; font-size:10px; cursor:pointer;">複製</button></div>
-        <div style="color:#666; font-size:11px;">莊園寄語：<span id="ownerBioDisplay">歡迎來到我的倉鼠樂園！</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+          <span>主人暱稱：</span>
+          <b id="cardOwnerName">大莊園主</b>
+          <button onclick="changeOwnerName()" style="border:none; background:none; color:var(--accent); font-weight:bold; cursor:pointer;">[修改]</button>
+        </div>
+        <div style="margin-top:4px;">
+          <span>個人簽名：</span>
+          <div id="cardOwnerBio" style="background:#faf4ed; border-radius:8px; padding:6px; color:#666; font-size:11px; margin-top:2px;">用心陪伴每隻小可愛～</div>
+          <button onclick="changeOwnerBio()" style="border:none; background:none; color:var(--accent); font-weight:bold; cursor:pointer; font-size:11px; float:right;">[編輯簽名]</button>
+          <div style="clear:both;"></div>
+        </div>
+        <div style="border-top:1px dashed var(--border-color); margin-top:6px; padding-top:6px; font-size:11px; color:#888;">
+          登入信箱：<span id="cardOwnerEmail"></span>
+        </div>
       </div>
+      <button class="btn-action" style="background:#e63946;" onclick="handleAuthLogout()">登出帳號</button>
+    </div>
+  </div>
 
-      <!-- 添加好友 -->
-      <div style="display:flex; gap:6px; margin-bottom:12px;">
-        <input type="text" id="inputFriendId" class="auth-input" style="margin-bottom:0; font-size:11px; padding:6px 10px;" placeholder="輸入朋友的 6 碼莊園 ID">
-        <button onclick="addFriendById()" class="btn-action" style="margin-top:0; width:auto; white-space:nowrap; padding:6px 12px; background:var(--accent); font-size:11px;">加好友</button>
+  <!-- 好友系統專屬視窗 -->
+  <div class="modal-overlay" id="friendsModal">
+    <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('friendsModal')">✕</button>
+      <h3 class="modal-title">莊園好友名冊 🤝</h3>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="addFriendInput" class="auth-input" style="margin-bottom:0; font-size:12px; padding:8px;" placeholder="輸入好友 ID (例: HAMSTER-XXXX)">
+          <button class="btn-action" style="width:auto; margin-top:0; padding:8px 12px; white-space:nowrap; background:var(--accent);" onclick="handleAddFriendById()">加好友</button>
+        </div>
       </div>
-
-      <!-- 好友列表 -->
-      <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">🌟 我的好友列表：</div>
-      <div id="friendListContainer"></div>
+      <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">好友列表 (<span id="friendsCount">0</span>)：</div>
+      <div id="friendsEmptyTip" style="font-size:11px; text-align:center; color:#888; padding:10px 0;">還沒有好友，快複製你的 ID 分享給朋友吧！</div>
+      <div id="friendsListContainer" style="max-height:220px; overflow-y:auto;"></div>
     </div>
   </div>
 
@@ -180,7 +204,7 @@
         <p style="margin-top:4px;">🧹 <b>便便與大掃除</b>：小鼠會自主排泄，點擊便便或按底部「🧹 大掃除」可一鍵清理賺取金幣！</p>
         <p style="margin-top:4px;">🔨 <b>建造與翻轉</b>：在雜貨鋪購買家具後進入「建造模式」，點擊家具可「水平翻轉」或「收回倉庫」。</p>
         <p style="margin-top:4px;">🍼 <b>培育與送養</b>：離線達 10 分鐘以上，成年公母鼠可能誕下幼鼠（上限 8 隻）；手帳內支援愛心送養並領取補貼！</p>
-        <p style="margin-top:4px;">👥 <b>好友互動</b>：複製你的莊園 ID 分享給好友，互加好友後每天拜訪可領取金幣！</p>
+        <p style="margin-top:4px;">🤝 <b>名片與好友</b>：在右上角選單複製專屬 ID 加好友，每天還能互相贈送葵花子愛心禮物！</p>
         <p style="margin-top:4px;">🎒 <b>旅行與明信片</b>：派小鼠出門背包旅行，收集全世界 12 大知名景點的精美紀念明信片！</p>
       </div>
       <button class="btn-action" style="background:var(--accent);" onclick="closeModal('helpModal')">我知道了 🐹</button>
@@ -232,25 +256,6 @@
     </div>
   </div>
 
-  <!-- 帳號 Modal -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-card">
-      <button class="modal-close-x" onclick="closeModal('authModal')">✕</button>
-      <h3 class="modal-title" id="authTitle">雲端存檔帳號 ☁️</h3>
-      <div id="authFormArea">
-        <input type="email" class="auth-input" id="authEmail" placeholder="電子信箱 (Email)">
-        <input type="password" class="auth-input" id="authPassword" placeholder="密碼 (最少 6 位數)">
-        <button class="btn-action" style="background:var(--accent);" onclick="handleAuthLogin()">登入帳號</button>
-        <button class="btn-action" style="background:#52b788; margin-top:6px;" onclick="handleAuthRegister()">註冊新帳號</button>
-      </div>
-      <div id="authLoggedInArea" style="display:none; text-align:center;">
-        <p style="font-size:13px; color:#555; margin-bottom:12px;">已登入：<b id="currentUserEmail"></b></p>
-        <button class="btn-action" style="background:var(--accent);" onclick="unlockGame()">開始遊玩 🎮</button>
-        <button class="btn-action" style="background:#e63946; margin-top:6px;" onclick="handleAuthLogout()">登出帳號</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 領養中心 -->
   <div class="modal-overlay" id="adoptModal">
     <div class="modal-card">
@@ -293,7 +298,6 @@
 
       <div style="font-size:12px; font-weight:bold; margin:6px 0;">挑選飾品：</div>
       <div class="grid-container" id="fittingHatGrid"></div>
-      <button class="btn-action" onclick="closeModal('fittingRoomModal')">換好出發！</button>
     </div>
   </div>
 
@@ -383,15 +387,15 @@
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
-      const statusBtn = document.getElementById('btnUserStatus');
 
       if (user) {
-        statusBtn.textContent = '帳號 👤';
         formArea.style.display = 'none';
         loggedArea.style.display = 'block';
         document.getElementById('currentUserEmail').textContent = user.email;
+        const ownerEmailEl = document.getElementById('cardOwnerEmail');
+        if (ownerEmailEl) ownerEmailEl.textContent = user.email;
 
-        // 下載雲端存檔
+        // 1. 抓取雲端存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -405,7 +409,7 @@
           state.furniturePlaced = cloudData.furniturePlaced ?? state.furniturePlaced;
           state.poopList = cloudData.poopList ?? state.poopList;
           state.postcards = cloudData.postcards ?? state.postcards;
-          state.ownerProfile = cloudData.ownerProfile ?? state.ownerProfile;
+          state.owner = cloudData.owner ?? state.owner;
           state.friends = cloudData.friends ?? state.friends;
 
           renderHUD();
@@ -413,7 +417,7 @@
           renderFurniture();
           renderPoops();
 
-          // 雲端資料同步後才結算，寶寶不會再被舊資料抹除！
+          // 2. 雲端下載完畢，進行一次安全結算（防止重複繁衍覆蓋）
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
@@ -423,7 +427,6 @@
 
         authGate.classList.add('unlocked');
       } else {
-        statusBtn.textContent = '登入 👤';
         formArea.style.display = 'block';
         loggedArea.style.display = 'none';
         authGate.classList.remove('unlocked');
@@ -444,7 +447,7 @@
           furniturePlaced: state.furniturePlaced,
           poopList: state.poopList,
           postcards: state.postcards,
-          ownerProfile: state.ownerProfile,
+          owner: state.owner,
           friends: state.friends
         });
       } catch (err) {
@@ -473,10 +476,7 @@
 
     window.handleAuthLogout = async () => {
       await signOut(auth);
-    };
-
-    window.openAuthModal = () => {
-      authGate.classList.remove('unlocked');
+      closeModal('ownerProfileModal');
     };
 
     window.unlockGame = () => {
