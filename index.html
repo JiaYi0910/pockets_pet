@@ -30,7 +30,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD -->
+    <!-- 頂部 HUD (乾淨整合音樂按鈕) -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -39,19 +39,11 @@
       </div>
       
       <div style="display:flex; gap:6px;">
+        <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgmPlayer()" title="音樂開關">🎵</button>
         <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
         <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
         <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
       </div>
-    </div>
-
-    <!-- 迷你 BGM 膠囊面板 -->
-    <div class="bgm-player-capsule">
-      <span>🎵 BGM</span>
-      <div id="yt-player-box">
-        <div id="yt-audio-player"></div>
-      </div>
-      <button class="bgm-btn" id="btnBgmControl" onclick="toggleBgmPlayer()">播 放</button>
     </div>
 
     <!-- 空間指示與導覽按鈕 -->
@@ -125,6 +117,11 @@
         <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
+  </div>
+
+  <!-- 隱藏式 YouTube 播放節點 (移出視窗外，不干擾畫面) -->
+  <div style="position:fixed; left:-200px; top:-200px; width:100px; height:100px; opacity:0; pointer-events:none;">
+    <div id="yt-audio-player"></div>
   </div>
 
   <!-- 帳號 Modal -->
@@ -285,7 +282,6 @@
         loggedArea.style.display = 'block';
         document.getElementById('currentUserEmail').textContent = user.email;
 
-        // 從雲端下載存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -304,7 +300,6 @@
           renderFurniture();
           renderPoops();
 
-          // 雲端存檔成功加載後，立刻精確計算離線收益與繁殖！
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
