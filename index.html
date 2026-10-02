@@ -31,19 +31,21 @@
 
   <div id="viewport">
     <!-- 頂部 HUD -->
-    <div class="top-bar">
-      <div class="hud-pill">
-        <span>🪙 <b id="valCoins">200</b></span>
-        <span>🌻 <b id="valFeedStock">30</b></span>
-        <span>🐹 <b id="valHamsterCount">1</b></span>
-      </div>
-      
-      <div style="display:flex; gap:6px;">
-        <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
-        <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
-        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
-      </div>
+  <div class="top-bar">
+    <div class="hud-pill">
+      <span>🪙 <b id="valCoins">200</b></span>
+      <span>🌻 <b id="valFeedStock">30</b></span>
+      <span>🐹 <b id="valHamsterCount">1</b></span>
     </div>
+    
+    <div style="display:flex; gap:6px;">
+      <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgm()">🎵</button>
+      <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
+      <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
+      <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
+    </div>
+  </div>
+
 
     <!-- 空間指示與導覽按鈕 -->
     <div class="room-indicator" id="roomIndicatorText">客廳 🛋️</div>
