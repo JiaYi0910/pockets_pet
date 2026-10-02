@@ -273,6 +273,10 @@ window.showToast = function(msg) {
   setTimeout(() => box.classList.remove('show'), 2200);
 };
 
+window.openGameHelp = function() {
+  document.getElementById('helpModal').style.display = 'flex';
+};
+
 window.saveGame = function() {
   state.lastActiveTime = Date.now();
   localStorage.setItem(LOCAL_KEY, JSON.stringify({
@@ -846,7 +850,6 @@ function dropSeed(x, y) {
   seed.style.left = `${x}px`;
   seed.style.top = `${y}px`;
 
-  // 關鍵修復：將瓜子掛載到當前所在的房間場景內，隨著房間切換移動！
   const curRoomId = ROOMS[currentRoomIndex].id;
   const targetRoomEl = document.getElementById(`room-${curRoomId}`);
   if (targetRoomEl) {
