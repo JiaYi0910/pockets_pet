@@ -1141,16 +1141,16 @@ window.onYouTubeIframeAPIReady = function() {
     },
     events: {
       onReady: (e) => {
-        e.target.setVolume(20);
+        e.target.setVolume(18); // 輕快舒適的 18% 音量
       },
       onStateChange: (e) => {
-        const btn = document.getElementById('btnBgmControl');
+        const btn = document.getElementById('btnBgmToggle');
         if (e.data === YT.PlayerState.PLAYING) {
           isYtPlaying = true;
-          if (btn) { btn.textContent = '暫 停'; btn.style.background = '#8b786d'; }
+          if (btn) btn.textContent = '🎵';
         } else {
           isYtPlaying = false;
-          if (btn) { btn.textContent = '播 放'; btn.style.background = 'var(--accent)'; }
+          if (btn) btn.textContent = '🔇';
         }
       }
     }
@@ -1158,24 +1158,23 @@ window.onYouTubeIframeAPIReady = function() {
 };
 
 window.toggleBgmPlayer = function() {
-  if (!ytBgmPlayer || typeof ytBgmPlayer.playVideo !== 'function') {
-    return alert('音樂播放器載入中，請稍候片刻再點擊！');
-  }
+  if (!ytBgmPlayer || typeof ytBgmPlayer.playVideo !== 'function') return;
 
   if (isYtPlaying) {
     ytBgmPlayer.pauseVideo();
   } else {
-    ytBgmPlayer.setVolume(20);
+    ytBgmPlayer.setVolume(18);
     ytBgmPlayer.playVideo();
   }
 };
 
 window.startBgmOnUnlock = function() {
   if (ytBgmPlayer && typeof ytBgmPlayer.playVideo === 'function') {
-    ytBgmPlayer.setVolume(20);
+    ytBgmPlayer.setVolume(18);
     ytBgmPlayer.playVideo();
   }
 };
+
 
 renderFurniture();
 renderHamsters();
