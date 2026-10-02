@@ -33,7 +33,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD (極致緊湊：加入說明按鈕並確保全螢幕不溢出) -->
+    <!-- 頂部 HUD (極致緊湊：金幣、葵花子、鼠口與完整自適應按鈕組) -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -44,6 +44,7 @@
       <div class="hud-actions">
         <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgmPlayer()" title="音樂開關">🎵</button>
         <button class="btn-pill" onclick="openGameHelp()" title="遊戲說明">說明 📖</button>
+        <button class="btn-pill" onclick="openSocialModal()" title="好友與主人名片">好友 👥</button>
         <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
         <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
         <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
@@ -140,6 +141,34 @@
     <div id="yt-audio-player"></div>
   </div>
 
+  <!-- 好友與主人名片 Modal -->
+  <div class="modal-overlay" id="socialModal">
+    <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('socialModal')">✕</button>
+      <h3 class="modal-title">莊園主人社交 👥</h3>
+      
+      <!-- 主人名片資訊 -->
+      <div style="background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px; margin-bottom:12px; font-size:12px; line-height:1.7;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <b>莊園主人：<span id="ownerNameDisplay">新手莊園主</span></b>
+          <button onclick="editOwnerProfile()" style="border:none; background:none; color:var(--accent); font-weight:bold; cursor:pointer;">[編輯]</button>
+        </div>
+        <div>專屬莊園 ID：<b id="ownerIdDisplay" style="color:var(--accent); font-family:monospace; font-size:13px;"></b> <button onclick="copyOwnerId()" style="border:none; background:#ede0d4; color:var(--main-text); padding:1px 6px; border-radius:6px; font-size:10px; cursor:pointer;">複製</button></div>
+        <div style="color:#666; font-size:11px;">莊園寄語：<span id="ownerBioDisplay">歡迎來到我的倉鼠樂園！</span></div>
+      </div>
+
+      <!-- 添加好友 -->
+      <div style="display:flex; gap:6px; margin-bottom:12px;">
+        <input type="text" id="inputFriendId" class="auth-input" style="margin-bottom:0; font-size:11px; padding:6px 10px;" placeholder="輸入朋友的 6 碼莊園 ID">
+        <button onclick="addFriendById()" class="btn-action" style="margin-top:0; width:auto; white-space:nowrap; padding:6px 12px; background:var(--accent); font-size:11px;">加好友</button>
+      </div>
+
+      <!-- 好友列表 -->
+      <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">🌟 我的好友列表：</div>
+      <div id="friendListContainer"></div>
+    </div>
+  </div>
+
   <!-- 莊園指引與遊戲說明專屬視窗 -->
   <div class="modal-overlay" id="helpModal">
     <div class="modal-card">
@@ -147,10 +176,11 @@
       <h3 class="modal-title">莊園新手指南 📖</h3>
       <div style="font-size: 12px; line-height: 1.8; color: var(--main-text); background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px;">
         <p>🌻 <b>餵食與囤糧</b>：點擊房間地面會掉落葵花子，小鼠會跑來塞滿腮幫子，再吐回小木屋囤積。</p>
-        <p style="margin-top:4px;">🛋️️ <b>多房生活</b>：點擊左右箭頭切換「客廳」、「活動室」與「庭院」，各房間家具與便便完全獨立。</p>
+        <p style="margin-top:4px;">🛋 <b>多房生活</b>：點擊左右箭頭切換「客廳」、「活動室」與「庭院」，各房間家具與便便完全獨立。</p>
         <p style="margin-top:4px;">🧹 <b>便便與大掃除</b>：小鼠會自主排泄，點擊便便或按底部「🧹 大掃除」可一鍵清理賺取金幣！</p>
         <p style="margin-top:4px;">🔨 <b>建造與翻轉</b>：在雜貨鋪購買家具後進入「建造模式」，點擊家具可「水平翻轉」或「收回倉庫」。</p>
         <p style="margin-top:4px;">🍼 <b>培育與送養</b>：離線達 10 分鐘以上，成年公母鼠可能誕下幼鼠（上限 8 隻）；手帳內支援愛心送養並領取補貼！</p>
+        <p style="margin-top:4px;">👥 <b>好友互動</b>：複製你的莊園 ID 分享給好友，互加好友後每天拜訪可領取金幣！</p>
         <p style="margin-top:4px;">🎒 <b>旅行與明信片</b>：派小鼠出門背包旅行，收集全世界 12 大知名景點的精美紀念明信片！</p>
       </div>
       <button class="btn-action" style="background:var(--accent);" onclick="closeModal('helpModal')">我知道了 🐹</button>
@@ -263,6 +293,7 @@
 
       <div style="font-size:12px; font-weight:bold; margin:6px 0;">挑選飾品：</div>
       <div class="grid-container" id="fittingHatGrid"></div>
+      <button class="btn-action" onclick="closeModal('fittingRoomModal')">換好出發！</button>
     </div>
   </div>
 
@@ -360,6 +391,7 @@
         loggedArea.style.display = 'block';
         document.getElementById('currentUserEmail').textContent = user.email;
 
+        // 下載雲端存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -373,11 +405,15 @@
           state.furniturePlaced = cloudData.furniturePlaced ?? state.furniturePlaced;
           state.poopList = cloudData.poopList ?? state.poopList;
           state.postcards = cloudData.postcards ?? state.postcards;
+          state.ownerProfile = cloudData.ownerProfile ?? state.ownerProfile;
+          state.friends = cloudData.friends ?? state.friends;
+
           renderHUD();
           renderHamsters();
           renderFurniture();
           renderPoops();
 
+          // 雲端資料同步後才結算，寶寶不會再被舊資料抹除！
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
@@ -407,7 +443,9 @@
           furnitureWarehouse: state.furnitureWarehouse,
           furniturePlaced: state.furniturePlaced,
           poopList: state.poopList,
-          postcards: state.postcards
+          postcards: state.postcards,
+          ownerProfile: state.ownerProfile,
+          friends: state.friends
         });
       } catch (err) {
         console.error("雲端存檔失敗:", err);
