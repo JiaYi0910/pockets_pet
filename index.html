@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <!-- 浮動無打擾提示 Toast -->
+  <div id="toastBox"></div>
+
   <!-- 強制登入閘門 -->
   <div id="authGate">
     <div class="modal-card" style="box-shadow: 0 15px 35px rgba(74, 59, 50, 0.15);">
@@ -30,7 +33,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD (乾淨整合音樂按鈕) -->
+    <!-- 頂部 HUD -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -57,22 +60,30 @@
 
     <div class="build-banner" id="buildBanner">建造模式：點家具翻轉/收回，底部從倉庫擺放</div>
 
-    <!-- 跨房間滑動軌道 -->
+    <!-- 跨房間滑動軌道 (每個房間皆配置專屬家具層與便便層) -->
     <div id="world-slider">
+      <!-- 房間 0: 客廳 -->
       <div class="room-scene" id="room-living" data-room-index="0">
         <div class="wall-window"><div></div><div></div><div></div><div></div></div>
         <div class="floor"></div>
         <div class="furniture-layer" id="furniture-living"></div>
+        <div class="poop-layer" id="poop-living"></div>
       </div>
+
+      <!-- 房間 1: 活動室 -->
       <div class="room-scene" id="room-play" data-room-index="1">
         <div class="wall-window" style="left:auto; right:7%;"><div></div><div></div><div></div><div></div></div>
         <div class="floor"></div>
         <div class="furniture-layer" id="furniture-play"></div>
+        <div class="poop-layer" id="poop-play"></div>
       </div>
+
+      <!-- 房間 2: 庭院 -->
       <div class="room-scene" id="room-garden" data-room-index="2">
         <div class="garden-flora-bg"></div>
         <div class="floor"></div>
         <div class="furniture-layer" id="furniture-garden"></div>
+        <div class="poop-layer" id="poop-garden"></div>
       </div>
     </div>
 
@@ -119,7 +130,7 @@
     </div>
   </div>
 
-  <!-- 隱藏式 YouTube 播放節點 (移出視窗外，不干擾畫面) -->
+  <!-- 隱藏式 YouTube 播放節點 -->
   <div style="position:fixed; left:-200px; top:-200px; width:100px; height:100px; opacity:0; pointer-events:none;">
     <div id="yt-audio-player"></div>
   </div>
@@ -247,7 +258,7 @@
   <script src="assets.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- Firebase 雲端認證與結算啟動 -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -300,6 +311,7 @@
           renderFurniture();
           renderPoops();
 
+          // 雲端資料同步完畢後，立即精準結算離線收益與繁衍
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
@@ -339,20 +351,20 @@
     window.handleAuthLogin = async () => {
       const em = document.getElementById('authEmail').value;
       const pw = document.getElementById('authPassword').value;
-      if (!em || !pw) return alert('請輸入帳號密碼！');
+      if (!em || !pw) return showToast('請輸入帳號密碼！');
       try {
         await signInWithEmailAndPassword(auth, em, pw);
-      } catch (e) { alert('登入失敗: ' + e.message); }
+      } catch (e) { showToast('登入失敗: ' + e.message); }
     };
 
     window.handleAuthRegister = async () => {
       const em = document.getElementById('authEmail').value;
       const pw = document.getElementById('authPassword').value;
-      if (!em || !pw) return alert('請輸入帳號密碼！');
+      if (!em || !pw) return showToast('請輸入帳號密碼！');
       try {
         await createUserWithEmailAndPassword(auth, em, pw);
-        alert('🎉 註冊成功！');
-      } catch (e) { alert('註冊失敗: ' + e.message); }
+        showToast('🎉 註冊成功！');
+      } catch (e) { showToast('註冊失敗: ' + e.message); }
     };
 
     window.handleAuthLogout = async () => {
