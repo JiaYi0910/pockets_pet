@@ -5,47 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Pocket Hamsters | 倉鼠大莊園 Online</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* 迷你毛玻璃音樂控制器 */
-    .bgm-player-capsule {
-      position: absolute;
-      top: 104px;
-      right: 12px;
-      z-index: 45;
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 4px 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(74, 59, 50, 0.1);
-    }
-    .bgm-player-capsule span {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--main-text);
-    }
-    .bgm-btn {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      font-size: 11px;
-      font-weight: bold;
-      border-radius: 12px;
-      padding: 3px 8px;
-      cursor: pointer;
-    }
-    /* YouTube 嵌入微型視窗 (高 40px，符合手機渲染規範) */
-    #yt-player-box {
-      width: 70px;
-      height: 40px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-  </style>
 </head>
 <body>
 
@@ -289,11 +248,9 @@
   </div>
 
   <script src="assets.js"></script>
-
-  <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase 雲端認證與結算啟動 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -328,6 +285,7 @@
         loggedArea.style.display = 'block';
         document.getElementById('currentUserEmail').textContent = user.email;
 
+        // 從雲端下載存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -345,6 +303,11 @@
           renderHamsters();
           renderFurniture();
           renderPoops();
+
+          // 雲端存檔成功加載後，立刻精確計算離線收益與繁殖！
+          if (typeof window.processOfflineEarnings === 'function') {
+            window.processOfflineEarnings();
+          }
         } else {
           window.saveGame();
         }
@@ -407,7 +370,6 @@
 
     window.unlockGame = () => {
       authGate.classList.add('unlocked');
-      // 點擊開始遊玩時，嘗試直接喚醒播放器
       if (typeof window.startBgmOnUnlock === 'function') {
         window.startBgmOnUnlock();
       }
