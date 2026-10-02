@@ -47,7 +47,6 @@ function generateHamsterSVG(speciesKey, isCheekFull = false) {
   </svg>`;
 }
 
-// 海量商品素材庫 (包含真實倉鼠習性、花草造景、合理大比例)
 const ASSETS = {
   hats: {
     straw_hat: { name: '夏日草帽', cost: 30, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>` },
@@ -102,24 +101,24 @@ const ASSETS = {
     },
     garden_sunflower: {
       name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110, defaultRoom: 'garden', defaultX: 200, defaultY: 0.52,
-      svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/><circle cx="30" cy="26" r="6" fill="#ffb703"/><circle cx="60" cy="26" r="6" fill="#ffb703"/><circle cx="60" cy="54" r="6" fill="#ffb703"/><circle cx="30" cy="54" r="6" fill="#ffb703"/></svg>`
+      svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>`
     },
     garden_log: {
       name: '庭院天然棲木樹樁', cost: 55, w: 100, h: 70, defaultRoom: 'garden', defaultX: 120, defaultY: 0.64,
-      svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/><ellipse cx="50" cy="30" rx="20" ry="7" fill="none" stroke="#b08968" stroke-width="2"/></svg>`
+      svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/></svg>`
     }
   },
   postcards: {
     shrine: { title: '京都神社之櫻', desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>` },
-    field: { title: '陽光向日葵田', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>` },
+    field: { title: '陽光向日葵田', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/></svg>` },
     beach: { title: '黃金海岸浪花', desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/></svg>` },
     fuji: { title: '富士山雪見溫泉', desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>` },
     bigben: { title: '倫敦鐘樓散步', desc: '在泰晤士河畔聽大笨鐘報時，撿到了亮晶晶的英鎊硬幣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#f0efeb"/><rect x="30" y="20" width="20" height="50" fill="#adb5bd"/><polygon points="30,20 40,8 50,20" fill="#6c757d"/><circle cx="40" cy="32" r="5" fill="#ffd166"/></svg>` },
-    aurora: { title: '極光雪地小冰屋', desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/><path d="M35 60 A5 5 0 0 1 45 60 Z" fill="#6c757d"/></svg>` }
+    aurora: { title: '極光雪地小冰屋', desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/></svg>` }
   }
 };
 
-const LOCAL_KEY = 'pocket_hamster_save_v13';
+const LOCAL_KEY = 'pocket_hamster_save_v14';
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
 
@@ -137,6 +136,7 @@ const state = {
     { instanceId: 'f_init_5', type: 'dandelion_bush', room: 'garden', x: 50, y: window.innerHeight * 0.58 },
     { instanceId: 'f_init_6', type: 'garden_sunflower', room: 'garden', x: 200, y: window.innerHeight * 0.52 }
   ],
+  poopList: saved.poopList || [], // 便便永久陣列儲存
   postcards: saved.postcards || [],
   isBuilding: false,
   travelingIds: [],
@@ -151,6 +151,7 @@ window.saveGame = function() {
     hamsters: state.hamsters,
     inventory: state.inventory,
     furnitureList: state.furnitureList,
+    poopList: state.poopList,
     postcards: state.postcards
   }));
   if (window.saveGameCloud) window.saveGameCloud();
@@ -162,6 +163,7 @@ function changeRoom(direction) {
   document.getElementById('roomIndicatorText').textContent = ROOMS[currentRoomIndex].name;
   renderHamsters();
   renderFurniture();
+  renderPoops(); // 切換房間時重新繪製該房間的便便
 }
 
 function hamsterRunToRoom(h, targetRoomId) {
@@ -290,6 +292,64 @@ function renderFurniture() {
   });
 }
 
+// 便便永久保留與渲染機制 (不自動消失，留給玩家打掃賺錢)
+function renderPoops() {
+  // 清理現有 DOM 便便
+  document.querySelectorAll('.poop-pellet').forEach(el => el.remove());
+
+  const curRoom = ROOMS[currentRoomIndex].id;
+  state.poopList.forEach(poop => {
+    if (poop.room !== curRoom) return;
+
+    const el = document.createElement('div');
+    el.className = 'poop-pellet';
+    el.id = `poop-${poop.id}`;
+    el.style.left = `${poop.x}px`;
+    el.style.top = `${poop.y}px`;
+    el.title = '點擊清掃賺金幣！';
+    el.onclick = (e) => {
+      e.stopPropagation();
+      collectPoop(poop.id);
+    };
+    document.getElementById('viewport').appendChild(el);
+  });
+}
+
+function spawnPoopPellet(x, y, room) {
+  // 單房間最多累積 8 顆便便，避免過度堆疊
+  const roomPoopCount = state.poopList.filter(p => p.room === room).length;
+  if (roomPoopCount >= 8) return;
+
+  const newPoop = {
+    id: `p_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+    x: Math.max(30, Math.min(window.innerWidth - 50, x)),
+    y: Math.max(window.innerHeight * 0.58, Math.min(window.innerHeight * 0.78, y)),
+    room: room
+  };
+  state.poopList.push(newPoop);
+  saveGame();
+
+  if (ROOMS[currentRoomIndex].id === room) {
+    renderPoops();
+  }
+}
+
+function collectPoop(poopId) {
+  const idx = state.poopList.findIndex(p => p.id === poopId);
+  if (idx === -1) return;
+
+  const p = state.poopList[idx];
+  state.poopList.splice(idx, 1);
+
+  const earn = 8;
+  state.coins += earn;
+  spawnBubble(`🪙 +${earn}`, p.x, p.y - 15);
+
+  saveGame();
+  renderHUD();
+  renderPoops();
+}
+
 setInterval(() => {
   if (state.isBuilding || state.isDraggingHamster) return;
 
@@ -312,8 +372,8 @@ setInterval(() => {
       }
     }
 
-    // 排泄小便便
-    if (Math.random() < 0.12) spawnPoopPellet(h.x + (Math.random()*20-10), h.y + 25, h.room);
+    // 排泄便便 (永久保留)
+    if (Math.random() < 0.16) spawnPoopPellet(h.x + (Math.random()*30-15), h.y + 25, h.room);
 
     // 換房間探險
     if (Math.random() < 0.15) {
@@ -339,25 +399,6 @@ setInterval(() => {
     }
   });
 }, 6500);
-
-function spawnPoopPellet(x, y, room) {
-  if (ROOMS[currentRoomIndex].id !== room) return;
-  const poop = document.createElement('div');
-  poop.className = 'poop-pellet';
-  poop.style.left = `${x}px`;
-  poop.style.top = `${y}px`;
-  poop.title = '點擊清掃！';
-  poop.onclick = () => {
-    poop.remove();
-    const earn = 8;
-    state.coins += earn;
-    spawnBubble(`🪙 +${earn}`, x, y - 20);
-    saveGame();
-    renderHUD();
-  };
-  document.getElementById('viewport').appendChild(poop);
-  setTimeout(() => poop.remove(), 18000);
-}
 
 function useFurniture(furniItem, h) {
   const wrap = document.getElementById(`entity-${h.id}`);
@@ -427,7 +468,7 @@ function walkTo(h, el, targetX, targetY, onArrival) {
 document.getElementById('viewport').addEventListener('pointerdown', (e) => {
   if (state.isBuilding || state.isDraggingHamster) return;
   if (e.clientY < 110 || e.clientY > window.innerHeight - 85) return;
-  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn')) return;
+  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet')) return;
   dropSeed(e.clientX - 8, e.clientY - 12);
 });
 
@@ -865,4 +906,5 @@ function renderHUD() {
 
 renderFurniture();
 renderHamsters();
+renderPoops(); // 初始化繪製便便
 renderHUD();
