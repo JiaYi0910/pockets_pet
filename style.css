@@ -104,13 +104,13 @@ html, body {
 }
 .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
 
-/* 導覽按鈕 */
+/* 左右導覽箭頭 */
 .room-nav-btn {
   position: absolute;
   top: 45%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--card-bg);
   backdrop-filter: blur(10px);
@@ -122,79 +122,86 @@ html, body {
   cursor: pointer;
   z-index: 35;
 }
-.room-nav-btn svg { width: 20px; height: 20px; stroke: var(--main-text); stroke-width: 2.5; fill: none; }
-#btn-prev-room { left: 10px; }
-#btn-next-room { right: 10px; }
+.room-nav-btn svg { width: 18px; height: 18px; stroke: var(--main-text); stroke-width: 2.5; fill: none; }
+#btn-prev-room { left: 8px; }
+#btn-next-room { right: 8px; }
 
 .room-indicator {
   position: absolute;
-  top: 66px;
+  top: 64px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--card-bg);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-color);
-  padding: 4px 14px;
+  padding: 3px 12px;
   border-radius: 14px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: var(--main-text);
   z-index: 20;
   white-space: nowrap;
 }
 
-/* 頂部 HUD */
+/* 頂部 HUD (極致緊湊佈局：防止手機邊緣溢出) */
 .top-bar {
   position: absolute;
-  top: env(safe-area-inset-top, 14px);
-  left: 10px;
-  right: 10px;
+  top: env(safe-area-inset-top, 10px);
+  left: 6px;
+  right: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   z-index: 30;
+  max-width: calc(100vw - 12px);
 }
 .hud-pill {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
-  padding: 6px 10px;
-  border-radius: 18px;
-  box-shadow: 0 3px 10px rgba(74, 59, 50, 0.08);
+  padding: 4px 6px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(74, 59, 50, 0.08);
   display: flex;
-  gap: 8px;
-  font-size: 11px;
+  gap: 4px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--main-text);
   border: 1px solid var(--border-color);
   white-space: nowrap;
+  flex-shrink: 1;
+}
+.hud-actions {
+  display: flex;
+  gap: 3px;
+  align-items: center;
   flex-shrink: 0;
 }
 .btn-pill {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
-  padding: 6px 10px;
-  border-radius: 18px;
-  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 16px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--main-text);
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(74, 59, 50, 0.08);
+  box-shadow: 0 2px 8px rgba(74, 59, 50, 0.08);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .build-banner {
   position: absolute;
-  top: 96px;
+  top: 92px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(217, 119, 54, 0.95);
   color: #fff;
-  padding: 5px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: bold;
   z-index: 50;
   display: none;
@@ -509,7 +516,7 @@ html, body {
   opacity: 1;
 }
 
-/* 彈窗 Modal (加強叉叉按鈕置頂) */
+/* 彈窗 Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
