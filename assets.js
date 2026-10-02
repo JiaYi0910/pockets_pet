@@ -712,17 +712,24 @@ function dropSeed(x, y) {
   seed.className = 'sunflower-seed';
   seed.style.left = `${x}px`;
   seed.style.top = `${y}px`;
-  document.getElementById('viewport').appendChild(seed);
+
+  // 關鍵修復：將瓜子掛載到當前所在的房間場景內，隨著房間切換移動！
+  const curRoomId = ROOMS[currentRoomIndex].id;
+  const targetRoomEl = document.getElementById(`room-${curRoomId}`);
+  if (targetRoomEl) {
+    targetRoomEl.appendChild(seed);
+  } else {
+    document.getElementById('viewport').appendChild(seed);
+  }
 
   const expireTimer = setTimeout(() => {
     seed.style.opacity = '0';
     setTimeout(() => seed.remove(), 400);
   }, 5000);
 
-  const curRoom = ROOMS[currentRoomIndex].id;
   let closest = null, minDist = Infinity;
   state.hamsters.forEach(h => {
-    if (state.travelingIds.includes(h.id) || h.room !== curRoom) return;
+    if (state.travelingIds.includes(h.id) || h.room !== curRoomId) return;
     const d = Math.hypot(h.x - x, h.y - y);
     if (d < minDist) { minDist = d; closest = h; }
   });
@@ -1230,10 +1237,6 @@ window.addEventListener('focus', () => {
   setTimeout(keepBgmAlive, 200);
 });
 
-// 初始化執行離線計算
-if (typeof window.processOfflineEarnings === 'function') {
-  window.processOfflineEarnings();
-}
 
 renderFurniture();
 renderHamsters();
