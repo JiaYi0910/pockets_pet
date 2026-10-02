@@ -116,7 +116,7 @@ const ASSETS = {
   }
 };
 
-const LOCAL_KEY = 'pocket_hamster_save_v18';
+const LOCAL_KEY = 'pocket_hamster_save_v19';
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
 
@@ -145,6 +145,15 @@ const state = {
   isCollectingPoop: false
 };
 
+// 專屬 Toast 提示 (絕不暫停音樂)
+window.showToast = function(msg) {
+  const box = document.getElementById('toastBox');
+  if (!box) return;
+  box.textContent = msg;
+  box.classList.add('show');
+  setTimeout(() => box.classList.remove('show'), 2200);
+};
+
 window.saveGame = function() {
   state.lastActiveTime = Date.now();
   localStorage.setItem(LOCAL_KEY, JSON.stringify({
@@ -161,7 +170,6 @@ window.saveGame = function() {
   if (window.saveGameCloud) window.saveGameCloud();
 };
 
-// === 離線收益與自然繁衍結算 (雲端對齊穩健版) ===
 window.processOfflineEarnings = function() {
   const now = Date.now();
   if (!state.lastActiveTime) {
@@ -170,19 +178,17 @@ window.processOfflineEarnings = function() {
   }
 
   const diffSec = Math.floor((now - state.lastActiveTime) / 1000);
-  // 離開超過 15 秒啟動結算
   if (diffSec < 15) {
     state.lastActiveTime = now;
     return;
   }
 
-  const cappedSec = Math.min(diffSec, 12 * 3600); // 上限 12 小時
+  const cappedSec = Math.min(diffSec, 12 * 3600);
   const minutes = Math.max(1, Math.floor(cappedSec / 60));
-  const earnedCoins = minutes * 5; // 每分鐘 5 金幣
+  const earnedCoins = minutes * 5;
 
-  let offlineMsg = `⏰ 你離開了 ${minutes} 分鐘！\n🐹 倉鼠們自己跑輪運動，賺取了 🪙 ${earnedCoins} 金幣！`;
+  let msg = `⏰ 離開了 ${minutes} 分鐘，小鼠玩跑輪賺了 🪙 ${earnedCoins} 金幣！`;
 
-  // 離線繁衍條件：離開滿 1 分鐘，且有公有母成年鼠
   if (minutes >= 1 && state.hamsters.length >= 2) {
     const hasMale = state.hamsters.some(h => h.gender === '♂');
     const hasFemale = state.hamsters.some(h => h.gender === '♀');
@@ -193,7 +199,7 @@ window.processOfflineEarnings = function() {
       const babySpecies = spKeys[Math.floor(Math.random() * spKeys.length)];
       const babyName = `小${SPECIES[babySpecies].name[0]}`;
 
-      const newBaby = {
+      state.hamsters.push({
         id: `h_${Date.now()}`,
         name: babyName,
         gender: babyGender,
@@ -204,10 +210,8 @@ window.processOfflineEarnings = function() {
         room: 'living',
         x: window.innerWidth / 2 - 40,
         y: window.innerHeight * 0.70
-      };
-
-      state.hamsters.push(newBaby);
-      offlineMsg += `\n\n🎉【離線驚喜】：家族在期間誕生了新寶寶【${babyName} (${babyGender})】！快去客廳看看牠吧！`;
+      });
+      msg += ` 並且誕生了新寶寶【${babyName} (${babyGender})】！`;
     }
   }
 
@@ -217,9 +221,7 @@ window.processOfflineEarnings = function() {
   renderHUD();
   renderHamsters();
 
-  setTimeout(() => {
-    alert(offlineMsg);
-  }, 400);
+  setTimeout(() => showToast(msg), 400);
 };
 
 function changeRoom(direction) {
@@ -416,6 +418,7 @@ window.retractSelectedFurni = function(e, instanceId) {
   saveGame();
   renderFurniture();
   renderBuildWarehouse();
+  showToast('家具已收回倉庫');
 };
 
 function renderBuildWarehouse() {
@@ -476,6 +479,7 @@ window.placeFurniFromWarehouse = function(typeId) {
   saveGame();
   renderFurniture();
   renderBuildWarehouse();
+  showToast('已擺放到目前房間！');
 };
 
 function toggleBuildMode() {
@@ -493,25 +497,30 @@ function toggleBuildMode() {
   renderFurniture();
 }
 
+// 關鍵修復：便便精準掛載到各自房間的專屬圖層中，隨房間移動，不再穿透！
 function renderPoops() {
-  document.querySelectorAll('.poop-pellet').forEach(el => el.remove());
-  const curRoom = ROOMS[currentRoomIndex].id;
-  state.poopList.forEach(poop => {
-    if (poop.room !== curRoom) return;
+  ['living', 'play', 'garden'].forEach(roomId => {
+    const con = document.getElementById(`poop-${roomId}`);
+    if (!con) return;
+    con.innerHTML = '';
 
-    const el = document.createElement('div');
-    el.className = 'poop-pellet';
-    el.id = `poop-${poop.id}`;
-    el.style.left = `${poop.x}px`;
-    el.style.top = `${poop.y}px`;
-    el.title = '點擊清掃賺金幣！';
-    el.onpointerdown = (e) => {
-      e.stopPropagation();
-      state.isCollectingPoop = true;
-      collectPoop(poop.id);
-      setTimeout(() => { state.isCollectingPoop = false; }, 200);
-    };
-    document.getElementById('viewport').appendChild(el);
+    state.poopList.forEach(poop => {
+      if (poop.room !== roomId) return;
+
+      const el = document.createElement('div');
+      el.className = 'poop-pellet';
+      el.id = `poop-${poop.id}`;
+      el.style.left = `${poop.x}px`;
+      el.style.top = `${poop.y}px`;
+      el.title = '點擊清掃賺金幣！';
+      el.onpointerdown = (e) => {
+        e.stopPropagation();
+        state.isCollectingPoop = true;
+        collectPoop(poop.id);
+        setTimeout(() => { state.isCollectingPoop = false; }, 200);
+      };
+      con.appendChild(el);
+    });
   });
 }
 
@@ -527,8 +536,7 @@ function spawnPoopPellet(x, y, room) {
   };
   state.poopList.push(newPoop);
   saveGame();
-
-  if (ROOMS[currentRoomIndex].id === room) renderPoops();
+  renderPoops();
 }
 
 function collectPoop(poopId) {
@@ -615,12 +623,6 @@ function useFurniture(furniItem, h) {
       if (rotor) rotor.classList.remove('spinning-wheel');
       delete state.furnitureOccupant[furniItem.instanceId];
     }, 3800);
-  } else if (furniItem.type === 'apple_sticks') {
-    spawnBubble('🪵 啃木磨牙', h.x + 20, h.y - 15);
-    setTimeout(() => { delete state.furnitureOccupant[furniItem.instanceId]; }, 3000);
-  } else if (furniItem.type === 'dandelion_bush' || furniItem.type === 'garden_sunflower') {
-    spawnBubble('🌸 聞聞花香', h.x + 20, h.y - 15);
-    setTimeout(() => { delete state.furnitureOccupant[furniItem.instanceId]; }, 3000);
   } else if (furniItem.type === 'mushroom_house' || furniItem.type === 'strawberry_house') {
     wrap.classList.add('sleeping');
     spawnBubble('💤 呼嚕大睡', h.x + 20, h.y - 15);
@@ -668,10 +670,10 @@ document.getElementById('viewport').addEventListener('pointerdown', (e) => {
   }
   if (state.isDraggingHamster || state.isCollectingPoop) return;
   if (e.clientY < 110 || e.clientY > window.innerHeight - 85) return;
-  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet') || e.target.closest('.bgm-player-capsule')) return;
+  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet') || e.target.closest('.top-bar')) return;
 
   if (state.feedStock <= 0) {
-    spawnBubble('🪣 飼料罐空了！去雜貨鋪補充', e.clientX - 60, e.clientY - 20);
+    showToast('🪣 飼料罐空了！去雜貨鋪補充');
     return;
   }
 
@@ -743,7 +745,7 @@ function openAdoptCenter() {
     btn.style.cssText = 'padding:6px; margin-top:4px;';
     btn.textContent = '領養';
     btn.onclick = () => {
-      if (state.coins < sp.cost) return alert('金幣不夠了！');
+      if (state.coins < sp.cost) return showToast('金幣不夠了！');
       const n = prompt(`為【${sp.name}】取個名字：`, sp.name);
       if (!n || !n.trim()) return;
       state.coins -= sp.cost;
@@ -764,7 +766,7 @@ function openAdoptCenter() {
       renderHamsters();
       renderHUD();
       closeModal('adoptModal');
-      alert(`恭喜領養成功！這是一隻 ${assignedGender === '♂' ? '小男生 ♂' : '小女生 ♀'}！`);
+      showToast(`領養成功！這是一隻 ${assignedGender === '♂' ? '小男生 ♂' : '小女生 ♀'}！`);
     };
     card.appendChild(btn);
     grid.appendChild(card);
@@ -807,6 +809,7 @@ function renameHamster(id) {
     saveGame();
     openProfile();
     renderHamsters();
+    showToast('名字已更新！');
   }
 }
 
@@ -888,12 +891,12 @@ function sendSelectedPetToTravel() {
   const targetId = sel.value;
   const traveler = state.hamsters.find(h => h.id === targetId);
   if (!traveler) return;
-  if (state.travelingIds.includes(targetId)) return alert('牠已經在散步路上囉！');
+  if (state.travelingIds.includes(targetId)) return showToast('牠已經在散步路上囉！');
 
   state.travelingIds.push(targetId);
   closeModal('postcardModal');
   renderHamsters();
-  alert(`${traveler.name} 出門旅行了！8 秒後會寄明信片回來～`);
+  showToast(`${traveler.name} 出發探險了！8 秒後寄明信片～`);
 
   setTimeout(() => {
     state.travelingIds = state.travelingIds.filter(id => id !== targetId);
@@ -907,7 +910,7 @@ function sendSelectedPetToTravel() {
     state.coins += 50;
     saveGame();
     renderHUD();
-    alert(`🌸 ${traveler.name} 散步回來了！寄回了【${cardData.title}】，賺了 50 金幣！`);
+    showToast(`🌸 ${traveler.name} 寄回了【${cardData.title}】，賺了 50 金幣！`);
   }, 8000);
 }
 
@@ -978,12 +981,12 @@ function switchShopTab(tab) {
 }
 
 window.buyFeedStock = function(count, cost) {
-  if (state.coins < cost) return alert('金幣不夠了！快去玩小遊戲或清便便賺錢吧！');
+  if (state.coins < cost) return showToast('金幣不夠了！');
   state.coins -= cost;
   state.feedStock += count;
   saveGame();
   renderHUD();
-  alert(`成功購買 ${count} 顆特級葵花子！飼料罐已加滿～`);
+  showToast(`加滿 ${count} 顆特級葵花子！`);
   openShop();
 };
 
@@ -1001,7 +1004,7 @@ function renderShopCard(con, item, onBuy) {
 }
 
 function buyFurnitureItem(typeId, cost) {
-  if (state.coins < cost) return alert('金幣不夠了！快去玩小遊戲吧！');
+  if (state.coins < cost) return showToast('金幣不夠了！');
   state.coins -= cost;
   state.furnitureWarehouse.push({
     id: `w_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
@@ -1009,17 +1012,17 @@ function buyFurnitureItem(typeId, cost) {
   });
   saveGame();
   renderHUD();
-  alert('成功買下家具！已存入【建造模式倉庫】！');
+  showToast('成功買下家具！已存入倉庫！');
   openShop();
 }
 
 function buyHatItem(hatId, cost) {
-  if (state.coins < cost) return alert('金幣不夠了！快去玩小遊戲吧！');
+  if (state.coins < cost) return showToast('金幣不夠了！');
   state.coins -= cost;
   state.inventory.push(hatId);
   saveGame();
   renderHUD();
-  alert('成功買下飾品！已放入試衣間！');
+  showToast('成功買下飾品！已放入試衣間！');
   openShop();
 }
 
@@ -1099,7 +1102,7 @@ function finishMiniGame() {
   state.coins += earned;
   saveGame();
   renderHUD();
-  alert(`挑戰結束！總得分 ${gScore}，折算獲得 🪙 ${earned} 金幣！`);
+  showToast(`挑戰結束！折算獲得 🪙 ${earned} 金幣！`);
 }
 
 function toggleDock() {
@@ -1141,7 +1144,7 @@ window.onYouTubeIframeAPIReady = function() {
     },
     events: {
       onReady: (e) => {
-        e.target.setVolume(18); // 輕快舒適的 18% 音量
+        e.target.setVolume(18);
       },
       onStateChange: (e) => {
         const btn = document.getElementById('btnBgmToggle');
@@ -1174,7 +1177,6 @@ window.startBgmOnUnlock = function() {
     ytBgmPlayer.playVideo();
   }
 };
-
 
 renderFurniture();
 renderHamsters();
