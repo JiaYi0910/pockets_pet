@@ -472,3 +472,33 @@ html, body {
   font-weight: bold;
   color: var(--main-text);
 }
+/* 強制登入全螢幕遮罩 */
+#authGate {
+  position: fixed;
+  inset: 0;
+  background: rgba(251, 248, 243, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s ease;
+}
+#authGate.unlocked {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 獨立試衣間舞台樣式 */
+.fitting-stage {
+  width: 140px;
+  height: 140px;
+  margin: 10px auto;
+  background: #faf4ed;
+  border: 3px dashed var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
