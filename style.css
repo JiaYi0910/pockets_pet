@@ -201,52 +201,32 @@ html, body {
   white-space: nowrap;
 }
 
-/* 迷你毛玻璃音樂控制器 */
-.bgm-player-capsule {
-  position: absolute;
-  top: 104px;
-  right: 12px;
-  z-index: 45;
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 4px 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 12px rgba(74, 59, 50, 0.1);
-}
-.bgm-player-capsule span {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--main-text);
-}
-.bgm-btn {
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  font-size: 11px;
-  font-weight: bold;
-  border-radius: 12px;
-  padding: 3px 8px;
-  cursor: pointer;
-}
-#yt-player-box {
-  width: 70px;
-  height: 40px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-}
-
-/* 家具層 */
+/* 房間專屬圖層 */
 .furniture-layer {
   position: absolute;
   inset: 0;
   z-index: 6;
   pointer-events: none;
 }
+.poop-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+.poop-pellet {
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  background: #3c2a21;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  pointer-events: auto;
+  animation: poopPop 0.2s ease-out;
+}
+@keyframes poopPop { from { transform: scale(0); } to { transform: scale(1); } }
+
 .placed-furniture {
   position: absolute;
   touch-action: none;
@@ -330,7 +310,7 @@ html, body {
   min-width: 90px;
 }
 
-/* 倉鼠容器與動作 */
+/* 倉鼠層與實體 */
 .hamster-layer {
   position: absolute;
   inset: 0;
@@ -453,7 +433,7 @@ html, body {
 }
 .toggle-dock-btn.is-collapsed svg { transform: rotate(180deg); }
 
-/* 食物、粒子與便便 */
+/* 食物與粒子 */
 .sunflower-seed {
   position: absolute;
   width: 16px;
@@ -494,20 +474,31 @@ html, body {
   100% { opacity: 0; transform: translateY(-36px) scale(1.2); }
 }
 
-.poop-pellet {
-  position: absolute;
-  width: 11px;
-  height: 7px;
-  background: #3c2a21;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-  cursor: pointer;
-  z-index: 7;
-  animation: poopPop 0.2s ease-out;
+/* 遊戲專屬輕量 Toast 通知 (完全不中斷音樂) */
+#toastBox {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  background: rgba(45, 35, 30, 0.92);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  white-space: nowrap;
 }
-@keyframes poopPop { from { transform: scale(0); } to { transform: scale(1); } }
+#toastBox.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
 
-/* 通用彈窗與遮罩 */
+/* 彈窗 Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -593,7 +584,7 @@ html, body {
 }
 #authGate.unlocked { opacity: 0; pointer-events: none; }
 
-/* 試衣間舞台專用樣式 */
+/* 試衣間舞台 */
 .fitting-stage {
   width: 140px;
   height: 140px;
@@ -607,7 +598,7 @@ html, body {
   position: relative;
 }
 
-/* MiniGame 全螢幕 */
+/* MiniGame */
 #minigame-screen {
   position: fixed;
   inset: 0;
