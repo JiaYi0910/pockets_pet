@@ -116,7 +116,7 @@ const ASSETS = {
   }
 };
 
-const LOCAL_KEY = 'pocket_hamster_save_v17';
+const LOCAL_KEY = 'pocket_hamster_save_v18';
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
 
@@ -161,27 +161,39 @@ window.saveGame = function() {
   if (window.saveGameCloud) window.saveGameCloud();
 };
 
-function processOfflineEarnings() {
+// === 離線收益與自然繁衍結算 (雲端對齊穩健版) ===
+window.processOfflineEarnings = function() {
   const now = Date.now();
+  if (!state.lastActiveTime) {
+    state.lastActiveTime = now;
+    return;
+  }
+
   const diffSec = Math.floor((now - state.lastActiveTime) / 1000);
-  if (diffSec < 40) return;
+  // 離開超過 15 秒啟動結算
+  if (diffSec < 15) {
+    state.lastActiveTime = now;
+    return;
+  }
 
-  const cappedSec = Math.min(diffSec, 12 * 3600);
-  const earnedCoins = Math.floor((cappedSec / 60) * 4);
+  const cappedSec = Math.min(diffSec, 12 * 3600); // 上限 12 小時
+  const minutes = Math.max(1, Math.floor(cappedSec / 60));
+  const earnedCoins = minutes * 5; // 每分鐘 5 金幣
 
-  let offlineMsg = `你離開了 ${Math.floor(cappedSec / 60)} 分鐘！\n小鼠們自己玩跑輪賺了 🪙 ${earnedCoins} 金幣！`;
+  let offlineMsg = `⏰ 你離開了 ${minutes} 分鐘！\n🐹 倉鼠們自己跑輪運動，賺取了 🪙 ${earnedCoins} 金幣！`;
 
-  if (cappedSec >= 1800) {
-    const adultMales = state.hamsters.filter(h => h.gender === '♂' && h.feedCount >= 20);
-    const adultFemales = state.hamsters.filter(h => h.gender === '♀' && h.feedCount >= 20);
+  // 離線繁衍條件：離開滿 1 分鐘，且有公有母成年鼠
+  if (minutes >= 1 && state.hamsters.length >= 2) {
+    const hasMale = state.hamsters.some(h => h.gender === '♂');
+    const hasFemale = state.hamsters.some(h => h.gender === '♀');
 
-    if (adultMales.length > 0 && adultFemales.length > 0 && Math.random() < 0.65) {
+    if (hasMale && hasFemale && Math.random() < 0.8) {
       const babyGender = Math.random() < 0.5 ? '♂' : '♀';
       const spKeys = Object.keys(SPECIES);
       const babySpecies = spKeys[Math.floor(Math.random() * spKeys.length)];
       const babyName = `小${SPECIES[babySpecies].name[0]}`;
 
-      state.hamsters.push({
+      const newBaby = {
         id: `h_${Date.now()}`,
         name: babyName,
         gender: babyGender,
@@ -192,16 +204,23 @@ function processOfflineEarnings() {
         room: 'living',
         x: window.innerWidth / 2 - 40,
         y: window.innerHeight * 0.70
-      });
-      offlineMsg += `\n\n🎉 離線驚喜：家族在期間誕生了新幼鼠【${babyName} (${babyGender})】！`;
+      };
+
+      state.hamsters.push(newBaby);
+      offlineMsg += `\n\n🎉【離線驚喜】：家族在期間誕生了新寶寶【${babyName} (${babyGender})】！快去客廳看看牠吧！`;
     }
   }
 
   state.coins += earnedCoins;
+  state.lastActiveTime = now;
   saveGame();
   renderHUD();
-  setTimeout(() => alert(offlineMsg), 600);
-}
+  renderHamsters();
+
+  setTimeout(() => {
+    alert(offlineMsg);
+  }, 400);
+};
 
 function changeRoom(direction) {
   currentRoomIndex = (currentRoomIndex + direction + ROOMS.length) % ROOMS.length;
@@ -300,7 +319,6 @@ function renderHamsters() {
   });
 }
 
-// 渲染家具 (關鍵修復：水平翻轉只套用在 SVG 內層，控制氣泡與文字永遠正向)
 function renderFurniture() {
   ['living', 'play', 'garden'].forEach(roomId => {
     const con = document.getElementById(`furniture-${roomId}`);
@@ -319,7 +337,6 @@ function renderFurniture() {
       el.style.left = `${f.x}px`;
       el.style.top = `${f.y}px`;
 
-      // 翻轉效果只套用在包裹 SVG 的容器上！文字與控制鈕不受影響
       const svgWrap = document.createElement('div');
       svgWrap.className = 'furni-svg-wrap';
       svgWrap.innerHTML = t.svg;
@@ -401,7 +418,6 @@ window.retractSelectedFurni = function(e, instanceId) {
   renderBuildWarehouse();
 };
 
-// 渲染建造模式的底部倉庫 (整張卡片皆可點擊擺出)
 function renderBuildWarehouse() {
   const panel = document.getElementById('buildWarehousePanel');
   const list = document.getElementById('buildWarehouseList');
@@ -432,7 +448,6 @@ function renderBuildWarehouse() {
       <div style="background:var(--accent); color:#fff; border-radius:8px; padding:2px 8px; font-size:10px; font-weight:bold; margin-top:4px; pointer-events:none;">點擊擺出</div>
     `;
 
-    // 點擊整張卡片立即擺放到目前房間
     card.onpointerdown = (e) => {
       e.stopPropagation();
       placeFurniFromWarehouse(typeId);
@@ -600,6 +615,12 @@ function useFurniture(furniItem, h) {
       if (rotor) rotor.classList.remove('spinning-wheel');
       delete state.furnitureOccupant[furniItem.instanceId];
     }, 3800);
+  } else if (furniItem.type === 'apple_sticks') {
+    spawnBubble('🪵 啃木磨牙', h.x + 20, h.y - 15);
+    setTimeout(() => { delete state.furnitureOccupant[furniItem.instanceId]; }, 3000);
+  } else if (furniItem.type === 'dandelion_bush' || furniItem.type === 'garden_sunflower') {
+    spawnBubble('🌸 聞聞花香', h.x + 20, h.y - 15);
+    setTimeout(() => { delete state.furnitureOccupant[furniItem.instanceId]; }, 3000);
   } else if (furniItem.type === 'mushroom_house' || furniItem.type === 'strawberry_house') {
     wrap.classList.add('sleeping');
     spawnBubble('💤 呼嚕大睡', h.x + 20, h.y - 15);
@@ -647,7 +668,7 @@ document.getElementById('viewport').addEventListener('pointerdown', (e) => {
   }
   if (state.isDraggingHamster || state.isCollectingPoop) return;
   if (e.clientY < 110 || e.clientY > window.innerHeight - 85) return;
-  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet')) return;
+  if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet') || e.target.closest('.bgm-player-capsule')) return;
 
   if (state.feedStock <= 0) {
     spawnBubble('🪣 飼料罐空了！去雜貨鋪補充', e.clientX - 60, e.clientY - 20);
@@ -979,7 +1000,6 @@ function renderShopCard(con, item, onBuy) {
   con.appendChild(card);
 }
 
-// 購買家具後確實寫入倉庫並儲存
 function buyFurnitureItem(typeId, cost) {
   if (state.coins < cost) return alert('金幣不夠了！快去玩小遊戲吧！');
   state.coins -= cost;
@@ -1121,7 +1141,7 @@ window.onYouTubeIframeAPIReady = function() {
     },
     events: {
       onReady: (e) => {
-        e.target.setVolume(20); // 20% 輕快小音量
+        e.target.setVolume(20);
       },
       onStateChange: (e) => {
         const btn = document.getElementById('btnBgmControl');
@@ -1157,11 +1177,7 @@ window.startBgmOnUnlock = function() {
   }
 };
 
-
-
 renderFurniture();
 renderHamsters();
 renderPoops();
 renderHUD();
-
-processOfflineEarnings();
