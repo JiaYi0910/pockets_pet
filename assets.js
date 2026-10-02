@@ -60,51 +60,51 @@ const ASSETS = {
   },
   furniture: {
     wheel: {
-      name: '巨無霸跑輪 (21cm+)', cost: 60, w: 140, h: 140, defaultRoom: 'living', defaultX: 15, defaultY: 0.54,
+      name: '巨無霸跑輪', cost: 60, w: 140, h: 140,
       svg: `<svg viewBox="0 0 100 100" width="140" height="140"><g id="wheel-rotor"><circle cx="50" cy="50" r="44" fill="none" stroke="#d4a373" stroke-width="6"/><circle cx="50" cy="50" r="8" fill="#8c6239"/><line x1="50" y1="6" x2="50" y2="94" stroke="#d4a373" stroke-width="4"/><line x1="6" y1="50" x2="94" y2="50" stroke="#d4a373" stroke-width="4"/></g><path d="M25 94 L50 50 L75 94" stroke="#8c6239" stroke-width="7" fill="none"/></svg>`
     },
     mushroom_house: {
-      name: '原木雙層儲糧窩', cost: 80, w: 130, h: 130, defaultRoom: 'living', defaultX: 230, defaultY: 0.56,
+      name: '原木雙層小木屋', cost: 80, w: 130, h: 130,
       svg: `<svg viewBox="0 0 100 100" width="130" height="130"><rect x="25" y="48" width="50" height="48" rx="10" fill="#f5ebe0"/><path d="M8 50 Q50 6 92 50 Z" fill="#e76f51"/><circle cx="32" cy="30" r="6" fill="#fff"/><circle cx="68" cy="25" r="7" fill="#fff"/><circle cx="50" cy="40" r="5" fill="#fff"/><path d="M38 96 A12 12 0 0 1 62 96 Z" fill="#582f0e"/></svg>`
     },
     strawberry_house: {
-      name: '草莓陶瓷避暑窩', cost: 85, w: 120, h: 120, defaultRoom: 'living', defaultX: 80, defaultY: 0.58,
+      name: '草莓陶瓷避暑窩', cost: 85, w: 120, h: 120,
       svg: `<svg viewBox="0 0 100 100" width="120" height="120"><path d="M15 45 C15 15 85 15 85 45 C85 85 50 95 50 95 C50 95 15 85 15 45 Z" fill="#e63946"/><polygon points="45,15 50,5 55,15 65,12 55,20 60,30 50,22 40,30 45,20 35,12" fill="#52b788"/><circle cx="32" cy="35" r="3" fill="#fff"/><circle cx="68" cy="35" r="3" fill="#fff"/><circle cx="50" cy="50" r="3.5" fill="#fff"/><path d="M38 95 A12 12 0 0 1 62 95 Z" fill="#333"/></svg>`
     },
     sand_bath: {
-      name: '透明砂浴沐浴盆', cost: 70, w: 120, h: 80, defaultRoom: 'play', defaultX: 30, defaultY: 0.63,
+      name: '透明砂浴沐浴盆', cost: 70, w: 120, h: 80,
       svg: `<svg viewBox="0 0 120 80" width="120" height="80"><rect x="10" y="25" width="100" height="50" rx="14" fill="#edf2f4" stroke="#8d99ae" stroke-width="3"/><ellipse cx="60" cy="52" rx="44" ry="16" fill="#faedcd"/><circle cx="40" cy="50" r="2" fill="#d4a373"/><circle cx="75" cy="54" r="2.5" fill="#d4a373"/></svg>`
     },
     wood_tunnel: {
-      name: '原木拱橋啃木隧道', cost: 65, w: 125, h: 80, defaultRoom: 'play', defaultX: 160, defaultY: 0.62,
+      name: '原木啃木拱橋', cost: 65, w: 125, h: 80,
       svg: `<svg viewBox="0 0 125 80" width="125" height="80"><path d="M15 70 C15 25 110 25 110 70 Z" fill="#d4a373" stroke="#8c6239" stroke-width="5"/><path d="M30 70 C30 40 95 40 95 70 Z" fill="#582f0e"/></svg>`
     },
     cool_plate: {
-      name: '涼感散熱鋁板', cost: 45, w: 100, h: 50, defaultRoom: 'living', defaultX: 130, defaultY: 0.72,
+      name: '涼感散熱鋁板', cost: 45, w: 100, h: 50,
       svg: `<svg viewBox="0 0 100 50" width="100" height="50"><rect x="5" y="10" width="90" height="30" rx="4" fill="#e0e1dd" stroke="#778da9" stroke-width="2"/><line x1="15" y1="15" x2="85" y2="15" stroke="#ffffff" stroke-width="2"/></svg>`
     },
     water_bottle: {
-      name: '滾珠防漏飲水樽', cost: 40, w: 60, h: 100, defaultRoom: 'living', defaultX: 160, defaultY: 0.55,
+      name: '滾珠防漏水樽', cost: 40, w: 60, h: 100,
       svg: `<svg viewBox="0 0 60 100" width="60" height="100"><rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/><rect x="22" y="70" width="16" height="8" fill="#adb5bd"/><line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="96" r="3" fill="#00b4d8"/></svg>`
     },
     food_bowl: {
-      name: '向日葵防翻陶瓷盆', cost: 45, w: 80, h: 60, defaultRoom: 'living', defaultX: 100, defaultY: 0.70,
+      name: '向日葵防翻陶瓷盆', cost: 45, w: 80, h: 60,
       svg: `<svg viewBox="0 0 80 60" width="80" height="60"><ellipse cx="40" cy="35" rx="36" ry="18" fill="#f4a261" stroke="#e76f51" stroke-width="3"/><circle cx="32" cy="33" r="5" fill="#5a4b3d"/><circle cx="48" cy="35" r="5" fill="#5a4b3d"/><circle cx="40" cy="30" r="5" fill="#5a4b3d"/></svg>`
     },
     apple_sticks: {
-      name: '原生態磨牙蘋果枝', cost: 35, w: 85, h: 50, defaultRoom: 'play', defaultX: 80, defaultY: 0.72,
+      name: '磨牙蘋果枝捆', cost: 35, w: 85, h: 50,
       svg: `<svg viewBox="0 0 85 50" width="85" height="50"><rect x="10" y="15" width="65" height="8" rx="4" fill="#8c6239"/><rect x="15" y="26" width="60" height="8" rx="4" fill="#7f5539"/><rect x="8" y="37" width="68" height="7" rx="3.5" fill="#9c6644"/></svg>`
     },
     dandelion_bush: {
-      name: '野生蒲公英草叢', cost: 50, w: 90, h: 80, defaultRoom: 'garden', defaultX: 40, defaultY: 0.58,
+      name: '野生蒲公英草叢', cost: 50, w: 90, h: 80,
       svg: `<svg viewBox="0 0 90 80" width="90" height="80"><path d="M10 70 Q30 30 45 65 Q60 20 80 70 Z" fill="#52b788"/><circle cx="45" cy="30" r="12" fill="#ffd166"/><circle cx="65" cy="40" r="10" fill="#ffd166"/></svg>`
     },
     garden_sunflower: {
-      name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110, defaultRoom: 'garden', defaultX: 200, defaultY: 0.52,
+      name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110,
       svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>`
     },
     garden_log: {
-      name: '庭院天然棲木樹樁', cost: 55, w: 100, h: 70, defaultRoom: 'garden', defaultX: 120, defaultY: 0.64,
+      name: '天然棲木樹樁', cost: 55, w: 100, h: 70,
       svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/></svg>`
     }
   },
@@ -118,7 +118,7 @@ const ASSETS = {
   }
 };
 
-const LOCAL_KEY = 'pocket_hamster_save_v14';
+const LOCAL_KEY = 'pocket_hamster_save_v15';
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
 
@@ -128,17 +128,23 @@ const state = {
     { id: 'h_1', name: '泡泡', gender: '♂', species: 'golden', feedCount: 22, cheekPouch: 0, equippedHat: 'straw_hat', room: 'living', x: 80, y: window.innerHeight * 0.70 }
   ],
   inventory: saved.inventory || ['straw_hat'],
-  furnitureList: saved.furnitureList || [
-    { instanceId: 'f_init_1', type: 'wheel', room: 'living', x: 20, y: window.innerHeight * 0.54 },
-    { instanceId: 'f_init_2', type: 'mushroom_house', room: 'living', x: 230, y: window.innerHeight * 0.56 },
-    { instanceId: 'f_init_3', type: 'water_bottle', room: 'living', x: 160, y: window.innerHeight * 0.55 },
-    { instanceId: 'f_init_4', type: 'sand_bath', room: 'play', x: 30, y: window.innerHeight * 0.63 },
-    { instanceId: 'f_init_5', type: 'dandelion_bush', room: 'garden', x: 50, y: window.innerHeight * 0.58 },
-    { instanceId: 'f_init_6', type: 'garden_sunflower', room: 'garden', x: 200, y: window.innerHeight * 0.52 }
+  // 倉庫中未擺放的家具物件清單 (陣列型態: [{ id: 'furni_xxx', type: 'wheel' }])
+  furnitureWarehouse: saved.furnitureWarehouse || [
+    { id: 'w_init_1', type: 'wood_tunnel' },
+    { id: 'w_init_2', type: 'apple_sticks' }
   ],
-  poopList: saved.poopList || [], // 便便永久陣列儲存
+  // 場景中已擺放的家具物件 (包含角度/翻轉 flip: 1 或 -1)
+  furniturePlaced: saved.furniturePlaced || [
+    { instanceId: 'fp_1', type: 'wheel', room: 'living', x: 20, y: window.innerHeight * 0.54, flip: 1 },
+    { instanceId: 'fp_2', type: 'mushroom_house', room: 'living', x: 230, y: window.innerHeight * 0.56, flip: 1 },
+    { instanceId: 'fp_3', type: 'water_bottle', room: 'living', x: 160, y: window.innerHeight * 0.55, flip: 1 },
+    { instanceId: 'fp_4', type: 'sand_bath', room: 'play', x: 30, y: window.innerHeight * 0.63, flip: 1 },
+    { instanceId: 'fp_5', type: 'dandelion_bush', room: 'garden', x: 50, y: window.innerHeight * 0.58, flip: 1 }
+  ],
+  poopList: saved.poopList || [],
   postcards: saved.postcards || [],
   isBuilding: false,
+  selectedFurniId: null, // 建造模式中當前點選的家具
   travelingIds: [],
   wardrobeTargetId: null,
   furnitureOccupant: {},
@@ -150,7 +156,8 @@ window.saveGame = function() {
     coins: state.coins,
     hamsters: state.hamsters,
     inventory: state.inventory,
-    furnitureList: state.furnitureList,
+    furnitureWarehouse: state.furnitureWarehouse,
+    furniturePlaced: state.furniturePlaced,
     poopList: state.poopList,
     postcards: state.postcards
   }));
@@ -161,9 +168,11 @@ function changeRoom(direction) {
   currentRoomIndex = (currentRoomIndex + direction + ROOMS.length) % ROOMS.length;
   document.getElementById('world-slider').style.transform = `translateX(-${currentRoomIndex * 100}vw)`;
   document.getElementById('roomIndicatorText').textContent = ROOMS[currentRoomIndex].name;
+  deselectBuildingFurni();
   renderHamsters();
   renderFurniture();
-  renderPoops(); // 切換房間時重新繪製該房間的便便
+  renderPoops();
+  if (state.isBuilding) renderBuildWarehouse();
 }
 
 function hamsterRunToRoom(h, targetRoomId) {
@@ -252,51 +261,172 @@ function renderHamsters() {
   });
 }
 
+// 渲染家具與選中操作控制項 (翻轉/收回)
 function renderFurniture() {
   ['living', 'play', 'garden'].forEach(roomId => {
     const con = document.getElementById(`furniture-${roomId}`);
     if (!con) return;
     con.innerHTML = '';
 
-    state.furnitureList.forEach(furniItem => {
-      if (furniItem.room !== roomId) return;
-      const t = ASSETS.furniture[furniItem.type];
+    state.furniturePlaced.forEach(f => {
+      if (f.room !== roomId) return;
+      const t = ASSETS.furniture[f.type];
       if (!t) return;
 
+      const isSelected = state.isBuilding && state.selectedFurniId === f.instanceId;
       const el = document.createElement('div');
-      el.className = `placed-furniture ${state.isBuilding ? 'building' : ''}`;
-      el.id = `furni-${furniItem.instanceId}`;
+      el.className = `placed-furniture ${state.isBuilding ? 'in-building' : ''} ${isSelected ? 'is-selected' : ''}`;
+      el.id = `furni-${f.instanceId}`;
       el.innerHTML = t.svg;
-      el.style.left = `${furniItem.x}px`;
-      el.style.top = `${furniItem.y}px`;
+      el.style.left = `${f.x}px`;
+      el.style.top = `${f.y}px`;
+      el.style.transform = `scaleX(${f.flip || 1})`;
 
+      // 建造模式交互
       if (state.isBuilding) {
+        // 如果被選中，加入浮動控制按鈕 (翻轉/收回)
+        if (isSelected) {
+          const ctrlBox = document.createElement('div');
+          ctrlBox.className = 'furni-ctrl-bubble';
+          ctrlBox.innerHTML = `
+            <button class="ctrl-btn-bubble" onclick="flipSelectedFurni(event, '${f.instanceId}')" title="水平翻轉">🔄 翻轉</button>
+            <button class="ctrl-btn-bubble" style="background:#e63946; color:#fff;" onclick="retractSelectedFurni(event, '${f.instanceId}')" title="收回倉庫">📦 收回</button>
+          `;
+          el.appendChild(ctrlBox);
+        }
+
         let fDrag = false, fOffset = { x: 0, y: 0 };
         el.addEventListener('pointerdown', (e) => {
+          if (e.target.closest('.furni-ctrl-bubble')) return;
+          e.stopPropagation();
+          state.selectedFurniId = f.instanceId;
+          renderFurniture();
+
           fDrag = true;
-          fOffset.x = e.clientX - furniItem.x;
-          fOffset.y = e.clientY - furniItem.y;
+          fOffset.x = e.clientX - f.x;
+          fOffset.y = e.clientY - f.y;
           el.setPointerCapture(e.pointerId);
         });
         el.addEventListener('pointermove', (e) => {
           if (!fDrag) return;
-          furniItem.x = e.clientX - fOffset.x;
-          furniItem.y = Math.max(window.innerHeight * 0.50, Math.min(window.innerHeight * 0.80, e.clientY - fOffset.y));
-          el.style.left = `${furniItem.x}px`;
-          el.style.top = `${furniItem.y}px`;
+          f.x = e.clientX - fOffset.x;
+          f.y = Math.max(window.innerHeight * 0.48, Math.min(window.innerHeight * 0.78, e.clientY - fOffset.y));
+          el.style.left = `${f.x}px`;
+          el.style.top = `${f.y}px`;
         });
-        el.addEventListener('pointerup', () => { fDrag = false; saveGame(); });
+        el.addEventListener('pointerup', () => {
+          if (fDrag) { fDrag = false; saveGame(); }
+        });
       }
       con.appendChild(el);
     });
   });
 }
 
-// 便便永久保留與渲染機制 (不自動消失，留給玩家打掃賺錢)
-function renderPoops() {
-  // 清理現有 DOM 便便
-  document.querySelectorAll('.poop-pellet').forEach(el => el.remove());
+function deselectBuildingFurni() {
+  state.selectedFurniId = null;
+  renderFurniture();
+}
 
+// 水平翻轉家具
+window.flipSelectedFurni = function(e, instanceId) {
+  e.stopPropagation();
+  const f = state.furniturePlaced.find(item => item.instanceId === instanceId);
+  if (!f) return;
+  f.flip = (f.flip || 1) * -1;
+  saveGame();
+  renderFurniture();
+};
+
+// 將場景家具收回倉庫
+window.retractSelectedFurni = function(e, instanceId) {
+  e.stopPropagation();
+  const idx = state.furniturePlaced.findIndex(item => item.instanceId === instanceId);
+  if (idx === -1) return;
+
+  const f = state.furniturePlaced[idx];
+  state.furniturePlaced.splice(idx, 1);
+  state.furnitureWarehouse.push({ id: `w_${Date.now()}`, type: f.type });
+  state.selectedFurniId = null;
+
+  saveGame();
+  renderFurniture();
+  renderBuildWarehouse();
+};
+
+// 渲染建造模式的底部倉庫選單
+function renderBuildWarehouse() {
+  const panel = document.getElementById('buildWarehousePanel');
+  const list = document.getElementById('buildWarehouseList');
+  if (!panel || !list) return;
+
+  list.innerHTML = '';
+  if (state.furnitureWarehouse.length === 0) {
+    list.innerHTML = `<div style="font-size:12px; color:#888; padding:12px;">倉庫空空如也，去雜貨鋪買點家具吧！</div>`;
+    return;
+  }
+
+  // 匯總倉庫中的各類家具
+  const counts = {};
+  state.furnitureWarehouse.forEach(item => {
+    counts[item.type] = (counts[item.type] || 0) + 1;
+  });
+
+  Object.keys(counts).forEach(typeId => {
+    const t = ASSETS.furniture[typeId];
+    if (!t) return;
+
+    const card = document.createElement('div');
+    card.className = 'warehouse-item-card';
+    card.innerHTML = `
+      <div style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">${t.svg}</div>
+      <b style="font-size:11px; margin-top:2px;">${t.name}</b>
+      <span style="font-size:10px; color:#666;">剩餘 x${counts[typeId]}</span>
+      <button class="btn-action" style="padding:4px 8px; font-size:11px; margin-top:4px;" onclick="placeFurniFromWarehouse('${typeId}')">擺放出來</button>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// 從倉庫拿家具擺到當前房間
+window.placeFurniFromWarehouse = function(typeId) {
+  const wIdx = state.furnitureWarehouse.findIndex(item => item.type === typeId);
+  if (wIdx === -1) return;
+
+  state.furnitureWarehouse.splice(wIdx, 1);
+  const newPlaced = {
+    instanceId: `fp_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+    type: typeId,
+    room: ROOMS[currentRoomIndex].id,
+    x: window.innerWidth / 2 - 40,
+    y: window.innerHeight * 0.62,
+    flip: 1
+  };
+  state.furniturePlaced.push(newPlaced);
+  state.selectedFurniId = newPlaced.instanceId;
+
+  saveGame();
+  renderFurniture();
+  renderBuildWarehouse();
+};
+
+function toggleBuildMode() {
+  state.isBuilding = !state.isBuilding;
+  document.getElementById('buildBanner').style.display = state.isBuilding ? 'block' : 'none';
+  document.getElementById('buildWarehousePanel').style.display = state.isBuilding ? 'flex' : 'none';
+  document.getElementById('buildBtnText').textContent = state.isBuilding ? '完成佈置' : '建造模式';
+
+  if (!state.isBuilding) {
+    state.selectedFurniId = null;
+    saveGame();
+  } else {
+    renderBuildWarehouse();
+  }
+  renderFurniture();
+}
+
+function renderPoops() {
+  document.querySelectorAll('.poop-pellet').forEach(el => el.remove());
   const curRoom = ROOMS[currentRoomIndex].id;
   state.poopList.forEach(poop => {
     if (poop.room !== curRoom) return;
@@ -316,7 +446,6 @@ function renderPoops() {
 }
 
 function spawnPoopPellet(x, y, room) {
-  // 單房間最多累積 8 顆便便，避免過度堆疊
   const roomPoopCount = state.poopList.filter(p => p.room === room).length;
   if (roomPoopCount >= 8) return;
 
@@ -329,9 +458,7 @@ function spawnPoopPellet(x, y, room) {
   state.poopList.push(newPoop);
   saveGame();
 
-  if (ROOMS[currentRoomIndex].id === room) {
-    renderPoops();
-  }
+  if (ROOMS[currentRoomIndex].id === room) renderPoops();
 }
 
 function collectPoop(poopId) {
@@ -356,9 +483,8 @@ setInterval(() => {
   state.hamsters.forEach(h => {
     if (state.travelingIds.includes(h.id)) return;
 
-    // 吐糧回小木屋
     if ((h.cheekPouch || 0) >= 2) {
-      const house = state.furnitureList.find(f => (f.type === 'mushroom_house' || f.type === 'strawberry_house') && f.room === h.room);
+      const house = state.furniturePlaced.find(f => (f.type === 'mushroom_house' || f.type === 'strawberry_house') && f.room === h.room);
       if (house) {
         const wrap = document.getElementById(`entity-${h.id}`);
         if (!wrap) return;
@@ -372,10 +498,8 @@ setInterval(() => {
       }
     }
 
-    // 排泄便便 (永久保留)
     if (Math.random() < 0.16) spawnPoopPellet(h.x + (Math.random()*30-15), h.y + 25, h.room);
 
-    // 換房間探險
     if (Math.random() < 0.15) {
       const otherRooms = ROOMS.map(r => r.id).filter(id => id !== h.room);
       hamsterRunToRoom(h, otherRooms[Math.floor(Math.random() * otherRooms.length)]);
@@ -385,7 +509,7 @@ setInterval(() => {
     const wrap = document.getElementById(`entity-${h.id}`);
     if (!wrap || wrap.classList.contains('held') || wrap.classList.contains('fighting')) return;
 
-    const curRoomFurnis = state.furnitureList.filter(f => f.room === h.room);
+    const curRoomFurnis = state.furniturePlaced.filter(f => f.room === h.room);
     if (curRoomFurnis.length > 0 && Math.random() < 0.7) {
       const targetFurni = curRoomFurnis[Math.floor(Math.random() * curRoomFurnis.length)];
 
@@ -466,7 +590,14 @@ function walkTo(h, el, targetX, targetY, onArrival) {
 }
 
 document.getElementById('viewport').addEventListener('pointerdown', (e) => {
-  if (state.isBuilding || state.isDraggingHamster) return;
+  if (state.isBuilding) {
+    // 點擊空白處取消選中家具
+    if (!e.target.closest('.placed-furniture') && !e.target.closest('#buildWarehousePanel')) {
+      deselectBuildingFurni();
+    }
+    return;
+  }
+  if (state.isDraggingHamster) return;
   if (e.clientY < 110 || e.clientY > window.innerHeight - 85) return;
   if (e.target.closest('.dock-wrapper') || e.target.closest('.room-nav-btn') || e.target.closest('.poop-pellet')) return;
   dropSeed(e.clientX - 8, e.clientY - 12);
@@ -770,21 +901,17 @@ function renderShopCard(con, item, onBuy) {
   con.appendChild(card);
 }
 
+// 購買家具後存入「倉庫」，由建造模式擺放
 function buyFurnitureItem(typeId, cost) {
   if (state.coins < cost) return alert('金幣不夠了！快去玩小遊戲吧！');
   state.coins -= cost;
-  const newInst = {
-    instanceId: `f_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-    type: typeId,
-    room: ROOMS[currentRoomIndex].id,
-    x: window.innerWidth / 2 - 40,
-    y: window.innerHeight * 0.65
-  };
-  state.furnitureList.push(newInst);
+  state.furnitureWarehouse.push({
+    id: `w_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+    type: typeId
+  });
   saveGame();
-  renderFurniture();
   renderHUD();
-  alert('成功買下家具並擺入當前房間！可開啟建造模式自由移動！');
+  alert('成功買下家具！已存入【建造模式倉庫】，快開啟建造模式擺放吧！');
   openShop();
 }
 
@@ -796,14 +923,6 @@ function buyHatItem(hatId, cost) {
   renderHUD();
   alert('成功買下飾品！已放入試衣間！');
   openShop();
-}
-
-function toggleBuildMode() {
-  state.isBuilding = !state.isBuilding;
-  document.getElementById('buildBanner').style.display = state.isBuilding ? 'block' : 'none';
-  document.getElementById('buildBtnText').textContent = state.isBuilding ? '完成佈置' : '建造模式';
-  renderFurniture();
-  if (!state.isBuilding) saveGame();
 }
 
 function showMiniGameIntro() { document.getElementById('rulesModal').style.display = 'flex'; }
@@ -906,5 +1025,5 @@ function renderHUD() {
 
 renderFurniture();
 renderHamsters();
-renderPoops(); // 初始化繪製便便
+renderPoops();
 renderHUD();
