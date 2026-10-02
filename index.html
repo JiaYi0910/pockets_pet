@@ -360,7 +360,7 @@
   <script src="assets.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- Firebase 雲端公開索引與跨玩家好友同步模組 -->
+  <!-- Firebase 雲端公開索引與跨玩家好友同步模組 (獨立初始化修復版) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -386,6 +386,31 @@
     const formArea = document.getElementById('authFormArea');
     const loggedArea = document.getElementById('authLoggedInArea');
 
+    // 全新玩家乾淨初始化函數 (防止繼承舊帳號殘留的 LocalStorage)
+    function resetToBrandNewState() {
+      state.coins = 200;
+      state.feedStock = 30;
+      state.lastActiveTime = Date.now();
+      state.hamsters = [
+        { id: `h_${Date.now()}`, name: '泡泡', gender: '♂', species: 'golden', feedCount: 0, cheekPouch: 0, equippedHat: 'straw_hat', room: 'living', x: 80, y: window.innerHeight * 0.70 }
+      ];
+      state.inventory = ['straw_hat'];
+      state.furnitureWarehouse = [];
+      state.furniturePlaced = [
+        { instanceId: 'fp_1', type: 'wheel', room: 'living', x: 20, y: window.innerHeight * 0.54, flip: 1 },
+        { instanceId: 'fp_2', type: 'mushroom_house', room: 'living', x: 230, y: window.innerHeight * 0.56, flip: 1 },
+        { instanceId: 'fp_3', type: 'water_bottle', room: 'living', x: 160, y: window.innerHeight * 0.55, flip: 1 }
+      ];
+      state.poopList = [];
+      state.postcards = [];
+      state.owner = {
+        id: generateRandomOwnerId(),
+        name: '新手莊園主',
+        bio: '用心陪伴每隻小可愛～'
+      };
+      state.friends = [];
+    }
+
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
 
@@ -396,40 +421,47 @@
         const ownerEmailEl = document.getElementById('cardOwnerEmail');
         if (ownerEmailEl) ownerEmailEl.textContent = user.email;
 
-        // 1. 抓取個人存檔
+        // 1. 抓取雲端存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
+          // 老帳號：完全讀取雲端專屬存檔
           const cloudData = snap.data();
-          state.coins = cloudData.coins ?? state.coins;
-          state.feedStock = cloudData.feedStock ?? state.feedStock;
-          state.lastActiveTime = cloudData.lastActiveTime ?? state.lastActiveTime;
-          state.hamsters = cloudData.hamsters ?? state.hamsters;
-          state.inventory = cloudData.inventory ?? state.inventory;
-          state.furnitureWarehouse = cloudData.furnitureWarehouse ?? state.furnitureWarehouse;
-          state.furniturePlaced = cloudData.furniturePlaced ?? state.furniturePlaced;
-          state.poopList = cloudData.poopList ?? state.poopList;
-          state.postcards = cloudData.postcards ?? state.postcards;
-          state.owner = cloudData.owner ?? state.owner;
-          state.friends = cloudData.friends ?? state.friends;
+          state.coins = cloudData.coins ?? 200;
+          state.feedStock = cloudData.feedStock ?? 30;
+          state.lastActiveTime = cloudData.lastActiveTime ?? Date.now();
+          state.hamsters = cloudData.hamsters ?? [];
+          state.inventory = cloudData.inventory ?? ['straw_hat'];
+          state.furnitureWarehouse = cloudData.furnitureWarehouse ?? [];
+          state.furniturePlaced = cloudData.furniturePlaced ?? [];
+          state.poopList = cloudData.poopList ?? [];
+          state.postcards = cloudData.postcards ?? [];
+          state.owner = cloudData.owner ?? { id: generateRandomOwnerId(), name: '大莊園主', bio: '用心陪伴每隻小可愛～' };
+          state.friends = cloudData.friends ?? [];
 
           renderHUD();
           renderHamsters();
           renderFurniture();
           renderPoops();
 
-          // 2. 雲端資料下載並對齊完畢後，安全觸發離線結算（保證小鼠存活並回傳雲端）
+          // 雲端資料對齊完畢後，安全觸發離線結算
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
         } else {
+          // 關鍵修復：全新註冊的帳號，強制抹除舊帳號殘留的記憶，乾淨新手開局！
+          resetToBrandNewState();
+          renderHUD();
+          renderHamsters();
+          renderFurniture();
+          renderPoops();
           window.saveGame();
         }
 
-        // 3. 向全服發布「公開名片索引」，讓其他玩家用 ID 搜得到你
+        // 2. 向全服發布「公開名片索引」，讓其他玩家用 ID 搜得到你
         await publishPublicProfile(user.uid);
 
-        // 4. 監聽專屬好友信箱（如果朋友加你，你這裡即時收到並加回）
+        // 3. 監聽專屬好友信箱（如果朋友加你，你這裡即時收到並加入名冊）
         listenFriendInbox(state.owner.id);
 
         authGate.classList.add('unlocked');
@@ -482,7 +514,7 @@
       });
     }
 
-    // 真實跨雲端加好友邏輯
+    // 真實跨雲端加好友邏輯 (雙向通知)
     window.cloudAddFriend = async function(targetId) {
       try {
         const targetRef = doc(db, 'public_profiles', targetId);
@@ -582,7 +614,14 @@
 
     window.handleAuthLogout = async () => {
       await signOut(auth);
+      // 登出時清空記憶體，避免下一個註冊帳號受到污染
+      resetToBrandNewState();
+      renderHUD();
+      renderHamsters();
+      renderFurniture();
+      renderPoops();
       closeModal('ownerProfileModal');
+      showToast('已登出當前帳號。');
     };
 
     window.unlockGame = () => {
