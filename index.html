@@ -5,11 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Pocket Hamsters | 倉鼠大莊園 Online</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* 迷你毛玻璃音樂控制器 */
+    .bgm-player-capsule {
+      position: absolute;
+      top: 104px;
+      right: 12px;
+      z-index: 45;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(74, 59, 50, 0.1);
+    }
+    .bgm-player-capsule span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--main-text);
+    }
+    .bgm-btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 12px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    /* YouTube 嵌入微型視窗 (高 40px，符合手機渲染規範) */
+    #yt-player-box {
+      width: 70px;
+      height: 40px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+  </style>
 </head>
 <body>
-
-  <!-- 原生背景音樂播放器 (自動循環) -->
-  <audio id="bgmAudio" loop preload="auto" src="https://ia800508.us.archive.org/15/items/HamsterDanceSong_201603/HamsterDanceSong.mp3"></audio>
 
   <!-- 強制登入閘門 -->
   <div id="authGate">
@@ -33,7 +71,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD (包含音樂開關按鈕) -->
+    <!-- 頂部 HUD -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -42,11 +80,19 @@
       </div>
       
       <div style="display:flex; gap:6px;">
-        <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgm()">🎵</button>
         <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
         <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
         <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
       </div>
+    </div>
+
+    <!-- 迷你 BGM 膠囊面板 -->
+    <div class="bgm-player-capsule">
+      <span>🎵 BGM</span>
+      <div id="yt-player-box">
+        <div id="yt-audio-player"></div>
+      </div>
+      <button class="bgm-btn" id="btnBgmControl" onclick="toggleBgmPlayer()">播 放</button>
     </div>
 
     <!-- 空間指示與導覽按鈕 -->
@@ -244,6 +290,9 @@
 
   <script src="assets.js"></script>
 
+  <!-- YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -358,14 +407,9 @@
 
     window.unlockGame = () => {
       authGate.classList.add('unlocked');
-      // 使用者互動時自動播放背景音樂 (音量小聲 15%)
-      const bgm = document.getElementById('bgmAudio');
-      if (bgm) {
-        bgm.volume = 0.15;
-        bgm.play().then(() => {
-          const btn = document.getElementById('btnBgmToggle');
-          if (btn) btn.textContent = '🎵';
-        }).catch(() => {});
+      // 點擊開始遊玩時，嘗試直接喚醒播放器
+      if (typeof window.startBgmOnUnlock === 'function') {
+        window.startBgmOnUnlock();
       }
     };
   </script>
