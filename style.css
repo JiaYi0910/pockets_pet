@@ -522,9 +522,11 @@ html, body {
   align-items: center;
   z-index: 100;
 }
+/* 彈窗卡片與右上角叉叉按鈕 */
 .modal-card {
+  position: relative; /* 讓右上角叉叉定位以卡片為基準 */
   background: #fdfaf6;
-  padding: 20px;
+  padding: 24px 20px 20px 20px;
   border-radius: 22px;
   width: 90%;
   max-width: 360px;
@@ -532,6 +534,33 @@ html, body {
   max-height: 80vh;
   overflow-y: auto;
 }
+
+/* 卡片右上角浮動叉叉按鈕 */
+.modal-close-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(74, 59, 50, 0.08);
+  border: none;
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
+  color: var(--main-text);
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+.modal-close-x:active {
+  background: rgba(74, 59, 50, 0.2);
+}
+
 .modal-title { font-size: 16px; color: var(--main-text); margin-bottom: 12px; text-align: center; }
 .btn-action {
   background: var(--main-text);
