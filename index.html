@@ -33,12 +33,12 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD -->
+    <!-- 頂部 HUD (顯示當前數量 / 8 隻上限) -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
         <span>🌻 <b id="valFeedStock">30</b></span>
-        <span>🐹 <b id="valHamsterCount">1</b></span>
+        <span>🐹 <b id="valHamsterCount">1</b>/8</span>
       </div>
       
       <div style="display:flex; gap:6px;">
@@ -139,6 +139,51 @@
     <div id="yt-audio-player"></div>
   </div>
 
+  <!-- 離線收益結算專屬視窗 -->
+  <div class="modal-overlay" id="offlineModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close-x" onclick="closeModal('offlineModal')">✕</button>
+      <h3 class="modal-title">歡迎回家！🐹🏡</h3>
+      <div style="margin: 14px 0; font-size: 13px; line-height: 1.8; color: var(--main-text);">
+        <p>你離開莊園了 <b id="offlineTimeText" style="color:var(--accent);">0</b> 分鐘</p>
+        <p>鼠鼠們在跑輪上運動，為你賺了：</p>
+        <p style="font-size: 22px; font-weight: bold; color: var(--accent); margin: 6px 0;">🪙 +<span id="offlineCoinVal">0</span> 金幣</p>
+        <div id="offlineBabyNotify" style="display:none; margin-top:10px; background:#fff; border:1px solid var(--border-color); border-radius:12px; padding:10px;">
+          <span style="font-size:24px;">🎉🍼</span>
+          <p style="font-weight:bold; color:#ff006e; margin-top:4px;">家族誕生了新幼鼠寶寶！</p>
+          <p id="offlineBabyDesc" style="font-size:12px; color:#555;"></p>
+        </div>
+      </div>
+      <button class="btn-action" style="background:var(--accent);" onclick="closeModal('offlineModal')">開心收下 ✨</button>
+    </div>
+  </div>
+
+  <!-- 旅行歸來成果專屬視窗 -->
+  <div class="modal-overlay" id="travelResultModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close-x" onclick="closeModal('travelResultModal')">✕</button>
+      <h3 class="modal-title">旅行散步回來囉！🎒</h3>
+      <div id="travelCardPreview" style="margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background:#fff; border-radius:16px; border:1px solid var(--border-color);"></div>
+      <b id="travelCardTitle" style="font-size: 14px; color: var(--main-text);"></b>
+      <p id="travelCardDesc" style="font-size: 12px; color: #666; margin: 6px 0 12px; line-height: 1.5;"></p>
+      <div style="font-size: 14px; font-weight: bold; color: var(--accent); margin-bottom: 12px;">🪙 帶回旅途收穫 +50 金幣！</div>
+      <button class="btn-action" style="background:var(--accent);" onclick="closeModal('travelResultModal')">太棒了！</button>
+    </div>
+  </div>
+
+  <!-- 小遊戲結算專屬視窗 -->
+  <div class="modal-overlay" id="gameResultModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close-x" onclick="closeModal('gameResultModal')">✕</button>
+      <h3 class="modal-title">接瓜子大作戰 結算 🎮</h3>
+      <div style="margin: 14px 0; font-size: 13px; color: var(--main-text);">
+        <p>本次挑戰得分：<b id="gameFinalScore" style="font-size:18px;">0</b> 分</p>
+        <p style="font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 8px;">🪙 換算獲得：+<span id="gameEarnedCoins">0</span> 金幣！</p>
+      </div>
+      <button class="btn-action" style="background:var(--accent);" onclick="closeModal('gameResultModal')">確定領取 💰</button>
+    </div>
+  </div>
+
   <!-- 帳號 Modal -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
@@ -168,7 +213,7 @@
     </div>
   </div>
 
-  <!-- 家族手帳 -->
+  <!-- 家族手帳 (支援改名與愛心送養) -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-card">
       <button class="modal-close-x" onclick="closeModal('profileModal')">✕</button>
