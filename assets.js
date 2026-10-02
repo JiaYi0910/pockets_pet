@@ -106,12 +106,66 @@ const ASSETS = {
     }
   },
   postcards: {
-    shrine: { title: '京都神社之櫻', desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>` },
-    field: { title: '陽光向日葵田', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/></svg>` },
-    beach: { title: '黃金海岸浪花', desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/></svg>` },
-    fuji: { title: '富士山雪見溫泉', desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>` },
-    bigben: { title: '倫敦鐘樓散步', desc: '在泰晤士河畔聽大笨鐘報時，撿到了亮晶晶的英鎊硬幣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#f0efeb"/><rect x="30" y="20" width="20" height="50" fill="#adb5bd"/><polygon points="30,20 40,8 50,20" fill="#6c757d"/><circle cx="40" cy="32" r="5" fill="#ffd166"/></svg>` },
-    aurora: { title: '極光雪地小冰屋', desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/></svg>` }
+    shrine: {
+      title: '京都神社之櫻 ⛩️',
+      desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>`
+    },
+    field: {
+      title: '陽光向日葵田 🌻',
+      desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>`
+    },
+    beach: {
+      title: '黃金海岸浪花 🏖️',
+      desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/><path d="M10 50 Q25 45 40 50 T70 50" stroke="#00b4d8" stroke-width="3" fill="none"/></svg>`
+    },
+    fuji: {
+      title: '富士山雪見溫泉 🗻',
+      desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>`
+    },
+    bigben: {
+      title: '倫敦大笨鐘漫遊 🕰️',
+      desc: '在泰晤士河畔聽大笨鐘報時，撿到了亮晶晶的英鎊硬幣。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#f0efeb"/><rect x="30" y="20" width="20" height="50" fill="#adb5bd"/><polygon points="30,20 40,8 50,20" fill="#6c757d"/><circle cx="40" cy="32" r="5" fill="#ffd166"/><line x1="40" y1="32" x2="40" y2="29" stroke="#333" stroke-width="1.5"/></svg>`
+    },
+    aurora: {
+      title: '極光雪地小冰屋 🌌',
+      desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/><path d="M35 60 A5 5 0 0 1 45 60 Z" fill="#6c757d"/></svg>`
+    },
+    eiffel: {
+      title: '巴黎鐵塔香榭漫步 🗼',
+      desc: '漫步在香榭麗舍大道，在露天咖啡座分享剛出爐的香脆可頌。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#ffe5d9"/><path d="M40 10 L30 65 L50 65 Z" fill="#6c757d"/><path d="M33 65 A8 8 0 0 1 47 65 Z" fill="#ffe5d9"/><line x1="28" y1="45" x2="52" y2="45" stroke="#495057" stroke-width="3"/><line x1="40" y1="8" x2="40" y2="15" stroke="#343a40" stroke-width="2"/></svg>`
+    },
+    pyramids: {
+      title: '埃及金字塔奇境 🏜️',
+      desc: '攀登浩瀚金色沙漠中的千年金字塔，發現了刻著太陽的古老石碑！',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fdf0d5"/><circle cx="65" cy="20" r="8" fill="#f77f00"/><polygon points="40,25 15,65 65,65" fill="#ddb892"/><polygon points="40,25 50,65 65,65" fill="#b08968"/><polygon points="20,40 5,65 35,65" fill="#e6ccb2" opacity="0.85"/></svg>`
+    },
+    cappadocia: {
+      title: '熱氣球棉花堡 🎈',
+      desc: '清晨鳥瞰奇岩異石，天空飄滿了色彩繽紛的浪漫熱氣球。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e0fbfc"/><ellipse cx="38" cy="30" rx="15" ry="18" fill="#ee6c4d"/><path d="M30 46 L46 46 L42 54 L34 54 Z" fill="#98c1d9"/><rect x="35" y="56" width="6" height="5" fill="#8c6239"/><ellipse cx="62" cy="24" rx="8" ry="10" fill="#ffd166"/></svg>`
+    },
+    venice: {
+      title: '威尼斯水都貢多拉 🛶',
+      desc: '坐在黑色貢多拉小船上搖曳過拱橋，聽水手哼唱歡樂的民謠。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#cbf3f0"/><path d="M10 40 Q40 25 70 40 Z" fill="#d4a373" stroke="#8c6239" stroke-width="2"/><path d="M15 60 Q40 72 65 60 Z" fill="#2ec4b6"/><line x1="20" y1="52" x2="60" y2="58" stroke="#333" stroke-width="2"/></svg>`
+    },
+    pisa: {
+      title: '比薩斜塔奇蹟 🏛️',
+      desc: '站在翠綠大草坪前，歪著頭看這座神奇傾斜的大理石鐘樓！',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9edc9"/><g transform="rotate(10 40 40)"><rect x="32" y="16" width="16" height="48" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><line x1="32" y1="28" x2="48" y2="28" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="40" x2="48" y2="40" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="52" x2="48" y2="52" stroke="#adb5bd" stroke-width="2"/></g></svg>`
+    },
+    tajmahal: {
+      title: '泰姬瑪哈陵倒影 🕌',
+      desc: '純白大理石宮殿在水池中映照出夢幻倒影，微風吹過水面泛起漣漪。',
+      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e8e8e4"/><path d="M25 40 Q40 22 55 40 L55 60 L25 60 Z" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/><circle cx="40" cy="22" r="3" fill="#f4a261"/><path d="M34 60 A6 6 0 0 1 46 60 Z" fill="#778da9"/><line x1="15" y1="35" x2="15" y2="60" stroke="#ced4da" stroke-width="2.5"/><line x1="65" y1="35" x2="65" y2="60" stroke="#ced4da" stroke-width="2.5"/></svg>`
+    }
   }
 };
 
