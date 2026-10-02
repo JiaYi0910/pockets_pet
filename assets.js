@@ -165,7 +165,8 @@ const ASSETS = {
     },
     garden_sunflower: {
       name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110,
-      svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>` },
+      svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>`
+    },
     garden_log: {
       name: '天然棲木樹樁', cost: 55, w: 100, h: 70,
       svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/></svg>`
@@ -845,6 +846,7 @@ function dropSeed(x, y) {
   seed.style.left = `${x}px`;
   seed.style.top = `${y}px`;
 
+  // 關鍵修復：將瓜子掛載到當前所在的房間場景內，隨著房間切換移動！
   const curRoomId = ROOMS[currentRoomIndex].id;
   const targetRoomEl = document.getElementById(`room-${curRoomId}`);
   if (targetRoomEl) {
@@ -1017,6 +1019,7 @@ function openWardrobeSelect() {
   document.getElementById('wardrobeSelectModal').style.display = 'flex';
 }
 
+// 試衣間：以玩家去重擁有的帽子列表進行穿戴挑選
 function openFittingRoom(hamster) {
   document.getElementById('stageHamsterName').textContent = `${hamster.name} (${hamster.gender})`;
   updateFittingStage(hamster);
@@ -1024,21 +1027,26 @@ function openFittingRoom(hamster) {
   const grid = document.getElementById('fittingHatGrid');
   grid.innerHTML = '';
 
-  const hatIds = state.inventory.filter(id => ASSETS.hats[id]);
-  hatIds.forEach(id => {
-    const item = ASSETS.hats[id];
-    const isEquipped = hamster.equippedHat === id;
-    const card = document.createElement('div');
-    card.className = 'card-item';
-    card.innerHTML = `
-      <div class="preview-box">${item.svg}</div>
-      <b>${item.name}</b>
-      <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="tryHatOnStage('${id}')">
-        ${isEquipped ? '卸下' : '試穿'}
-      </button>
-    `;
-    grid.appendChild(card);
-  });
+  const ownedHatTypes = [...new Set(state.inventory.filter(id => ASSETS.hats[id]))];
+
+  if (ownedHatTypes.length === 0) {
+    grid.innerHTML = `<div style="grid-column: span 2; font-size:12px; color:#888; text-align:center; padding:12px;">衣櫥裡還沒有飾品，快去雜貨鋪挑選吧！</div>`;
+  } else {
+    ownedHatTypes.forEach(id => {
+      const item = ASSETS.hats[id];
+      const isEquipped = hamster.equippedHat === id;
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.innerHTML = `
+        <div class="preview-box">${item.svg}</div>
+        <b>${item.name}</b>
+        <button class="btn-action" style="padding:6px; margin-top:4px;" onclick="tryHatOnStage('${id}')">
+          ${isEquipped ? '卸下' : '穿戴'}
+        </button>
+      `;
+      grid.appendChild(card);
+    });
+  }
 
   document.getElementById('fittingRoomModal').style.display = 'flex';
 }
@@ -1134,6 +1142,7 @@ function openShop() {
   document.getElementById('shopModal').style.display = 'flex';
 }
 
+// 雜貨鋪：常駐顯示所有飾品，並顯示擁有數量
 function switchShopTab(tab) {
   currentShopTab = tab;
   document.getElementById('tabShopFurni').style.background = tab === 'furniture' ? 'var(--accent)' : '#fff';
@@ -1162,10 +1171,25 @@ function switchShopTab(tab) {
     });
   } else {
     Object.keys(ASSETS.hats).forEach(id => {
-      if (!state.inventory.includes(id)) {
-        const item = ASSETS.hats[id];
-        renderShopCard(grid, item, () => buyHatItem(id, item.cost));
-      }
+      const item = ASSETS.hats[id];
+      const count = state.inventory.filter(h => h === id).length;
+      const countBadge = count > 0 ? `<span style="font-size:10px; color:var(--accent); font-weight:bold;">已擁有 x${count}</span>` : '';
+
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.innerHTML = `
+        <div class="preview-box">${item.svg}</div>
+        <b>${item.name}</b>
+        <span>🪙 ${item.cost} 幣</span>
+        ${countBadge}
+      `;
+      const btn = document.createElement('button');
+      btn.className = 'btn-action';
+      btn.style.cssText = 'padding:6px; margin-top:4px;';
+      btn.textContent = '購買';
+      btn.onclick = () => buyHatItem(id, item.cost);
+      card.appendChild(btn);
+      grid.appendChild(card);
     });
   }
 }
@@ -1398,3 +1422,8 @@ renderFurniture();
 renderHamsters();
 renderPoops();
 renderHUD();
+
+// 初始化執行離線計算 (單次呼叫)
+if (typeof window.processOfflineEarnings === 'function') {
+  window.processOfflineEarnings();
+}
