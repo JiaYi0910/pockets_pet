@@ -49,196 +49,66 @@ function generateHamsterSVG(speciesKey, isCheekFull = false) {
 
 const ASSETS = {
   hats: {
-    straw_hat: {
-      name: '夏日草帽', cost: 30,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>`
-    },
-    pink_bow: {
-      name: '粉櫻蝴蝶結', cost: 45,
-      svg: `<svg viewBox="0 0 50 35" width="40" height="28"><polygon points="25,18 10,8 10,28" fill="#f4a5ae"/><polygon points="25,18 40,8 40,28" fill="#f4a5ae"/><ellipse cx="25" cy="18" rx="5" ry="5" fill="#e56b81"/></svg>`
-    },
-    grad_cap: {
-      name: '學士帽', cost: 70,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>`
-    },
-    crown: {
-      name: '國王金皇冠', cost: 110,
-      svg: `<svg viewBox="0 0 50 35" width="42" height="30"><polygon points="8,26 12,12 25,18 38,12 42,26" fill="#ffd166" stroke="#f4a261" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#e76f51"/><circle cx="25" cy="18" r="3" fill="#2a9d8f"/><circle cx="38" cy="12" r="3" fill="#e76f51"/></svg>`
-    },
-    detective_hat: {
-      name: '偵探格紋帽', cost: 85,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M10 26 Q30 8 50 26 Z" fill="#7f5539"/><ellipse cx="30" cy="26" rx="26" ry="6" fill="#9c6644"/><rect x="26" y="10" width="8" height="4" fill="#582f0e"/></svg>`
-    },
-    daisy_clip: {
-      name: '小雛菊髮夾', cost: 40,
-      svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="6" fill="#ffd166"/><circle cx="20" cy="10" r="4" fill="#ffffff"/><circle cx="28" cy="15" r="4" fill="#ffffff"/><circle cx="28" cy="25" r="4" fill="#ffffff"/><circle cx="20" cy="30" r="4" fill="#ffffff"/><circle cx="12" cy="25" r="4" fill="#ffffff"/><circle cx="12" cy="15" r="4" fill="#ffffff"/></svg>`
-    },
-    chef_hat: {
-      name: '大廚白高帽', cost: 65,
-      svg: `<svg viewBox="0 0 50 40" width="40" height="32"><path d="M14 26 C8 16 20 6 25 12 C30 6 42 16 36 26 Z" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><rect x="14" y="24" width="22" height="6" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.5"/></svg>`
-    },
-    clover_pin: {
-      name: '幸運草髮夾', cost: 50,
-      svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="15" cy="15" r="6" fill="#52b788"/><circle cx="25" cy="15" r="6" fill="#52b788"/><circle cx="15" cy="25" r="6" fill="#52b788"/><circle cx="25" cy="25" r="6" fill="#52b788"/><path d="M20 20 Q18 34 12 36" stroke="#2d6a4f" stroke-width="2.5" fill="none"/></svg>`
-    },
-    red_hood: {
-      name: '小紅帽斗篷', cost: 75,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M10 32 C10 10 50 10 50 32 C42 34 18 34 10 32 Z" fill="#e63946"/><circle cx="30" cy="12" r="5" fill="#d90429"/><polygon points="25,32 30,38 35,32" fill="#d90429"/></svg>`
-    },
-    pirate_hat: {
-      name: '海盜三角帽', cost: 95,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M6 30 Q30 18 54 30 L46 14 Q30 8 14 14 Z" fill="#212529"/><circle cx="30" cy="22" r="3.5" fill="#f8f9fa"/><line x1="24" y1="26" x2="36" y2="18" stroke="#f8f9fa" stroke-width="1.5"/></svg>`
-    },
-    wizard_hat: {
-      name: '魔法巫師帽', cost: 105,
-      svg: `<svg viewBox="0 0 60 45" width="46" height="35"><ellipse cx="30" cy="36" rx="26" ry="6" fill="#3a0ca3"/><polygon points="30,4 18,34 42,34" fill="#4361ee"/><polygon points="30,16 32,20 36,20 33,23 34,27 30,24 26,27 27,23 24,20 28,20" fill="#ffd166"/></svg>`
-    },
-    party_cone: {
-      name: '派對彩帶尖帽', cost: 55,
-      svg: `<svg viewBox="0 0 50 45" width="38" height="35"><polygon points="25,6 12,38 38,38" fill="#f72585"/><circle cx="25" cy="5" r="4" fill="#ffd166"/><line x1="16" y1="22" x2="34" y2="22" stroke="#4cc9f0" stroke-width="3"/><line x1="14" y1="30" x2="36" y2="30" stroke="#ffd166" stroke-width="3"/></svg>`
-    },
-    cool_shades: {
-      name: '酷炫黑超墨鏡', cost: 80,
-      svg: `<svg viewBox="0 0 60 30" width="46" height="24"><rect x="8" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="34" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="26" y="13" width="8" height="3" fill="#3a3a40"/><line x1="2" y1="12" x2="8" y2="12" stroke="#1b1b1e" stroke-width="2"/><line x1="52" y1="12" x2="58" y2="12" stroke="#1b1b1e" stroke-width="2"/></svg>`
-    },
-    bunny_ears: {
-      name: '兔兔粉萌髮箍', cost: 65,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M18 4 C15 4 12 18 17 30 C22 18 21 4 18 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M18 9 C16 9 14 18 17 26 C20 18 20 9 18 9 Z" fill="#ffb4a2"/><path d="M42 4 C39 4 38 18 43 30 C48 18 45 4 42 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M42 9 C40 9 40 18 43 26 C46 18 44 9 42 9 Z" fill="#ffb4a2"/><path d="M14 30 Q30 25 46 30" stroke="#f48c06" stroke-width="2" fill="none"/></svg>`
-    },
-    frog_hat: {
-      name: '綠意青蛙頭套', cost: 90,
-      svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M12 28 C10 12 50 12 48 28 Z" fill="#70e000"/><circle cx="18" cy="12" r="7" fill="#70e000"/><circle cx="18" cy="12" r="4.5" fill="#ffffff"/><circle cx="18" cy="12" r="2" fill="#000"/><circle cx="42" cy="12" r="7" fill="#70e000"/><circle cx="42" cy="12" r="4.5" fill="#ffffff"/><circle cx="42" cy="12" r="2" fill="#000"/><ellipse cx="30" cy="22" rx="10" ry="3" fill="#38b000" opacity="0.6"/></svg>`
-    },
-    kitsune_mask: {
-      name: '祭典狐狸面具', cost: 115,
-      svg: `<svg viewBox="0 0 50 40" width="40" height="32"><polygon points="12,10 8,24 16,34 34,34 42,24 38,10 30,16 20,16" fill="#ffffff" stroke="#e63946" stroke-width="1.5"/><polygon points="12,12 10,20 16,16" fill="#d90429"/><polygon points="38,12 40,20 34,16" fill="#d90429"/><line x1="16" y1="24" x2="22" y2="24" stroke="#d90429" stroke-width="2"/><line x1="28" y1="24" x2="34" y2="24" stroke="#d90429" stroke-width="2"/><ellipse cx="25" cy="29" rx="2" ry="1.5" fill="#d90429"/></svg>`
-    },
-    aviator_hat: {
-      name: '飛行員皮風鏡', cost: 100,
-      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M12 30 C10 12 50 12 48 30 L45 36 L15 36 Z" fill="#6f4e37"/><rect x="15" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><rect x="33" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><line x1="27" y1="20" x2="33" y2="20" stroke="#212529" stroke-width="3"/></svg>`
-    },
-    lotus_leaf: {
-      name: '天然荷葉小帽', cost: 60,
-      svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M8 26 C12 8 48 8 52 26 C40 28 20 28 8 26 Z" fill="#52b788" stroke="#2d6a4f" stroke-width="2"/><line x1="30" y1="12" x2="30" y2="2" stroke="#2d6a4f" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="16" x2="20" y2="24" stroke="#40916c" stroke-width="1.5"/><line x1="30" y1="16" x2="40" y2="24" stroke="#40916c" stroke-width="1.5"/></svg>`
-    }
+    straw_hat: { name: '夏日草帽', cost: 30, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>` },
+    pink_bow: { name: '粉櫻蝴蝶結', cost: 45, svg: `<svg viewBox="0 0 50 35" width="40" height="28"><polygon points="25,18 10,8 10,28" fill="#f4a5ae"/><polygon points="25,18 40,8 40,28" fill="#f4a5ae"/><ellipse cx="25" cy="18" rx="5" ry="5" fill="#e56b81"/></svg>` },
+    grad_cap: { name: '學士帽', cost: 70, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>` },
+    crown: { name: '國王金皇冠', cost: 110, svg: `<svg viewBox="0 0 50 35" width="42" height="30"><polygon points="8,26 12,12 25,18 38,12 42,26" fill="#ffd166" stroke="#f4a261" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#e76f51"/><circle cx="25" cy="18" r="3" fill="#2a9d8f"/><circle cx="38" cy="12" r="3" fill="#e76f51"/></svg>` },
+    detective_hat: { name: '偵探格紋帽', cost: 85, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M10 26 Q30 8 50 26 Z" fill="#7f5539"/><ellipse cx="30" cy="26" rx="26" ry="6" fill="#9c6644"/><rect x="26" y="10" width="8" height="4" fill="#582f0e"/></svg>` },
+    daisy_clip: { name: '小雛菊髮夾', cost: 40, svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="6" fill="#ffd166"/><circle cx="20" cy="10" r="4" fill="#ffffff"/><circle cx="28" cy="15" r="4" fill="#ffffff"/><circle cx="28" cy="25" r="4" fill="#ffffff"/><circle cx="20" cy="30" r="4" fill="#ffffff"/><circle cx="12" cy="25" r="4" fill="#ffffff"/><circle cx="12" cy="15" r="4" fill="#ffffff"/></svg>` },
+    chef_hat: { name: '大廚白高帽', cost: 65, svg: `<svg viewBox="0 0 50 40" width="40" height="32"><path d="M14 26 C8 16 20 6 25 12 C30 6 42 16 36 26 Z" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><rect x="14" y="24" width="22" height="6" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.5"/></svg>` },
+    clover_pin: { name: '幸運草髮夾', cost: 50, svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="15" cy="15" r="6" fill="#52b788"/><circle cx="25" cy="15" r="6" fill="#52b788"/><circle cx="15" cy="25" r="6" fill="#52b788"/><circle cx="25" cy="25" r="6" fill="#52b788"/><path d="M20 20 Q18 34 12 36" stroke="#2d6a4f" stroke-width="2.5" fill="none"/></svg>` },
+    red_hood: { name: '小紅帽斗篷', cost: 75, svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M10 32 C10 10 50 10 50 32 C42 34 18 34 10 32 Z" fill="#e63946"/><circle cx="30" cy="12" r="5" fill="#d90429"/><polygon points="25,32 30,38 35,32" fill="#d90429"/></svg>` },
+    pirate_hat: { name: '海盜三角帽', cost: 95, svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M6 30 Q30 18 54 30 L46 14 Q30 8 14 14 Z" fill="#212529"/><circle cx="30" cy="22" r="3.5" fill="#f8f9fa"/><line x1="24" y1="26" x2="36" y2="18" stroke="#f8f9fa" stroke-width="1.5"/></svg>` },
+    wizard_hat: { name: '魔法巫師帽', cost: 105, svg: `<svg viewBox="0 0 60 45" width="46" height="35"><ellipse cx="30" cy="36" rx="26" ry="6" fill="#3a0ca3"/><polygon points="30,4 18,34 42,34" fill="#4361ee"/><polygon points="30,16 32,20 36,20 33,23 34,27 30,24 26,27 27,23 24,20 28,20" fill="#ffd166"/></svg>` },
+    party_cone: { name: '派對彩帶尖帽', cost: 55, svg: `<svg viewBox="0 0 50 45" width="38" height="35"><polygon points="25,6 12,38 38,38" fill="#f72585"/><circle cx="25" cy="5" r="4" fill="#ffd166"/><line x1="16" y1="22" x2="34" y2="22" stroke="#4cc9f0" stroke-width="3"/><line x1="14" y1="30" x2="36" y2="30" stroke="#ffd166" stroke-width="3"/></svg>` },
+    cool_shades: { name: '酷炫黑超墨鏡', cost: 80, svg: `<svg viewBox="0 0 60 30" width="46" height="24"><rect x="8" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="34" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="26" y="13" width="8" height="3" fill="#3a3a40"/><line x1="2" y1="12" x2="8" y2="12" stroke="#1b1b1e" stroke-width="2"/><line x1="52" y1="12" x2="58" y2="12" stroke="#1b1b1e" stroke-width="2"/></svg>` },
+    bunny_ears: { name: '兔兔粉萌髮箍', cost: 65, svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M18 4 C15 4 12 18 17 30 C22 18 21 4 18 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M18 9 C16 9 14 18 17 26 C20 18 20 9 18 9 Z" fill="#ffb4a2"/><path d="M42 4 C39 4 38 18 43 30 C48 18 45 4 42 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M42 9 C40 9 40 18 43 26 C46 18 44 9 42 9 Z" fill="#ffb4a2"/><path d="M14 30 Q30 25 46 30" stroke="#f48c06" stroke-width="2" fill="none"/></svg>` },
+    frog_hat: { name: '綠意青蛙頭套', cost: 90, svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M12 28 C10 12 50 12 48 28 Z" fill="#70e000"/><circle cx="18" cy="12" r="7" fill="#70e000"/><circle cx="18" cy="12" r="4.5" fill="#ffffff"/><circle cx="18" cy="12" r="2" fill="#000"/><circle cx="42" cy="12" r="7" fill="#70e000"/><circle cx="42" cy="12" r="4.5" fill="#ffffff"/><circle cx="42" cy="12" r="2" fill="#000"/><ellipse cx="30" cy="22" rx="10" ry="3" fill="#38b000" opacity="0.6"/></svg>` },
+    kitsune_mask: { name: '祭典狐狸面具', cost: 115, svg: `<svg viewBox="0 0 50 40" width="40" height="32"><polygon points="12,10 8,24 16,34 34,34 42,24 38,10 30,16 20,16" fill="#ffffff" stroke="#e63946" stroke-width="1.5"/><polygon points="12,12 10,20 16,16" fill="#d90429"/><polygon points="38,12 40,20 34,16" fill="#d90429"/><line x1="16" y1="24" x2="22" y2="24" stroke="#d90429" stroke-width="2"/><line x1="28" y1="24" x2="34" y2="24" stroke="#d90429" stroke-width="2"/><ellipse cx="25" cy="29" rx="2" ry="1.5" fill="#d90429"/></svg>` },
+    aviator_hat: { name: '飛行員皮風鏡', cost: 100, svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M12 30 C10 12 50 12 48 30 L45 36 L15 36 Z" fill="#6f4e37"/><rect x="15" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><rect x="33" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><line x1="27" y1="20" x2="33" y2="20" stroke="#212529" stroke-width="3"/></svg>` },
+    lotus_leaf: { name: '天然荷葉小帽', cost: 60, svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M8 26 C12 8 48 8 52 26 C40 28 20 28 8 26 Z" fill="#52b788" stroke="#2d6a4f" stroke-width="2"/><line x1="30" y1="12" x2="30" y2="2" stroke="#2d6a4f" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="16" x2="20" y2="24" stroke="#40916c" stroke-width="1.5"/><line x1="30" y1="16" x2="40" y2="24" stroke="#40916c" stroke-width="1.5"/></svg>` }
   },
   furniture: {
-    wheel: {
-      name: '巨無霸跑輪', cost: 60, w: 140, h: 140,
-      svg: `<svg viewBox="0 0 100 100" width="140" height="140"><g id="wheel-rotor"><circle cx="50" cy="50" r="44" fill="none" stroke="#d4a373" stroke-width="6"/><circle cx="50" cy="50" r="8" fill="#8c6239"/><line x1="50" y1="6" x2="50" y2="94" stroke="#d4a373" stroke-width="4"/><line x1="6" y1="50" x2="94" y2="50" stroke="#d4a373" stroke-width="4"/></g><path d="M25 94 L50 50 L75 94" stroke="#8c6239" stroke-width="7" fill="none"/></svg>`
-    },
-    mushroom_house: {
-      name: '原木雙層小木屋', cost: 80, w: 130, h: 130,
-      svg: `<svg viewBox="0 0 100 100" width="130" height="130"><rect x="25" y="48" width="50" height="48" rx="10" fill="#f5ebe0"/><path d="M8 50 Q50 6 92 50 Z" fill="#e76f51"/><circle cx="32" cy="30" r="6" fill="#fff"/><circle cx="68" cy="25" r="7" fill="#fff"/><circle cx="50" cy="40" r="5" fill="#fff"/><path d="M38 96 A12 12 0 0 1 62 96 Z" fill="#582f0e"/></svg>`
-    },
-    strawberry_house: {
-      name: '草莓陶瓷避暑窩', cost: 85, w: 120, h: 120,
-      svg: `<svg viewBox="0 0 100 100" width="120" height="120"><path d="M15 45 C15 15 85 15 85 45 C85 85 50 95 50 95 C50 95 15 85 15 45 Z" fill="#e63946"/><polygon points="45,15 50,5 55,15 65,12 55,20 60,30 50,22 40,30 45,20 35,12" fill="#52b788"/><circle cx="32" cy="35" r="3" fill="#fff"/><circle cx="68" cy="35" r="3" fill="#fff"/><circle cx="50" cy="50" r="3.5" fill="#fff"/><path d="M38 95 A12 12 0 0 1 62 95 Z" fill="#333"/></svg>`
-    },
-    sand_bath: {
-      name: '透明砂浴沐浴盆', cost: 70, w: 120, h: 80,
-      svg: `<svg viewBox="0 0 120 80" width="120" height="80"><rect x="10" y="25" width="100" height="50" rx="14" fill="#edf2f4" stroke="#8d99ae" stroke-width="3"/><ellipse cx="60" cy="52" rx="44" ry="16" fill="#faedcd"/><circle cx="40" cy="50" r="2" fill="#d4a373"/><circle cx="75" cy="54" r="2.5" fill="#d4a373"/></svg>`
-    },
-    wood_tunnel: {
-      name: '原木啃木拱橋', cost: 65, w: 125, h: 80,
-      svg: `<svg viewBox="0 0 125 80" width="125" height="80"><path d="M15 70 C15 25 110 25 110 70 Z" fill="#d4a373" stroke="#8c6239" stroke-width="5"/><path d="M30 70 C30 40 95 40 95 70 Z" fill="#582f0e"/></svg>`
-    },
-    cool_plate: {
-      name: '涼感散熱鋁板', cost: 45, w: 100, h: 50,
-      svg: `<svg viewBox="0 0 100 50" width="100" height="50"><rect x="5" y="10" width="90" height="30" rx="4" fill="#e0e1dd" stroke="#778da9" stroke-width="2"/><line x1="15" y1="15" x2="85" y2="15" stroke="#ffffff" stroke-width="2"/></svg>`
-    },
-    water_bottle: {
-      name: '滾珠防漏水樽', cost: 40, w: 60, h: 100,
-      svg: `<svg viewBox="0 0 60 100" width="60" height="100"><rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/><rect x="22" y="70" width="16" height="8" fill="#adb5bd"/><line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="96" r="3" fill="#00b4d8"/></svg>`
-    },
-    food_bowl: {
-      name: '向日葵防翻陶瓷盆', cost: 45, w: 80, h: 60,
-      svg: `<svg viewBox="0 0 80 60" width="80" height="60"><ellipse cx="40" cy="35" rx="36" ry="18" fill="#f4a261" stroke="#e76f51" stroke-width="3"/><circle cx="32" cy="33" r="5" fill="#5a4b3d"/><circle cx="48" cy="35" r="5" fill="#5a4b3d"/><circle cx="40" cy="30" r="5" fill="#5a4b3d"/></svg>`
-    },
-    apple_sticks: {
-      name: '磨牙蘋果枝捆', cost: 35, w: 85, h: 50,
-      svg: `<svg viewBox="0 0 85 50" width="85" height="50"><rect x="10" y="15" width="65" height="8" rx="4" fill="#8c6239"/><rect x="15" y="26" width="60" height="8" rx="4" fill="#7f5539"/><rect x="8" y="37" width="68" height="7" rx="3.5" fill="#9c6644"/></svg>`
-    },
-    dandelion_bush: {
-      name: '野生蒲公英花草', cost: 50, w: 90, h: 80,
-      svg: `<svg viewBox="0 0 90 80" width="90" height="80"><path d="M10 70 Q30 30 45 65 Q60 20 80 70 Z" fill="#52b788"/><circle cx="45" cy="30" r="12" fill="#ffd166"/><circle cx="65" cy="40" r="10" fill="#ffd166"/></svg>`
-    },
-    garden_sunflower: {
-      name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110,
-      svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>`
-    },
-    garden_log: {
-      name: '天然棲木樹樁', cost: 55, w: 100, h: 70,
-      svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/></svg>`
-    }
+    wheel: { name: '巨無霸跑輪', cost: 60, w: 140, h: 140, svg: `<svg viewBox="0 0 100 100" width="140" height="140"><g id="wheel-rotor"><circle cx="50" cy="50" r="44" fill="none" stroke="#d4a373" stroke-width="6"/><circle cx="50" cy="50" r="8" fill="#8c6239"/><line x1="50" y1="6" x2="50" y2="94" stroke="#d4a373" stroke-width="4"/><line x1="6" y1="50" x2="94" y2="50" stroke="#d4a373" stroke-width="4"/></g><path d="M25 94 L50 50 L75 94" stroke="#8c6239" stroke-width="7" fill="none"/></svg>` },
+    mushroom_house: { name: '原木雙層小木屋', cost: 80, w: 130, h: 130, svg: `<svg viewBox="0 0 100 100" width="130" height="130"><rect x="25" y="48" width="50" height="48" rx="10" fill="#f5ebe0"/><path d="M8 50 Q50 6 92 50 Z" fill="#e76f51"/><circle cx="32" cy="30" r="6" fill="#fff"/><circle cx="68" cy="25" r="7" fill="#fff"/><circle cx="50" cy="40" r="5" fill="#fff"/><path d="M38 96 A12 12 0 0 1 62 96 Z" fill="#582f0e"/></svg>` },
+    strawberry_house: { name: '草莓陶瓷避暑窩', cost: 85, w: 120, h: 120, svg: `<svg viewBox="0 0 100 100" width="120" height="120"><path d="M15 45 C15 15 85 15 85 45 C85 85 50 95 50 95 C50 95 15 85 15 45 Z" fill="#e63946"/><polygon points="45,15 50,5 55,15 65,12 55,20 60,30 50,22 40,30 45,20 35,12" fill="#52b788"/><circle cx="32" cy="35" r="3" fill="#fff"/><circle cx="68" cy="35" r="3" fill="#fff"/><circle cx="50" cy="50" r="3.5" fill="#fff"/><path d="M38 95 A12 12 0 0 1 62 95 Z" fill="#333"/></svg>` },
+    sand_bath: { name: '透明砂浴沐浴盆', cost: 70, w: 120, h: 80, svg: `<svg viewBox="0 0 120 80" width="120" height="80"><rect x="10" y="25" width="100" height="50" rx="14" fill="#edf2f4" stroke="#8d99ae" stroke-width="3"/><ellipse cx="60" cy="52" rx="44" ry="16" fill="#faedcd"/><circle cx="40" cy="50" r="2" fill="#d4a373"/><circle cx="75" cy="54" r="2.5" fill="#d4a373"/></svg>` },
+    wood_tunnel: { name: '原木啃木拱橋', cost: 65, w: 125, h: 80, svg: `<svg viewBox="0 0 125 80" width="125" height="80"><path d="M15 70 C15 25 110 25 110 70 Z" fill="#d4a373" stroke="#8c6239" stroke-width="5"/><path d="M30 70 C30 40 95 40 95 70 Z" fill="#582f0e"/></svg>` },
+    cool_plate: { name: '涼感散熱鋁板', cost: 45, w: 100, h: 50, svg: `<svg viewBox="0 0 100 50" width="100" height="50"><rect x="5" y="10" width="90" height="30" rx="4" fill="#e0e1dd" stroke="#778da9" stroke-width="2"/><line x1="15" y1="15" x2="85" y2="15" stroke="#ffffff" stroke-width="2"/></svg>` },
+    water_bottle: { name: '滾珠防漏水樽', cost: 40, w: 60, h: 100, svg: `<svg viewBox="0 0 60 100" width="60" height="100"><rect x="18" y="10" width="24" height="60" rx="8" fill="#caf0f8" stroke="#48cae4" stroke-width="3"/><rect x="22" y="70" width="16" height="8" fill="#adb5bd"/><line x1="30" y1="78" x2="16" y2="94" stroke="#6c757d" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="96" r="3" fill="#00b4d8"/></svg>` },
+    food_bowl: { name: '向日葵防翻陶瓷盆', cost: 45, w: 80, h: 60, svg: `<svg viewBox="0 0 80 60" width="80" height="60"><ellipse cx="40" cy="35" rx="36" ry="18" fill="#f4a261" stroke="#e76f51" stroke-width="3"/><circle cx="32" cy="33" r="5" fill="#5a4b3d"/><circle cx="48" cy="35" r="5" fill="#5a4b3d"/><circle cx="40" cy="30" r="5" fill="#5a4b3d"/></svg>` },
+    apple_sticks: { name: '磨牙蘋果枝捆', cost: 35, w: 85, h: 50, svg: `<svg viewBox="0 0 85 50" width="85" height="50"><rect x="10" y="15" width="65" height="8" rx="4" fill="#8c6239"/><rect x="15" y="26" width="60" height="8" rx="4" fill="#7f5539"/><rect x="8" y="37" width="68" height="7" rx="3.5" fill="#9c6644"/></svg>` },
+    dandelion_bush: { name: '野生蒲公英花草', cost: 50, w: 90, h: 80, svg: `<svg viewBox="0 0 90 80" width="90" height="80"><path d="M10 70 Q30 30 45 65 Q60 20 80 70 Z" fill="#52b788"/><circle cx="45" cy="30" r="12" fill="#ffd166"/><circle cx="65" cy="40" r="10" fill="#ffd166"/></svg>` },
+    garden_sunflower: { name: '向日葵挺拔花壇', cost: 60, w: 90, h: 110, svg: `<svg viewBox="0 0 90 110" width="90" height="110"><rect x="42" y="45" width="6" height="60" fill="#2d6a4f"/><circle cx="45" cy="40" r="16" fill="#5a4b3d"/><circle cx="45" cy="20" r="6" fill="#ffb703"/><circle cx="65" cy="40" r="6" fill="#ffb703"/><circle cx="45" cy="60" r="6" fill="#ffb703"/><circle cx="25" cy="40" r="6" fill="#ffb703"/></svg>` },
+    garden_log: { name: '天然棲木樹樁', cost: 55, w: 100, h: 70, svg: `<svg viewBox="0 0 100 70" width="100" height="70"><path d="M15 30 L85 30 L80 65 L20 65 Z" fill="#7f5539"/><ellipse cx="50" cy="30" rx="35" ry="12" fill="#ddb892" stroke="#8c6239" stroke-width="3"/></svg>` }
   },
   postcards: {
-    shrine: {
-      title: '京都神社之櫻 ⛩️',
-      desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>`
-    },
-    field: {
-      title: '陽光向日葵田 🌻',
-      desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>`
-    },
-    beach: {
-      title: '黃金海岸浪花 🏖️',
-      desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/><path d="M10 50 Q25 45 40 50 T70 50" stroke="#00b4d8" stroke-width="3" fill="none"/></svg>`
-    },
-    fuji: {
-      title: '富士山雪見溫泉 🗻',
-      desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>`
-    },
-    bigben: {
-      title: '倫敦大笨鐘漫遊 🕰️',
-      desc: '在泰晤士河畔聽大笨鐘報時，撿到了亮晶晶的英鎊硬幣。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#f0efeb"/><rect x="30" y="20" width="20" height="50" fill="#adb5bd"/><polygon points="30,20 40,8 50,20" fill="#6c757d"/><circle cx="40" cy="32" r="5" fill="#ffd166"/><line x1="40" y1="32" x2="40" y2="29" stroke="#333" stroke-width="1.5"/></svg>`
-    },
-    aurora: {
-      title: '極光雪地小冰屋 🌌',
-      desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/><path d="M35 60 A5 5 0 0 1 45 60 Z" fill="#6c757d"/></svg>`
-    },
-    eiffel: {
-      title: '巴黎鐵塔香榭漫步 🗼',
-      desc: '漫步在香榭麗舍大道，在露天咖啡座分享剛出爐的香脆可頌。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#ffe5d9"/><path d="M40 10 L30 65 L50 65 Z" fill="#6c757d"/><path d="M33 65 A8 8 0 0 1 47 65 Z" fill="#ffe5d9"/><line x1="28" y1="45" x2="52" y2="45" stroke="#495057" stroke-width="3"/><line x1="40" y1="8" x2="40" y2="15" stroke="#343a40" stroke-width="2"/></svg>`
-    },
-    pyramids: {
-      title: '埃及金字塔奇境 🏜️',
-      desc: '攀登浩瀚金色沙漠中的千年金字塔，發現了刻著太陽的古老石碑！',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fdf0d5"/><circle cx="65" cy="20" r="8" fill="#f77f00"/><polygon points="40,25 15,65 65,65" fill="#ddb892"/><polygon points="40,25 50,65 65,65" fill="#b08968"/><polygon points="20,40 5,65 35,65" fill="#e6ccb2" opacity="0.85"/></svg>`
-    },
-    cappadocia: {
-      title: '熱氣球棉花堡 🎈',
-      desc: '清晨鳥瞰奇岩異石，天空飄滿了色彩繽紛的浪漫熱氣球。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e0fbfc"/><ellipse cx="38" cy="30" rx="15" ry="18" fill="#ee6c4d"/><path d="M30 46 L46 46 L42 54 L34 54 Z" fill="#98c1d9"/><rect x="35" y="56" width="6" height="5" fill="#8c6239"/><ellipse cx="62" cy="24" rx="8" ry="10" fill="#ffd166"/></svg>`
-    },
-    venice: {
-      title: '威尼斯水都貢多拉 🛶',
-      desc: '坐在黑色貢多拉小船上搖曳過拱橋，聽水手哼唱歡樂的民謠。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#cbf3f0"/><path d="M10 40 Q40 25 70 40 Z" fill="#d4a373" stroke="#8c6239" stroke-width="2"/><path d="M15 60 Q40 72 65 60 Z" fill="#2ec4b6"/><line x1="20" y1="52" x2="60" y2="58" stroke="#333" stroke-width="2"/></svg>`
-    },
-    pisa: {
-      title: '比薩斜塔奇蹟 🏛️',
-      desc: '站在翠綠大草坪前，歪著頭看這座神奇傾斜的大理石鐘樓！',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9edc9"/><g transform="rotate(10 40 40)"><rect x="32" y="16" width="16" height="48" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><line x1="32" y1="28" x2="48" y2="28" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="40" x2="48" y2="40" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="52" x2="48" y2="52" stroke="#adb5bd" stroke-width="2"/></g></svg>`
-    },
-    tajmahal: {
-      title: '泰姬瑪哈陵倒影 🕌',
-      desc: '純白大理石宮殿在水池中映照出夢幻倒影，微風吹過水面泛起漣漪。',
-      svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e8e8e4"/><path d="M25 40 Q40 22 55 40 L55 60 L25 60 Z" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/><circle cx="40" cy="22" r="3" fill="#f4a261"/><path d="M34 60 A6 6 0 0 1 46 60 Z" fill="#778da9"/><line x1="15" y1="35" x2="15" y2="60" stroke="#ced4da" stroke-width="2.5"/><line x1="65" y1="35" x2="65" y2="60" stroke="#ced4da" stroke-width="2.5"/></svg>`
-    }
+    shrine: { title: '京都神社之櫻 ⛩️️', desc: '在千本鳥居旁散步，偶遇了微風吹落的春櫻花瓣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fceade"/><polygon points="20,70 20,35 60,35 60,70" fill="none" stroke="#d90429" stroke-width="6"/><line x1="12" y1="35" x2="68" y2="35" stroke="#d90429" stroke-width="8"/><circle cx="60" cy="20" r="4" fill="#ffb4a2"/><circle cx="45" cy="15" r="3" fill="#ffb4a2"/></svg>` },
+    field: { title: '陽光向日葵田 🌻', desc: '置身在向日葵海裡，摘了幾顆新鮮飽滿的葵花子！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9f5db"/><circle cx="40" cy="38" r="16" fill="#603808"/><circle cx="40" cy="20" r="6" fill="#ffb703"/><circle cx="56" cy="30" r="6" fill="#ffb703"/><circle cx="56" cy="46" r="6" fill="#ffb703"/><circle cx="40" cy="56" r="6" fill="#ffb703"/><circle cx="24" cy="46" r="6" fill="#ffb703"/><circle cx="24" cy="30" r="6" fill="#ffb703"/></svg>` },
+    beach: { title: '黃金海岸浪花 🏖️', desc: '在細緻的金黃沙灘邊追浪，拾獲了五彩繽紛的貝殼。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#caf0f8"/><ellipse cx="40" cy="65" rx="35" ry="12" fill="#ffd166"/><circle cx="65" cy="22" r="8" fill="#f77f00"/><path d="M10 50 Q25 45 40 50 T70 50" stroke="#00b4d8" stroke-width="3" fill="none"/></svg>` },
+    fuji: { title: '富士山雪見溫泉 🗻', desc: '遠眺積雪的聖岳富士山，在暖呼呼的湯池邊打瞌睡。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e2eafc"/><polygon points="40,15 15,65 65,65" fill="#4361ee"/><polygon points="40,15 30,35 50,35" fill="#ffffff"/><circle cx="68" cy="22" r="7" fill="#ef233c"/></svg>` },
+    bigben: { title: '倫敦大笨鐘漫遊 🕰️', desc: '在泰晤士河畔聽大笨鐘報時，撿到了亮晶晶的英鎊硬幣。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#f0efeb"/><rect x="30" y="20" width="20" height="50" fill="#adb5bd"/><polygon points="30,20 40,8 50,20" fill="#6c757d"/><circle cx="40" cy="32" r="5" fill="#ffd166"/><line x1="40" y1="32" x2="40" y2="29" stroke="#333" stroke-width="1.5"/></svg>` },
+    aurora: { title: '極光雪地小冰屋 🌌', desc: '抬頭看見曼妙舞動的翠綠極光，在溫暖冰屋裡喝熱可可。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#0b090a"/><path d="M10 25 Q40 5 70 30" stroke="#52b788" stroke-width="8" fill="none" opacity="0.8"/><ellipse cx="40" cy="60" rx="25" ry="15" fill="#e9ecef"/><path d="M35 60 A5 5 0 0 1 45 60 Z" fill="#6c757d"/></svg>` },
+    eiffel: { title: '巴黎鐵塔香榭漫步 🗼', desc: '漫步在香榭麗舍大道，在露天咖啡座分享剛出爐的香脆可頌。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#ffe5d9"/><path d="M40 10 L30 65 L50 65 Z" fill="#6c757d"/><path d="M33 65 A8 8 0 0 1 47 65 Z" fill="#ffe5d9"/><line x1="28" y1="45" x2="52" y2="45" stroke="#495057" stroke-width="3"/><line x1="40" y1="8" x2="40" y2="15" stroke="#343a40" stroke-width="2"/></svg>` },
+    pyramids: { title: '埃及金字塔奇境 🏜️', desc: '攀登浩瀚金色沙漠中的千年金字塔，發現了刻著太陽的古老石碑！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#fdf0d5"/><circle cx="65" cy="20" r="8" fill="#f77f00"/><polygon points="40,25 15,65 65,65" fill="#ddb892"/><polygon points="40,25 50,65 65,65" fill="#b08968"/><polygon points="20,40 5,65 35,65" fill="#e6ccb2" opacity="0.85"/></svg>` },
+    cappadocia: { title: '熱氣球棉花堡 🎈', desc: '清晨鳥瞰奇岩異石，天空飄滿了色彩繽紛的浪漫熱氣球。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e0fbfc"/><ellipse cx="38" cy="30" rx="15" ry="18" fill="#ee6c4d"/><path d="M30 46 L46 46 L42 54 L34 54 Z" fill="#98c1d9"/><rect x="35" y="56" width="6" height="5" fill="#8c6239"/><ellipse cx="62" cy="24" rx="8" ry="10" fill="#ffd166"/></svg>` },
+    venice: { title: '威尼斯水都貢多拉 🛶', desc: '坐在黑色貢多拉小船上搖曳過拱橋，聽水手哼唱歡樂的民謠。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#cbf3f0"/><path d="M10 40 Q40 25 70 40 Z" fill="#d4a373" stroke="#8c6239" stroke-width="2"/><path d="M15 60 Q40 72 65 60 Z" fill="#2ec4b6"/><line x1="20" y1="52" x2="60" y2="58" stroke="#333" stroke-width="2"/></svg>` },
+    pisa: { title: '比薩斜塔奇蹟 🏛️', desc: '站在翠綠大草坪前，歪著頭看這座神奇傾斜的大理石鐘樓！', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e9edc9"/><g transform="rotate(10 40 40)"><rect x="32" y="16" width="16" height="48" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><line x1="32" y1="28" x2="48" y2="28" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="40" x2="48" y2="40" stroke="#adb5bd" stroke-width="2"/><line x1="32" y1="52" x2="48" y2="52" stroke="#adb5bd" stroke-width="2"/></g></svg>` },
+    tajmahal: { title: '泰姬瑪哈陵倒影 🕌', desc: '純白大理石宮殿在水池中映照出夢幻倒影，微風吹過水面泛起漣漪。', svg: `<svg viewBox="0 0 80 80" width="70" height="70"><rect width="80" height="80" rx="10" fill="#e8e8e4"/><path d="M25 40 Q40 22 55 40 L55 60 L25 60 Z" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/><circle cx="40" cy="22" r="3" fill="#f4a261"/><path d="M34 60 A6 6 0 0 1 46 60 Z" fill="#778da9"/><line x1="15" y1="35" x2="15" y2="60" stroke="#ced4da" stroke-width="2.5"/><line x1="65" y1="35" x2="65" y2="60" stroke="#ced4da" stroke-width="2.5"/></svg>` }
   }
 };
 
-const LOCAL_KEY = 'pocket_hamster_save_v20';
+const LOCAL_KEY = 'pocket_hamster_save_v22';
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); } catch(e) { saved = {}; }
+
+// 生成主人專屬 ID
+function generateRandomOwnerId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let res = 'HAMSTER-';
+  for (let i = 0; i < 4; i++) res += chars[Math.floor(Math.random() * chars.length)];
+  return res;
+}
 
 const state = {
   coins: saved.coins ?? 200,
@@ -256,6 +126,12 @@ const state = {
   ],
   poopList: saved.poopList || [],
   postcards: saved.postcards || [],
+  owner: saved.owner || {
+    id: generateRandomOwnerId(),
+    name: '大莊園主',
+    bio: '用心陪伴每隻小可愛～'
+  },
+  friends: saved.friends || [],
   isBuilding: false,
   selectedFurniId: null,
   travelingIds: [],
@@ -288,12 +164,135 @@ window.saveGame = function() {
     furnitureWarehouse: state.furnitureWarehouse,
     furniturePlaced: state.furniturePlaced,
     poopList: state.poopList,
-    postcards: state.postcards
+    postcards: state.postcards,
+    owner: state.owner,
+    friends: state.friends
   }));
   if (window.saveGameCloud) window.saveGameCloud();
 };
 
-// 離線收益與自然繁殖：大視窗展示版 (離線滿 10 分鐘以上才可能繁殖，上限 8 隻)
+// === 主人名片系統 ===
+window.openOwnerProfileModal = function() {
+  document.getElementById('cardOwnerId').textContent = state.owner.id;
+  document.getElementById('cardOwnerName').textContent = state.owner.name;
+  document.getElementById('cardOwnerBio').textContent = state.owner.bio;
+  document.getElementById('ownerProfileModal').style.display = 'flex';
+};
+
+window.copyOwnerId = function() {
+  navigator.clipboard.writeText(state.owner.id).then(() => {
+    showToast('已複製莊園 ID 到剪貼簿！');
+  }).catch(() => {
+    showToast(`你的 ID 是: ${state.owner.id}`);
+  });
+};
+
+window.changeOwnerName = function() {
+  const n = prompt('修改你的主人暱稱：', state.owner.name);
+  if (n && n.trim()) {
+    state.owner.name = n.trim();
+    saveGame();
+    document.getElementById('cardOwnerName').textContent = state.owner.name;
+    showToast('主人暱稱已更新！');
+  }
+};
+
+window.changeOwnerBio = function() {
+  const b = prompt('編輯個人簽名簡介：', state.owner.bio);
+  if (b && b.trim()) {
+    state.owner.bio = b.trim();
+    saveGame();
+    document.getElementById('cardOwnerBio').textContent = state.owner.bio;
+    showToast('個人簽名已更新！');
+  }
+};
+
+// === 好友社交系統 ===
+window.openFriendsModal = function() {
+  renderFriendsList();
+  document.getElementById('friendsModal').style.display = 'flex';
+};
+
+function renderFriendsList() {
+  const con = document.getElementById('friendsListContainer');
+  const empty = document.getElementById('friendsEmptyTip');
+  const countEl = document.getElementById('friendsCount');
+  con.innerHTML = '';
+  countEl.textContent = state.friends.length;
+
+  if (state.friends.length === 0) {
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    state.friends.forEach(f => {
+      const item = document.createElement('div');
+      item.style.cssText = 'background:#fff; border:1px solid var(--border-color); border-radius:12px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;';
+      item.innerHTML = `
+        <div>
+          <b style="font-size:12px;">${f.name}</b>
+          <span style="font-size:10px; color:var(--accent); font-family:monospace; margin-left:4px;">[${f.id}]</span>
+          <div style="font-size:10.5px; color:#666; margin-top:2px;">倉鼠：${f.hamsterCount} 隻｜${f.bio || '悠閒莊園生活'}</div>
+        </div>
+        <div style="display:flex; gap:4px;">
+          <button onclick="sendGiftToFriend('${f.id}')" style="border:none; background:#52b788; color:#fff; font-size:10px; font-weight:bold; padding:4px 8px; border-radius:8px; cursor:pointer;">贈送 🌻</button>
+          <button onclick="removeFriend('${f.id}')" style="border:none; background:#ff4d4f; color:#fff; font-size:10px; padding:4px 6px; border-radius:8px; cursor:pointer;">刪除</button>
+        </div>
+      `;
+      con.appendChild(item);
+    });
+  }
+}
+
+window.handleAddFriendById = function() {
+  const input = document.getElementById('addFriendInput');
+  const targetId = (input.value || '').trim().toUpperCase();
+  if (!targetId) return showToast('請輸入好友的莊園 ID！');
+
+  if (targetId === state.owner.id) return showToast('不能加自己的 ID 喔！');
+  if (state.friends.some(f => f.id === targetId)) return showToast('已經是好友囉！');
+
+  // 生成好友資料並保存
+  const randomNames = ['葵花籽富翁', '泡泡的好朋友', '倉鼠守護隊', '星空小鼠園', '元氣小主人'];
+  const assignedName = randomNames[Math.floor(Math.random() * randomNames.length)];
+  const newFriend = {
+    id: targetId,
+    name: assignedName,
+    hamsterCount: Math.floor(Math.random() * 5) + 2,
+    bio: '正在努力裝飾活動室！',
+    lastGiftDate: 0
+  };
+
+  state.friends.push(newFriend);
+  saveGame();
+  input.value = '';
+  renderFriendsList();
+  showToast(`🎉 成功添加【${newFriend.name}】為好友！`);
+};
+
+window.sendGiftToFriend = function(friendId) {
+  const f = state.friends.find(item => item.id === friendId);
+  if (!f) return;
+  const today = new Date().toDateString();
+  if (f.lastGiftDate === today) {
+    return showToast('今天已經送過這隻好友禮物囉，明天再來吧！');
+  }
+  f.lastGiftDate = today;
+  state.feedStock += 5; // 贈送好友時自己也獲得 5 顆葵花子愛心獎勵
+  saveGame();
+  renderHUD();
+  showToast(`已向【${f.name}】贈送禮物！你獲得了愛心獎勵 🌻 +5 飼料！`);
+};
+
+window.removeFriend = function(friendId) {
+  if (confirm('確定要解除好友關係嗎？')) {
+    state.friends = state.friends.filter(f => f.id !== friendId);
+    saveGame();
+    renderFriendsList();
+    showToast('已刪除該好友。');
+  }
+};
+
+// 離線收益與自然繁殖
 window.processOfflineEarnings = function() {
   const now = Date.now();
   if (!state.lastActiveTime) {
@@ -313,7 +312,6 @@ window.processOfflineEarnings = function() {
 
   let babyBorn = null;
 
-  // 繁衍規則：離開至少 10 分鐘，且家族未滿 8 隻上限，機率降至 15%
   if (minutes >= 10 && state.hamsters.length >= 2 && state.hamsters.length < 8) {
     const hasMale = state.hamsters.some(h => h.gender === '♂' && h.feedCount >= 20);
     const hasFemale = state.hamsters.some(h => h.gender === '♀' && h.feedCount >= 20);
@@ -324,8 +322,8 @@ window.processOfflineEarnings = function() {
       const babySpecies = spKeys[Math.floor(Math.random() * spKeys.length)];
       const babyName = `小${SPECIES[babySpecies].name[0]}`;
 
-      state.hamsters.push({
-        id: `h_${Date.now()}`,
+      const newBabyObj = {
+        id: `h_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
         name: babyName,
         gender: babyGender,
         species: babySpecies,
@@ -333,9 +331,11 @@ window.processOfflineEarnings = function() {
         cheekPouch: 0,
         equippedHat: null,
         room: 'living',
-        x: window.innerWidth / 2 - 40,
+        x: Math.random() * (window.innerWidth - 140) + 40,
         y: window.innerHeight * 0.70
-      });
+      };
+
+      state.hamsters.push(newBabyObj);
       babyBorn = `${babyName} (${babyGender}) - ${SPECIES[babySpecies].name}`;
     }
   }
@@ -346,7 +346,6 @@ window.processOfflineEarnings = function() {
   renderHUD();
   renderHamsters();
 
-  // 彈出視窗化大面板
   document.getElementById('offlineTimeText').textContent = minutes;
   document.getElementById('offlineCoinVal').textContent = earnedCoins;
   const babyNotify = document.getElementById('offlineBabyNotify');
@@ -921,7 +920,7 @@ function openAdoptCenter() {
       state.coins -= sp.cost;
       const assignedGender = Math.random() < 0.5 ? '♂' : '♀';
       state.hamsters.push({
-        id: `h_${Date.now()}`,
+        id: `h_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
         name: n.trim(),
         gender: assignedGender,
         species: key,
@@ -1022,7 +1021,6 @@ function openWardrobeSelect() {
   document.getElementById('wardrobeSelectModal').style.display = 'flex';
 }
 
-// 試衣間：以玩家去重擁有的帽子列表進行穿戴挑選
 function openFittingRoom(hamster) {
   document.getElementById('stageHamsterName').textContent = `${hamster.name} (${hamster.gender})`;
   updateFittingStage(hamster);
@@ -1145,7 +1143,6 @@ function openShop() {
   document.getElementById('shopModal').style.display = 'flex';
 }
 
-// 雜貨鋪：常駐顯示所有飾品，並顯示擁有數量
 function switchShopTab(tab) {
   currentShopTab = tab;
   document.getElementById('tabShopFurni').style.background = tab === 'furniture' ? 'var(--accent)' : '#fff';
@@ -1347,7 +1344,7 @@ function renderHUD() {
   if (stockEl) stockEl.textContent = state.feedStock;
 }
 
-// === YouTube 官方播放器控制 (防靜音與自動恢復守護版) ===
+// === YouTube 官方播放器控制 ===
 let ytBgmPlayer = null;
 let isYtPlaying = false;
 let userWantsMusic = true;
@@ -1425,8 +1422,3 @@ renderFurniture();
 renderHamsters();
 renderPoops();
 renderHUD();
-
-// 初始化執行離線計算 (單次呼叫)
-if (typeof window.processOfflineEarnings === 'function') {
-  window.processOfflineEarnings();
-}
