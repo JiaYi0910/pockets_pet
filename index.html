@@ -33,7 +33,7 @@
   </div>
 
   <div id="viewport">
-    <!-- 頂部 HUD (顯示當前數量 / 8 隻上限) -->
+    <!-- 頂部 HUD (極致緊湊：加入說明按鈕並確保全螢幕不溢出) -->
     <div class="top-bar">
       <div class="hud-pill">
         <span>🪙 <b id="valCoins">200</b></span>
@@ -41,8 +41,9 @@
         <span>🐹 <b id="valHamsterCount">1</b>/8</span>
       </div>
       
-      <div style="display:flex; gap:6px;">
+      <div class="hud-actions">
         <button class="btn-pill" id="btnBgmToggle" onclick="toggleBgmPlayer()" title="音樂開關">🎵</button>
+        <button class="btn-pill" onclick="openGameHelp()" title="遊戲說明">說明 📖</button>
         <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
         <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
         <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
@@ -137,6 +138,23 @@
   <!-- 隱藏式 YouTube 播放節點 -->
   <div style="position:fixed; left:-200px; top:-200px; width:100px; height:100px; opacity:0; pointer-events:none;">
     <div id="yt-audio-player"></div>
+  </div>
+
+  <!-- 莊園指引與遊戲說明專屬視窗 -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('helpModal')">✕</button>
+      <h3 class="modal-title">莊園新手指南 📖</h3>
+      <div style="font-size: 12px; line-height: 1.8; color: var(--main-text); background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px;">
+        <p>🌻 <b>餵食與囤糧</b>：點擊房間地面會掉落葵花子，小鼠會跑來塞滿腮幫子，再吐回小木屋囤積。</p>
+        <p style="margin-top:4px;">🛋️️ <b>多房生活</b>：點擊左右箭頭切換「客廳」、「活動室」與「庭院」，各房間家具與便便完全獨立。</p>
+        <p style="margin-top:4px;">🧹 <b>便便與大掃除</b>：小鼠會自主排泄，點擊便便或按底部「🧹 大掃除」可一鍵清理賺取金幣！</p>
+        <p style="margin-top:4px;">🔨 <b>建造與翻轉</b>：在雜貨鋪購買家具後進入「建造模式」，點擊家具可「水平翻轉」或「收回倉庫」。</p>
+        <p style="margin-top:4px;">🍼 <b>培育與送養</b>：離線達 10 分鐘以上，成年公母鼠可能誕下幼鼠（上限 8 隻）；手帳內支援愛心送養並領取補貼！</p>
+        <p style="margin-top:4px;">🎒 <b>旅行與明信片</b>：派小鼠出門背包旅行，收集全世界 12 大知名景點的精美紀念明信片！</p>
+      </div>
+      <button class="btn-action" style="background:var(--accent);" onclick="closeModal('helpModal')">我知道了 🐹</button>
+    </div>
   </div>
 
   <!-- 離線收益結算專屬視窗 -->
@@ -274,7 +292,7 @@
         <select id="selectTraveler" style="width:100%; padding:6px; border-radius:10px; border:1px solid var(--border-color); margin-top:4px; font-size:12px; background:#fff;"></select>
       </div>
       <button class="btn-action" style="margin-bottom:12px; background:var(--accent);" onclick="sendSelectedPetToTravel()">讓牠出發去探險 🎒</button>
-<div style="font-size:12px; font-weight:bold; margin-bottom:6px;">🌸 收集到的明信片 (<span id="postcardCount">0</span>/12)：</div>
+      <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">🌸 收集到的明信片 (<span id="postcardCount">0</span>/12)：</div>
       <div id="postcardEmpty" style="font-size:11px; text-align:center; color:#888; padding:8px 0;">還沒有明信片，快派鼠鼠出門吧！</div>
       <div id="postcardList"></div>
     </div>
