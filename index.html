@@ -5,8 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Pocket Hamsters | 倉鼠大莊園 Online</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* 強制登入全螢幕遮罩 */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      background: rgba(251, 248, 243, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.4s ease;
+    }
+    #authGate.unlocked {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- 強制登入閘門 (未登入無法進入) -->
+  <div id="authGate">
+    <div class="modal-card" style="box-shadow: 0 15px 35px rgba(74, 59, 50, 0.15);">
+      <h3 class="modal-title">倉鼠大莊園 🐹</h3>
+      <p style="font-size: 12px; color: #888; text-align: center; margin-bottom: 14px;">請先登入帳號以載入你的專屬鼠鼠雲端存檔</p>
+      
+      <div id="authFormArea">
+        <input type="email" class="auth-input" id="authEmail" placeholder="電子信箱 (Email)">
+        <input type="password" class="auth-input" id="authPassword" placeholder="密碼 (最少 6 位數)">
+        <button class="btn-action" style="background:var(--accent);" onclick="handleAuthLogin()">登入帳號</button>
+        <button class="btn-action" style="background:#52b788; margin-top:6px;" onclick="handleAuthRegister()">註冊新帳號</button>
+      </div>
+
+      <div id="authLoggedInArea" style="display:none; text-align:center;">
+        <p style="font-size:13px; color:#555; margin-bottom:12px;">當前登入：<b id="currentUserEmail"></b></p>
+        <button class="btn-action" style="background:var(--accent);" onclick="unlockGame()">開始遊玩 🎮</button>
+        <button class="btn-action" style="background:#e63946; margin-top:6px;" onclick="handleAuthLogout()">登出帳號</button>
+      </div>
+    </div>
+  </div>
 
   <div id="viewport">
     <!-- 頂部 HUD -->
@@ -18,7 +57,7 @@
       <div style="display:flex; gap:6px;">
         <button class="btn-pill" onclick="openAdoptCenter()">領養 🏡</button>
         <button class="btn-pill" onclick="openProfile()">手帳 📋</button>
-        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">登入 👤</button>
+        <button class="btn-pill" id="btnUserStatus" onclick="openAuthModal()">帳號 👤</button>
       </div>
     </div>
 
@@ -89,24 +128,6 @@
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
-    </div>
-  </div>
-
-  <!-- 帳號登入/註冊 Modal -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-card">
-      <h3 class="modal-title" id="authTitle">雲端存檔帳號 ☁️</h3>
-      <div id="authFormArea">
-        <input type="email" class="auth-input" id="authEmail" placeholder="電子信箱 (Email)">
-        <input type="password" class="auth-input" id="authPassword" placeholder="密碼 (最少 6 位數)">
-        <button class="btn-action" style="background:var(--accent);" onclick="handleAuthLogin()">登入現有帳號</button>
-        <button class="btn-action" style="background:#52b788; margin-top:6px;" onclick="handleAuthRegister()">註冊新帳號</button>
-      </div>
-      <div id="authLoggedInArea" style="display:none; text-align:center;">
-        <p style="font-size:13px; color:#555; margin-bottom:12px;">已登入：<b id="currentUserEmail"></b></p>
-        <button class="btn-action" style="background:#e63946;" onclick="handleAuthLogout()">登出帳號</button>
-      </div>
-      <button class="btn-action" style="background:#8b786d; margin-top:8px;" onclick="closeModal('authModal')">關閉</button>
     </div>
   </div>
 
@@ -198,10 +219,10 @@
     <canvas id="game-canvas"></canvas>
   </div>
 
-  <!-- 引入遊戲主素材與邏輯 -->
+  <!-- 引入遊戲素材與邏輯 -->
   <script src="assets.js"></script>
 
-  <!-- 引入 Firebase 雲端模組 -->
+  <!-- Firebase 雲端認證與登入攔截 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -222,19 +243,21 @@
     const db = getFirestore(app);
 
     let currentUser = null;
+    const authGate = document.getElementById('authGate');
+    const formArea = document.getElementById('authFormArea');
+    const loggedArea = document.getElementById('authLoggedInArea');
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       const statusBtn = document.getElementById('btnUserStatus');
-      const formArea = document.getElementById('authFormArea');
-      const loggedArea = document.getElementById('authLoggedInArea');
 
       if (user) {
-        statusBtn.textContent = '已連線 ☁️';
+        statusBtn.textContent = '帳號 👤';
         formArea.style.display = 'none';
         loggedArea.style.display = 'block';
         document.getElementById('currentUserEmail').textContent = user.email;
 
+        // 下載雲端存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -250,10 +273,15 @@
         } else {
           window.saveGame();
         }
+
+        // 登入成功解鎖畫面
+        authGate.classList.add('unlocked');
       } else {
+        // 未登入強制鎖定遮罩
         statusBtn.textContent = '登入 👤';
         formArea.style.display = 'block';
         loggedArea.style.display = 'none';
+        authGate.classList.remove('unlocked');
       }
     });
 
@@ -276,27 +304,32 @@
     window.handleAuthLogin = async () => {
       const em = document.getElementById('authEmail').value;
       const pw = document.getElementById('authPassword').value;
+      if (!em || !pw) return alert('請輸入帳號密碼！');
       try {
         await signInWithEmailAndPassword(auth, em, pw);
-        window.closeModal('authModal');
-        alert('🎉 雲端登入成功！存檔已同步。');
       } catch (e) { alert('登入失敗: ' + e.message); }
     };
 
     window.handleAuthRegister = async () => {
       const em = document.getElementById('authEmail').value;
       const pw = document.getElementById('authPassword').value;
+      if (!em || !pw) return alert('請輸入帳號密碼！');
       try {
         await createUserWithEmailAndPassword(auth, em, pw);
-        window.closeModal('authModal');
-        alert('🎉 帳號註冊成功！已開啟雲端備份。');
+        alert('🎉 註冊成功！');
       } catch (e) { alert('註冊失敗: ' + e.message); }
     };
 
     window.handleAuthLogout = async () => {
       await signOut(auth);
-      window.closeModal('authModal');
-      alert('已登出帳號。');
+    };
+
+    window.openAuthModal = () => {
+      authGate.classList.remove('unlocked');
+    };
+
+    window.unlockGame = () => {
+      authGate.classList.add('unlocked');
     };
   </script>
 </body>
