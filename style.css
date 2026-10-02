@@ -48,7 +48,7 @@ html, body {
   box-shadow: inset 0 12px 24px rgba(110, 80, 50, 0.12);
 }
 
-/* 房間 2: 活動室 (蓬鬆柔軟純白/淺灰紙棉厚鋪) */
+/* 房間 2: 活動室 (蓬鬆柔軟紙棉厚鋪) */
 #room-play { background: #f4faf8; }
 #room-play .floor {
   background: radial-gradient(circle at 50% 50%, #ffffff 2px, transparent 0) 0 0/16px 16px,
@@ -66,7 +66,6 @@ html, body {
   box-shadow: inset 0 14px 20px rgba(27, 67, 50, 0.15);
 }
 
-/* 庭院野生花草與裝飾層 */
 .garden-flora-bg {
   position: absolute;
   bottom: 40%;
@@ -215,15 +214,82 @@ html, body {
   cursor: pointer;
   pointer-events: auto;
 }
-.placed-furniture.building {
-  outline: 2px dashed var(--accent);
+.placed-furniture.in-building {
+  outline: 2px dashed rgba(217, 119, 54, 0.4);
   border-radius: 8px;
 }
+.placed-furniture.is-selected {
+  outline: 2px solid var(--accent) !important;
+  background: rgba(217, 119, 54, 0.08);
+  border-radius: 8px;
+}
+.furni-ctrl-bubble {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3px 8px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  border: 1px solid var(--border-color);
+  z-index: 50;
+  white-space: nowrap;
+}
+.ctrl-btn-bubble {
+  border: none;
+  background: var(--card-bg);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--main-text);
+  padding: 3px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .spinning-wheel {
   animation: spinWheel 0.35s linear infinite;
   transform-origin: 50% 50%;
 }
 @keyframes spinWheel { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* 建造模式底層倉庫面板 */
+#buildWarehousePanel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 130px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+  padding: 8px 12px;
+}
+.warehouse-scroll-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  flex-grow: 1;
+  align-items: center;
+}
+.warehouse-item-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 90px;
+}
 
 /* 倉鼠容器與動作 */
 .hamster-layer {
@@ -348,7 +414,7 @@ html, body {
 }
 .toggle-dock-btn.is-collapsed svg { transform: rotate(180deg); }
 
-/* 食物與粒子 */
+/* 食物、粒子與便便 */
 .sunflower-seed {
   position: absolute;
   width: 16px;
@@ -402,7 +468,7 @@ html, body {
 }
 @keyframes poopPop { from { transform: scale(0); } to { transform: scale(1); } }
 
-/* 通用彈窗 Modal */
+/* 通用彈窗與遮罩 */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -474,6 +540,35 @@ html, body {
   background: #fff;
 }
 
+/* 登入牆遮罩 */
+#authGate {
+  position: fixed;
+  inset: 0;
+  background: rgba(251, 248, 243, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s ease;
+}
+#authGate.unlocked { opacity: 0; pointer-events: none; }
+
+/* 試衣間舞台專用樣式 */
+.fitting-stage {
+  width: 140px;
+  height: 140px;
+  margin: 10px auto;
+  background: #faf4ed;
+  border: 3px dashed var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* MiniGame 全螢幕 */
 #minigame-screen {
   position: fixed;
   inset: 0;
