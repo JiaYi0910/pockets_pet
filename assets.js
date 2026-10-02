@@ -49,12 +49,78 @@ function generateHamsterSVG(speciesKey, isCheekFull = false) {
 
 const ASSETS = {
   hats: {
-    straw_hat: { name: '夏日草帽', cost: 30, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>` },
-    pink_bow: { name: '粉櫻蝴蝶結', cost: 45, svg: `<svg viewBox="0 0 50 35" width="40" height="28"><polygon points="25,18 10,8 10,28" fill="#f4a5ae"/><polygon points="25,18 40,8 40,28" fill="#f4a5ae"/><ellipse cx="25" cy="18" rx="5" ry="5" fill="#e56b81"/></svg>` },
-    grad_cap: { name: '學士帽', cost: 70, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>` },
-    crown: { name: '國王金皇冠', cost: 110, svg: `<svg viewBox="0 0 50 35" width="42" height="30"><polygon points="8,26 12,12 25,18 38,12 42,26" fill="#ffd166" stroke="#f4a261" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#e76f51"/><circle cx="25" cy="18" r="3" fill="#2a9d8f"/><circle cx="38" cy="12" r="3" fill="#e76f51"/></svg>` },
-    detective_hat: { name: '偵探格紋帽', cost: 85, svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M10 26 Q30 8 50 26 Z" fill="#7f5539"/><ellipse cx="30" cy="26" rx="26" ry="6" fill="#9c6644"/><rect x="26" y="10" width="8" height="4" fill="#582f0e"/></svg>` },
-    daisy_clip: { name: '小雛菊髮夾', cost: 40, svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="6" fill="#ffd166"/><circle cx="20" cy="10" r="4" fill="#ffffff"/><circle cx="28" cy="15" r="4" fill="#ffffff"/><circle cx="28" cy="25" r="4" fill="#ffffff"/><circle cx="20" cy="30" r="4" fill="#ffffff"/><circle cx="12" cy="25" r="4" fill="#ffffff"/><circle cx="12" cy="15" r="4" fill="#ffffff"/></svg>` }
+    straw_hat: {
+      name: '夏日草帽', cost: 30,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M5 28 Q30 22 55 28 Q30 34 5 28" fill="#e9c46a" stroke="#d4a373" stroke-width="2"/><ellipse cx="30" cy="20" rx="16" ry="12" fill="#f4a261"/><rect x="14" y="20" width="32" height="4" fill="#e76f51"/></svg>`
+    },
+    pink_bow: {
+      name: '粉櫻蝴蝶結', cost: 45,
+      svg: `<svg viewBox="0 0 50 35" width="40" height="28"><polygon points="25,18 10,8 10,28" fill="#f4a5ae"/><polygon points="25,18 40,8 40,28" fill="#f4a5ae"/><ellipse cx="25" cy="18" rx="5" ry="5" fill="#e56b81"/></svg>`
+    },
+    grad_cap: {
+      name: '學士帽', cost: 70,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><polygon points="30,8 54,18 30,28 6,18" fill="#2b2d42"/><rect x="22" y="24" width="16" height="8" fill="#1d1e2c"/><path d="M48 20 L48 30" stroke="#f4a261" stroke-width="2"/><circle cx="48" cy="31" r="2" fill="#f4a261"/></svg>`
+    },
+    crown: {
+      name: '國王金皇冠', cost: 110,
+      svg: `<svg viewBox="0 0 50 35" width="42" height="30"><polygon points="8,26 12,12 25,18 38,12 42,26" fill="#ffd166" stroke="#f4a261" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#e76f51"/><circle cx="25" cy="18" r="3" fill="#2a9d8f"/><circle cx="38" cy="12" r="3" fill="#e76f51"/></svg>`
+    },
+    detective_hat: {
+      name: '偵探格紋帽', cost: 85,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="30"><path d="M10 26 Q30 8 50 26 Z" fill="#7f5539"/><ellipse cx="30" cy="26" rx="26" ry="6" fill="#9c6644"/><rect x="26" y="10" width="8" height="4" fill="#582f0e"/></svg>`
+    },
+    daisy_clip: {
+      name: '小雛菊髮夾', cost: 40,
+      svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="6" fill="#ffd166"/><circle cx="20" cy="10" r="4" fill="#ffffff"/><circle cx="28" cy="15" r="4" fill="#ffffff"/><circle cx="28" cy="25" r="4" fill="#ffffff"/><circle cx="20" cy="30" r="4" fill="#ffffff"/><circle cx="12" cy="25" r="4" fill="#ffffff"/><circle cx="12" cy="15" r="4" fill="#ffffff"/></svg>`
+    },
+    chef_hat: {
+      name: '大廚白高帽', cost: 65,
+      svg: `<svg viewBox="0 0 50 40" width="40" height="32"><path d="M14 26 C8 16 20 6 25 12 C30 6 42 16 36 26 Z" fill="#ffffff" stroke="#ced4da" stroke-width="2"/><rect x="14" y="24" width="22" height="6" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.5"/></svg>`
+    },
+    clover_pin: {
+      name: '幸運草髮夾', cost: 50,
+      svg: `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="15" cy="15" r="6" fill="#52b788"/><circle cx="25" cy="15" r="6" fill="#52b788"/><circle cx="15" cy="25" r="6" fill="#52b788"/><circle cx="25" cy="25" r="6" fill="#52b788"/><path d="M20 20 Q18 34 12 36" stroke="#2d6a4f" stroke-width="2.5" fill="none"/></svg>`
+    },
+    red_hood: {
+      name: '小紅帽斗篷', cost: 75,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M10 32 C10 10 50 10 50 32 C42 34 18 34 10 32 Z" fill="#e63946"/><circle cx="30" cy="12" r="5" fill="#d90429"/><polygon points="25,32 30,38 35,32" fill="#d90429"/></svg>`
+    },
+    pirate_hat: {
+      name: '海盜三角帽', cost: 95,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M6 30 Q30 18 54 30 L46 14 Q30 8 14 14 Z" fill="#212529"/><circle cx="30" cy="22" r="3.5" fill="#f8f9fa"/><line x1="24" y1="26" x2="36" y2="18" stroke="#f8f9fa" stroke-width="1.5"/></svg>`
+    },
+    wizard_hat: {
+      name: '魔法巫師帽', cost: 105,
+      svg: `<svg viewBox="0 0 60 45" width="46" height="35"><ellipse cx="30" cy="36" rx="26" ry="6" fill="#3a0ca3"/><polygon points="30,4 18,34 42,34" fill="#4361ee"/><polygon points="30,16 32,20 36,20 33,23 34,27 30,24 26,27 27,23 24,20 28,20" fill="#ffd166"/></svg>`
+    },
+    party_cone: {
+      name: '派對彩帶尖帽', cost: 55,
+      svg: `<svg viewBox="0 0 50 45" width="38" height="35"><polygon points="25,6 12,38 38,38" fill="#f72585"/><circle cx="25" cy="5" r="4" fill="#ffd166"/><line x1="16" y1="22" x2="34" y2="22" stroke="#4cc9f0" stroke-width="3"/><line x1="14" y1="30" x2="36" y2="30" stroke="#ffd166" stroke-width="3"/></svg>`
+    },
+    cool_shades: {
+      name: '酷炫黑超墨鏡', cost: 80,
+      svg: `<svg viewBox="0 0 60 30" width="46" height="24"><rect x="8" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="34" y="10" width="18" height="12" rx="3" fill="#1b1b1e"/><rect x="26" y="13" width="8" height="3" fill="#3a3a40"/><line x1="2" y1="12" x2="8" y2="12" stroke="#1b1b1e" stroke-width="2"/><line x1="52" y1="12" x2="58" y2="12" stroke="#1b1b1e" stroke-width="2"/></svg>`
+    },
+    bunny_ears: {
+      name: '兔兔粉萌髮箍', cost: 65,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M18 4 C15 4 12 18 17 30 C22 18 21 4 18 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M18 9 C16 9 14 18 17 26 C20 18 20 9 18 9 Z" fill="#ffb4a2"/><path d="M42 4 C39 4 38 18 43 30 C48 18 45 4 42 4 Z" fill="#ffffff" stroke="#dee2e6" stroke-width="1.5"/><path d="M42 9 C40 9 40 18 43 26 C46 18 44 9 42 9 Z" fill="#ffb4a2"/><path d="M14 30 Q30 25 46 30" stroke="#f48c06" stroke-width="2" fill="none"/></svg>`
+    },
+    frog_hat: {
+      name: '綠意青蛙頭套', cost: 90,
+      svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M12 28 C10 12 50 12 48 28 Z" fill="#70e000"/><circle cx="18" cy="12" r="7" fill="#70e000"/><circle cx="18" cy="12" r="4.5" fill="#ffffff"/><circle cx="18" cy="12" r="2" fill="#000"/><circle cx="42" cy="12" r="7" fill="#70e000"/><circle cx="42" cy="12" r="4.5" fill="#ffffff"/><circle cx="42" cy="12" r="2" fill="#000"/><ellipse cx="30" cy="22" rx="10" ry="3" fill="#38b000" opacity="0.6"/></svg>`
+    },
+    kitsune_mask: {
+      name: '祭典狐狸面具', cost: 115,
+      svg: `<svg viewBox="0 0 50 40" width="40" height="32"><polygon points="12,10 8,24 16,34 34,34 42,24 38,10 30,16 20,16" fill="#ffffff" stroke="#e63946" stroke-width="1.5"/><polygon points="12,12 10,20 16,16" fill="#d90429"/><polygon points="38,12 40,20 34,16" fill="#d90429"/><line x1="16" y1="24" x2="22" y2="24" stroke="#d90429" stroke-width="2"/><line x1="28" y1="24" x2="34" y2="24" stroke="#d90429" stroke-width="2"/><ellipse cx="25" cy="29" rx="2" ry="1.5" fill="#d90429"/></svg>`
+    },
+    aviator_hat: {
+      name: '飛行員皮風鏡', cost: 100,
+      svg: `<svg viewBox="0 0 60 40" width="46" height="32"><path d="M12 30 C10 12 50 12 48 30 L45 36 L15 36 Z" fill="#6f4e37"/><rect x="15" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><rect x="33" y="16" width="12" height="8" rx="3" fill="#a2d2ff" stroke="#212529" stroke-width="2"/><line x1="27" y1="20" x2="33" y2="20" stroke="#212529" stroke-width="3"/></svg>`
+    },
+    lotus_leaf: {
+      name: '天然荷葉小帽', cost: 60,
+      svg: `<svg viewBox="0 0 60 35" width="46" height="28"><path d="M8 26 C12 8 48 8 52 26 C40 28 20 28 8 26 Z" fill="#52b788" stroke="#2d6a4f" stroke-width="2"/><line x1="30" y1="12" x2="30" y2="2" stroke="#2d6a4f" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="16" x2="20" y2="24" stroke="#40916c" stroke-width="1.5"/><line x1="30" y1="16" x2="40" y2="24" stroke="#40916c" stroke-width="1.5"/></svg>`
+    }
   },
   furniture: {
     wheel: {
