@@ -1151,9 +1151,10 @@ function renderHUD() {
   if (stockEl) stockEl.textContent = state.feedStock;
 }
 
-// === YouTube 官方播放器控制 ===
+// === YouTube 官方播放器控制 (防靜音與自動恢復守護版) ===
 let ytBgmPlayer = null;
 let isYtPlaying = false;
+let userWantsMusic = true; // 記錄使用者是否主動開啟音樂
 
 window.onYouTubeIframeAPIReady = function() {
   ytBgmPlayer = new YT.Player('yt-audio-player', {
@@ -1175,32 +1176,64 @@ window.onYouTubeIframeAPIReady = function() {
         if (e.data === YT.PlayerState.PLAYING) {
           isYtPlaying = true;
           if (btn) btn.textContent = '🎵';
-        } else {
+        } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
           isYtPlaying = false;
-          if (btn) btn.textContent = '🔇';
+          // 若使用者沒按靜音，卻被 Safari 系統中斷，在下次任意點擊時自動喚醒！
+          if (userWantsMusic && btn) btn.textContent = '🎵';
+          else if (btn) btn.textContent = '🔇';
         }
       }
     }
   });
 };
 
+// 使用者手動切換開關
 window.toggleBgmPlayer = function() {
   if (!ytBgmPlayer || typeof ytBgmPlayer.playVideo !== 'function') return;
 
   if (isYtPlaying) {
+    userWantsMusic = false;
     ytBgmPlayer.pauseVideo();
   } else {
+    userWantsMusic = true;
     ytBgmPlayer.setVolume(18);
     ytBgmPlayer.playVideo();
   }
 };
 
 window.startBgmOnUnlock = function() {
+  userWantsMusic = true;
   if (ytBgmPlayer && typeof ytBgmPlayer.playVideo === 'function') {
     ytBgmPlayer.setVolume(18);
     ytBgmPlayer.playVideo();
   }
 };
+
+// === 核心守護防線：防止 iOS Safari 在點按鈕或彈窗時靜音中斷 ===
+function keepBgmAlive() {
+  if (userWantsMusic && ytBgmPlayer && typeof ytBgmPlayer.getPlayerState === 'function') {
+    const currentState = ytBgmPlayer.getPlayerState();
+    // 如果音樂不是正在播放 (被系統暫停或緩衝卡住)，立刻喚醒恢復播放！
+    if (currentState !== YT.PlayerState.PLAYING && currentState !== YT.PlayerState.BUFFERING) {
+      ytBgmPlayer.setVolume(18);
+      ytBgmPlayer.playVideo();
+    }
+  }
+}
+
+// 監聽全螢幕任何按鈕點擊與焦點恢復，只要有點擊動作就確保音樂不中斷
+document.addEventListener('pointerup', () => {
+  setTimeout(keepBgmAlive, 150);
+}, { passive: true });
+
+window.addEventListener('focus', () => {
+  setTimeout(keepBgmAlive, 200);
+});
+
+// 初始化執行離線計算
+if (typeof window.processOfflineEarnings === 'function') {
+  window.processOfflineEarnings();
+}
 
 renderFurniture();
 renderHamsters();
