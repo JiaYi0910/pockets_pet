@@ -60,7 +60,7 @@
 
     <div class="build-banner" id="buildBanner">建造模式：點家具翻轉/收回，底部從倉庫擺放</div>
 
-    <!-- 跨房間滑動軌道 (每個房間皆配置專屬家具層與便便層) -->
+    <!-- 跨房間滑動軌道 -->
     <div id="world-slider">
       <!-- 房間 0: 客廳 -->
       <div class="room-scene" id="room-living" data-room-index="0">
@@ -123,10 +123,9 @@
           旅行手帳
         </button>
         <button class="dock-btn" onclick="cleanAllPoopInRoom()">
-  <span style="font-size: 20px; line-height: 22px;">🧹</span>
-  大掃除
-</button>
-
+          <span style="font-size: 20px; line-height: 22px;">🧹</span>
+          大掃除
+        </button>
       </div>
 
       <button class="toggle-dock-btn" id="dockToggleBtn" onclick="toggleDock()" title="收合選單">
@@ -143,6 +142,7 @@
   <!-- 帳號 Modal -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('authModal')">✕</button>
       <h3 class="modal-title" id="authTitle">雲端存檔帳號 ☁️</h3>
       <div id="authFormArea">
         <input type="email" class="auth-input" id="authEmail" placeholder="電子信箱 (Email)">
@@ -155,41 +155,41 @@
         <button class="btn-action" style="background:var(--accent);" onclick="unlockGame()">開始遊玩 🎮</button>
         <button class="btn-action" style="background:#e63946; margin-top:6px;" onclick="handleAuthLogout()">登出帳號</button>
       </div>
-      <button class="btn-action" style="background:#8b786d; margin-top:8px;" onclick="closeModal('authModal')">關閉</button>
     </div>
   </div>
 
   <!-- 領養中心 -->
   <div class="modal-overlay" id="adoptModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('adoptModal')">✕</button>
       <h3 class="modal-title">倉鼠領養中心 🏡</h3>
       <p style="font-size:12px; text-align:center; color:#888;">金幣餘額：<b id="adoptCoinVal">0</b></p>
       <div class="grid-container" id="adoptGrid"></div>
-      <button class="btn-action" style="background:#8b786d;" onclick="closeModal('adoptModal')">下次再來</button>
     </div>
   </div>
 
   <!-- 家族手帳 -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('profileModal')">✕</button>
       <h3 class="modal-title">倉鼠家族手帳 📋</h3>
       <div id="hamsterCardList"></div>
-      <button class="btn-action" onclick="closeModal('profileModal')">關閉</button>
     </div>
   </div>
 
   <!-- 換衣服選擇 -->
   <div class="modal-overlay" id="wardrobeSelectModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('wardrobeSelectModal')">✕</button>
       <h3 class="modal-title">選擇要換裝的倉鼠 🧣</h3>
       <div id="wardrobeSelectList"></div>
-      <button class="btn-action" style="background:#8b786d;" onclick="closeModal('wardrobeSelectModal')">取消</button>
     </div>
   </div>
 
   <!-- 獨立試衣間 Modal -->
   <div class="modal-overlay" id="fittingRoomModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('fittingRoomModal')">✕</button>
       <h3 class="modal-title">專屬試衣舞台 👒</h3>
       <p style="font-size:12px; text-align:center; color:var(--accent);">正在為 <b id="stageHamsterName"></b> 換裝</p>
       
@@ -200,13 +200,13 @@
 
       <div style="font-size:12px; font-weight:bold; margin:6px 0;">挑選飾品：</div>
       <div class="grid-container" id="fittingHatGrid"></div>
-      <button class="btn-action" onclick="closeModal('fittingRoomModal')">換好出發！</button>
     </div>
   </div>
 
   <!-- 分類雜貨鋪 Modal -->
   <div class="modal-overlay" id="shopModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('shopModal')">✕</button>
       <h3 class="modal-title">森之雜貨鋪 🛒</h3>
       <p style="font-size:12px; text-align:center; color:#888; margin-bottom:8px;">金幣餘額：<b id="shopCoinText">0</b></p>
       
@@ -216,13 +216,13 @@
       </div>
 
       <div class="grid-container" id="shopGrid"></div>
-      <button class="btn-action" style="background:#8b786d; margin-top:10px;" onclick="closeModal('shopModal')">離開</button>
     </div>
   </div>
 
   <!-- 旅行手帳 -->
   <div class="modal-overlay" id="postcardModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('postcardModal')">✕</button>
       <h3 class="modal-title">旅行紀念手帳 📖</h3>
       <div style="margin-bottom:10px;">
         <label style="font-size:12px; font-weight:bold; color:var(--main-text);">選擇誰出門散步：</label>
@@ -232,13 +232,13 @@
       <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">🌸 收集到的明信片 (<span id="postcardCount">0</span>/6)：</div>
       <div id="postcardEmpty" style="font-size:11px; text-align:center; color:#888; padding:8px 0;">還沒有明信片，快派鼠鼠出門吧！</div>
       <div id="postcardList"></div>
-      <button class="btn-action" style="background:#8b786d;" onclick="closeModal('postcardModal')">合上手帳</button>
     </div>
   </div>
 
   <!-- 小遊戲說明 -->
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-card">
+      <button class="modal-close-x" onclick="closeModal('rulesModal')">✕</button>
       <h3 class="modal-title">接瓜子大作戰 🎮</h3>
       <div style="background:#fff; border:1px solid var(--border-color); border-radius:14px; padding:12px; font-size:12px; line-height:1.7; color:var(--main-text);">
         <p><b>玩法說明：</b>用手指左右拖動接住落下的寶物，限時 20 秒！</p>
@@ -247,7 +247,6 @@
         <p>🪨 <b>落石</b>：扣 10 分（小心避開！）</p>
       </div>
       <button class="btn-action" style="background:var(--accent);" onclick="reallyStartMiniGame()">開始挑戰！</button>
-      <button class="btn-action" style="background:#8b786d; margin-top:6px;" onclick="closeModal('rulesModal')">取消</button>
     </div>
   </div>
 
@@ -316,7 +315,6 @@
           renderFurniture();
           renderPoops();
 
-          // 雲端資料同步完畢後，立即精準結算離線收益與繁衍
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
