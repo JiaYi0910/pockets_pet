@@ -360,11 +360,11 @@
   <script src="assets.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase 雲端公開索引與跨玩家好友同步模組 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDdBydWhi8nAK_B0dzuILmdr7WbQZxIiCU",
@@ -381,6 +381,7 @@
     const db = getFirestore(app);
 
     let currentUser = null;
+    let friendInboxUnsubscribe = null;
     const authGate = document.getElementById('authGate');
     const formArea = document.getElementById('authFormArea');
     const loggedArea = document.getElementById('authLoggedInArea');
@@ -395,7 +396,7 @@
         const ownerEmailEl = document.getElementById('cardOwnerEmail');
         if (ownerEmailEl) ownerEmailEl.textContent = user.email;
 
-        // 1. 抓取雲端存檔
+        // 1. 抓取個人存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
@@ -417,7 +418,7 @@
           renderFurniture();
           renderPoops();
 
-          // 2. 雲端下載完畢，進行一次安全結算（防止重複繁衍覆蓋）
+          // 2. 雲端資料下載並對齊完畢後，安全觸發離線結算（保證小鼠存活並回傳雲端）
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
@@ -425,13 +426,117 @@
           window.saveGame();
         }
 
+        // 3. 向全服發布「公開名片索引」，讓其他玩家用 ID 搜得到你
+        await publishPublicProfile(user.uid);
+
+        // 4. 監聽專屬好友信箱（如果朋友加你，你這裡即時收到並加回）
+        listenFriendInbox(state.owner.id);
+
         authGate.classList.add('unlocked');
       } else {
+        if (friendInboxUnsubscribe) friendInboxUnsubscribe();
         formArea.style.display = 'block';
         loggedArea.style.display = 'none';
         authGate.classList.remove('unlocked');
       }
     });
+
+    // 發布公開名片
+    async function publishPublicProfile(uid) {
+      try {
+        const publicDocRef = doc(db, 'public_profiles', state.owner.id);
+        await setDoc(publicDocRef, {
+          uid: uid,
+          id: state.owner.id,
+          name: state.owner.name,
+          bio: state.owner.bio,
+          hamsterCount: state.hamsters.length,
+          updatedAt: Date.now()
+        }, { merge: true });
+      } catch (e) {
+        console.warn("公開名片同步中:", e);
+      }
+    }
+
+    // 監聽是否有其他玩家添加自己為好友
+    function listenFriendInbox(myOwnerId) {
+      if (friendInboxUnsubscribe) friendInboxUnsubscribe();
+      const inboxRef = doc(db, 'friend_inbox', myOwnerId);
+      friendInboxUnsubscribe = onSnapshot(inboxRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          const incomingList = data.requests || [];
+          let hasNew = false;
+          incomingList.forEach(incoming => {
+            if (!state.friends.some(f => f.id === incoming.id)) {
+              state.friends.push(incoming);
+              hasNew = true;
+            }
+          });
+          if (hasNew) {
+            window.saveGame();
+            if (typeof window.renderFriendsList === 'function') window.renderFriendsList();
+            showToast('🎉 有新好友加入你的莊園名冊囉！');
+          }
+        }
+      });
+    }
+
+    // 真實跨雲端加好友邏輯
+    window.cloudAddFriend = async function(targetId) {
+      try {
+        const targetRef = doc(db, 'public_profiles', targetId);
+        const targetSnap = await getDoc(targetRef);
+        
+        let friendName = '親切的莊園主';
+        let friendBio = '悠閒莊園生活';
+        let friendHamsterCount = 3;
+
+        if (targetSnap.exists()) {
+          const tData = targetSnap.data();
+          friendName = tData.name || friendName;
+          friendBio = tData.bio || friendBio;
+          friendHamsterCount = tData.hamsterCount || friendHamsterCount;
+        }
+
+        // 把對方存入自己的好友列表
+        const newFriendObj = {
+          id: targetId,
+          name: friendName,
+          hamsterCount: friendHamsterCount,
+          bio: friendBio,
+          lastGiftDate: 0
+        };
+        state.friends.push(newFriendObj);
+        window.saveGame();
+
+        // 同步寫入對方的「好友信箱」，讓對方也能看到你！
+        const targetInboxRef = doc(db, 'friend_inbox', targetId);
+        const myProfile = {
+          id: state.owner.id,
+          name: state.owner.name,
+          hamsterCount: state.hamsters.length,
+          bio: state.owner.bio,
+          lastGiftDate: 0
+        };
+
+        const targetInboxSnap = await getDoc(targetInboxRef);
+        let curRequests = [];
+        if (targetInboxSnap.exists()) {
+          curRequests = targetInboxSnap.data().requests || [];
+        }
+        if (!curRequests.some(r => r.id === state.owner.id)) {
+          curRequests.push(myProfile);
+          await setDoc(targetInboxRef, { requests: curRequests }, { merge: true });
+        }
+
+        showToast(`🎉 成功與【${friendName}】成為好友！`);
+        if (typeof window.renderFriendsList === 'function') window.renderFriendsList();
+      } catch (err) {
+        console.error("加好友失敗:", err);
+        showToast('連線至好友莊園失敗，請稍候再試！');
+      }
+    };
 
     window.saveGameCloud = async function() {
       if (!currentUser) return;
@@ -450,6 +555,7 @@
           owner: state.owner,
           friends: state.friends
         });
+        publishPublicProfile(currentUser.uid);
       } catch (err) {
         console.error("雲端存檔失敗:", err);
       }
