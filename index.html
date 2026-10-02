@@ -5,105 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Pocket Hamsters | 倉鼠大莊園 Online</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    #authGate {
-      position: fixed;
-      inset: 0;
-      background: rgba(251, 248, 243, 0.95);
-      backdrop-filter: blur(8px);
-      z-index: 999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.4s ease;
-    }
-    #authGate.unlocked { opacity: 0; pointer-events: none; }
-
-    .fitting-stage {
-      width: 140px;
-      height: 140px;
-      margin: 10px auto;
-      background: #faf4ed;
-      border: 3px dashed var(--border-color);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    /* 建造模式專用樣式 */
-    .placed-furniture.in-building {
-      outline: 2px dashed rgba(217, 119, 54, 0.4);
-      border-radius: 8px;
-    }
-    .placed-furniture.is-selected {
-      outline: 2px solid var(--accent) !important;
-      background: rgba(217, 119, 54, 0.08);
-      border-radius: 8px;
-    }
-    .furni-ctrl-bubble {
-      position: absolute;
-      top: -36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 3px 8px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-      border: 1px solid var(--border-color);
-      z-index: 50;
-      white-space: nowrap;
-    }
-    .ctrl-btn-bubble {
-      border: none;
-      background: var(--card-bg);
-      font-size: 11px;
-      font-weight: bold;
-      color: var(--main-text);
-      padding: 3px 6px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    /* 建造模式底部倉庫面板 */
-    #buildWarehousePanel {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 130px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border-color);
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
-      z-index: 60;
-      display: none;
-      flex-direction: column;
-      padding: 8px 12px;
-    }
-    .warehouse-scroll-list {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      flex-grow: 1;
-      align-items: center;
-    }
-    .warehouse-item-card {
-      background: #fff;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 6px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-shrink: 0;
-      min-width: 90px;
-    }
-  </style>
 </head>
 <body>
 
@@ -379,6 +280,8 @@
         if (snap.exists()) {
           const cloudData = snap.data();
           state.coins = cloudData.coins ?? state.coins;
+          state.feedStock = cloudData.feedStock ?? state.feedStock;
+          state.lastActiveTime = cloudData.lastActiveTime ?? state.lastActiveTime;
           state.hamsters = cloudData.hamsters ?? state.hamsters;
           state.inventory = cloudData.inventory ?? state.inventory;
           state.furnitureWarehouse = cloudData.furnitureWarehouse ?? state.furnitureWarehouse;
@@ -408,6 +311,8 @@
         const userDocRef = doc(db, 'saves', currentUser.uid);
         await setDoc(userDocRef, {
           coins: state.coins,
+          feedStock: state.feedStock,
+          lastActiveTime: state.lastActiveTime,
           hamsters: state.hamsters,
           inventory: state.inventory,
           furnitureWarehouse: state.furnitureWarehouse,
