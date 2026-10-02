@@ -497,7 +497,6 @@ function toggleBuildMode() {
   renderFurniture();
 }
 
-// 關鍵修復：便便精準掛載到各自房間的專屬圖層中，隨房間移動，不再穿透！
 function renderPoops() {
   ['living', 'play', 'garden'].forEach(roomId => {
     const con = document.getElementById(`poop-${roomId}`);
@@ -512,31 +511,20 @@ function renderPoops() {
       el.id = `poop-${poop.id}`;
       el.style.left = `${poop.x}px`;
       el.style.top = `${poop.y}px`;
-      el.title = '點擊清掃賺金幣！';
-      el.onpointerdown = (e) => {
+      el.title = '點擊清掃！';
+      
+      // 雙重防禦：pointerdown 立即攔截，保證不穿透到底板產生瓜子
+      el.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         state.isCollectingPoop = true;
         collectPoop(poop.id);
-        setTimeout(() => { state.isCollectingPoop = false; }, 200);
-      };
+        setTimeout(() => { state.isCollectingPoop = false; }, 300);
+      });
+
       con.appendChild(el);
     });
   });
-}
-
-function spawnPoopPellet(x, y, room) {
-  const roomPoopCount = state.poopList.filter(p => p.room === room).length;
-  if (roomPoopCount >= 8) return;
-
-  const newPoop = {
-    id: `p_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-    x: Math.max(30, Math.min(window.innerWidth - 50, x)),
-    y: Math.max(window.innerHeight * 0.58, Math.min(window.innerHeight * 0.78, y)),
-    room: room
-  };
-  state.poopList.push(newPoop);
-  saveGame();
-  renderPoops();
 }
 
 function collectPoop(poopId) {
@@ -552,6 +540,41 @@ function collectPoop(poopId) {
 
   saveGame();
   renderHUD();
+  renderPoops();
+}
+
+// 一鍵清掃當前房間的所有便便 (清掃神器)
+window.cleanAllPoopInRoom = function() {
+  const curRoom = ROOMS[currentRoomIndex].id;
+  const targetPoops = state.poopList.filter(p => p.room === curRoom);
+  if (targetPoops.length === 0) {
+    showToast('房間乾乾淨淨，沒有便便喔！');
+    return;
+  }
+
+  const earnTotal = targetPoops.length * 8;
+  state.poopList = state.poopList.filter(p => p.room !== curRoom);
+  state.coins += earnTotal;
+
+  saveGame();
+  renderHUD();
+  renderPoops();
+  showToast(`🧹 大掃除完成！清理了 ${targetPoops.length} 顆便便，獲得 🪙 ${earnTotal} 金幣！`);
+};
+
+
+function spawnPoopPellet(x, y, room) {
+  const roomPoopCount = state.poopList.filter(p => p.room === room).length;
+  if (roomPoopCount >= 8) return;
+
+  const newPoop = {
+    id: `p_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+    x: Math.max(30, Math.min(window.innerWidth - 50, x)),
+    y: Math.max(window.innerHeight * 0.58, Math.min(window.innerHeight * 0.78, y)),
+    room: room
+  };
+  state.poopList.push(newPoop);
+  saveGame();
   renderPoops();
 }
 
