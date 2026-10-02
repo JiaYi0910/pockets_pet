@@ -1104,23 +1104,59 @@ function renderHUD() {
   if (stockEl) stockEl.textContent = state.feedStock;
 }
 
-// === 背景音樂 HTML5 控制 ===
-window.toggleBgm = function() {
-  const bgm = document.getElementById('bgmAudio');
-  const btn = document.getElementById('btnBgmToggle');
-  if (!bgm) return;
+// === YouTube 官方播放器控制 ===
+let ytBgmPlayer = null;
+let isYtPlaying = false;
 
-  bgm.volume = 0.15; // 保持 15% 小小聲
+window.onYouTubeIframeAPIReady = function() {
+  ytBgmPlayer = new YT.Player('yt-audio-player', {
+    videoId: 'LBjUh4bYF8w',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      loop: 1,
+      playlist: 'LBjUh4bYF8w',
+      playsinline: 1,
+      rel: 0
+    },
+    events: {
+      onReady: (e) => {
+        e.target.setVolume(20); // 20% 輕快小音量
+      },
+      onStateChange: (e) => {
+        const btn = document.getElementById('btnBgmControl');
+        if (e.data === YT.PlayerState.PLAYING) {
+          isYtPlaying = true;
+          if (btn) { btn.textContent = '暫 停'; btn.style.background = '#8b786d'; }
+        } else {
+          isYtPlaying = false;
+          if (btn) { btn.textContent = '播 放'; btn.style.background = 'var(--accent)'; }
+        }
+      }
+    }
+  });
+};
 
-  if (bgm.paused) {
-    bgm.play().then(() => {
-      if (btn) btn.textContent = '🎵';
-    }).catch(e => console.log('瀏覽器自動播放限制:', e));
+window.toggleBgmPlayer = function() {
+  if (!ytBgmPlayer || typeof ytBgmPlayer.playVideo !== 'function') {
+    return alert('音樂播放器載入中，請稍候片刻再點擊！');
+  }
+
+  if (isYtPlaying) {
+    ytBgmPlayer.pauseVideo();
   } else {
-    bgm.pause();
-    if (btn) btn.textContent = '🔇';
+    ytBgmPlayer.setVolume(20);
+    ytBgmPlayer.playVideo();
   }
 };
+
+window.startBgmOnUnlock = function() {
+  if (ytBgmPlayer && typeof ytBgmPlayer.playVideo === 'function') {
+    ytBgmPlayer.setVolume(20);
+    ytBgmPlayer.playVideo();
+  }
+};
+
 
 
 renderFurniture();
