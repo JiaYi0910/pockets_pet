@@ -576,7 +576,8 @@ setInterval(() => {
       }
     }
 
-    if (Math.random() < 0.16) spawnPoopPellet(h.x + (Math.random()*30-15), h.y + 25, h.room);
+    // 大幅降低排便頻率 (從 16% 降至 4.5%)，更符合真實規律
+    if (Math.random() < 0.045) spawnPoopPellet(h.x + (Math.random()*30-15), h.y + 25, h.room);
 
     if (Math.random() < 0.15) {
       const otherRooms = ROOMS.map(r => r.id).filter(id => id !== h.room);
