@@ -1206,3 +1206,9 @@ renderFurniture();
 renderHamsters();
 renderPoops();
 renderHUD();
+
+// 初始化執行離線計算
+if (typeof window.processOfflineEarnings === 'function') {
+  window.processOfflineEarnings();
+}
+
