@@ -176,7 +176,7 @@
     </div>
   </div>
 
-  <!-- 好友系統專屬視窗 -->
+  <!-- 好友系統專屬視窗 (含待審核申請區塊) -->
   <div class="modal-overlay" id="friendsModal">
     <div class="modal-card">
       <button class="modal-close-x" onclick="closeModal('friendsModal')">✕</button>
@@ -184,12 +184,19 @@
       <div style="margin-bottom:10px;">
         <div style="display:flex; gap:6px;">
           <input type="text" id="addFriendInput" class="auth-input" style="margin-bottom:0; font-size:12px; padding:8px;" placeholder="輸入好友 ID (例: HAMSTER-XXXX)">
-          <button class="btn-action" style="width:auto; margin-top:0; padding:8px 12px; white-space:nowrap; background:var(--accent);" onclick="handleAddFriendById()">加好友</button>
+          <button class="btn-action" style="width:auto; margin-top:0; padding:8px 12px; white-space:nowrap; background:var(--accent);" onclick="handleAddFriendById()">送出申請</button>
         </div>
       </div>
+
+      <!-- 待審核申請區塊 -->
+      <div id="friendRequestsSection" style="display:none; margin-bottom:10px; background:#fff3e0; border:1px solid #ffe0b2; border-radius:12px; padding:8px;">
+        <div style="font-size:11px; font-weight:bold; color:var(--accent); margin-bottom:4px;">📬 收到的好友申請：</div>
+        <div id="friendRequestsList"></div>
+      </div>
+
       <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">好友列表 (<span id="friendsCount">0</span>)：</div>
       <div id="friendsEmptyTip" style="font-size:11px; text-align:center; color:#888; padding:10px 0;">還沒有好友，快複製你的 ID 分享給朋友吧！</div>
-      <div id="friendsListContainer" style="max-height:220px; overflow-y:auto;"></div>
+      <div id="friendsListContainer" style="max-height:200px; overflow-y:auto;"></div>
     </div>
   </div>
 
@@ -204,7 +211,7 @@
         <p style="margin-top:4px;">🧹 <b>便便與大掃除</b>：小鼠會自主排泄，點擊便便或按底部「🧹 大掃除」可一鍵清理賺取金幣！</p>
         <p style="margin-top:4px;">🔨 <b>建造與翻轉</b>：在雜貨鋪購買家具後進入「建造模式」，點擊家具可「水平翻轉」或「收回倉庫」。</p>
         <p style="margin-top:4px;">🍼 <b>培育與送養</b>：離線達 10 分鐘以上，成年公母鼠可能誕下幼鼠（上限 8 隻）；手帳內支援愛心送養並領取補貼！</p>
-        <p style="margin-top:4px;">🤝 <b>名片與好友</b>：在右上角選單複製專屬 ID 加好友，每天還能互相贈送葵花子愛心禮物！</p>
+        <p style="margin-top:4px;">🤝 <b>名片與好友審核</b>：在名片複製專屬 ID 給朋友，收到申請並點擊「同意」即可互加好友！</p>
         <p style="margin-top:4px;">🎒 <b>旅行與明信片</b>：派小鼠出門背包旅行，收集全世界 12 大知名景點的精美紀念明信片！</p>
       </div>
       <button class="btn-action" style="background:var(--accent);" onclick="closeModal('helpModal')">我知道了 🐹</button>
@@ -266,7 +273,7 @@
     </div>
   </div>
 
-  <!-- 家族手帳 (支援改名與愛心送養) -->
+  <!-- 家族手帳 -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-card">
       <button class="modal-close-x" onclick="closeModal('profileModal')">✕</button>
@@ -360,7 +367,7 @@
   <script src="assets.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- Firebase 雲端公開索引與跨玩家好友同步模組 (獨立初始化修復版) -->
+  <!-- Firebase 雲端公開索引與好友雙向審核機制模組 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -382,11 +389,11 @@
 
     let currentUser = null;
     let friendInboxUnsubscribe = null;
+    let friendAcceptedUnsubscribe = null;
     const authGate = document.getElementById('authGate');
     const formArea = document.getElementById('authFormArea');
     const loggedArea = document.getElementById('authLoggedInArea');
 
-    // 全新玩家乾淨初始化函數 (防止繼承舊帳號殘留的 LocalStorage)
     function resetToBrandNewState() {
       state.coins = 200;
       state.feedStock = 30;
@@ -409,6 +416,7 @@
         bio: '用心陪伴每隻小可愛～'
       };
       state.friends = [];
+      state.friendRequests = [];
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -421,11 +429,10 @@
         const ownerEmailEl = document.getElementById('cardOwnerEmail');
         if (ownerEmailEl) ownerEmailEl.textContent = user.email;
 
-        // 1. 抓取雲端存檔
+        // 1. 抓取個人存檔
         const userDocRef = doc(db, 'saves', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
-          // 老帳號：完全讀取雲端專屬存檔
           const cloudData = snap.data();
           state.coins = cloudData.coins ?? 200;
           state.feedStock = cloudData.feedStock ?? 30;
@@ -438,18 +445,18 @@
           state.postcards = cloudData.postcards ?? [];
           state.owner = cloudData.owner ?? { id: generateRandomOwnerId(), name: '大莊園主', bio: '用心陪伴每隻小可愛～' };
           state.friends = cloudData.friends ?? [];
+          state.friendRequests = cloudData.friendRequests ?? [];
 
           renderHUD();
           renderHamsters();
           renderFurniture();
           renderPoops();
 
-          // 雲端資料對齊完畢後，安全觸發離線結算
           if (typeof window.processOfflineEarnings === 'function') {
             window.processOfflineEarnings();
           }
         } else {
-          // 關鍵修復：全新註冊的帳號，強制抹除舊帳號殘留的記憶，乾淨新手開局！
+          // 全新帳號初始化：防止繼承同瀏覽器舊資料
           resetToBrandNewState();
           renderHUD();
           renderHamsters();
@@ -458,27 +465,30 @@
           window.saveGame();
         }
 
-        // 2. 向全服發布「公開名片索引」，讓其他玩家用 ID 搜得到你
+        // 2. 向全服發布最新名片索引
         await publishPublicProfile(user.uid);
 
-        // 3. 監聽專屬好友信箱（如果朋友加你，你這裡即時收到並加入名冊）
+        // 3. 即時監聽收到的好友審核邀請與同意反饋
         listenFriendInbox(state.owner.id);
+        listenFriendAccepted(state.owner.id);
 
         authGate.classList.add('unlocked');
       } else {
         if (friendInboxUnsubscribe) friendInboxUnsubscribe();
+        if (friendAcceptedUnsubscribe) friendAcceptedUnsubscribe();
         formArea.style.display = 'block';
         loggedArea.style.display = 'none';
         authGate.classList.remove('unlocked');
       }
     });
 
-    // 發布公開名片
-    async function publishPublicProfile(uid) {
+    // 公開最新名片（改名或換簡介時即時同步）
+    window.publishPublicProfile = async function(uid) {
+      if (!uid && currentUser) uid = currentUser.uid;
       try {
         const publicDocRef = doc(db, 'public_profiles', state.owner.id);
         await setDoc(publicDocRef, {
-          uid: uid,
+          uid: uid || '',
           id: state.owner.id,
           name: state.owner.name,
           bio: state.owner.bio,
@@ -488,85 +498,145 @@
       } catch (e) {
         console.warn("公開名片同步中:", e);
       }
-    }
+    };
 
-    // 監聽是否有其他玩家添加自己為好友
+    // 監聽他人對我發出的好友審核邀請
     function listenFriendInbox(myOwnerId) {
       if (friendInboxUnsubscribe) friendInboxUnsubscribe();
       const inboxRef = doc(db, 'friend_inbox', myOwnerId);
       friendInboxUnsubscribe = onSnapshot(inboxRef, (snap) => {
         if (snap.exists()) {
           const data = snap.data();
-          const incomingList = data.requests || [];
-          let hasNew = false;
-          incomingList.forEach(incoming => {
-            if (!state.friends.some(f => f.id === incoming.id)) {
-              state.friends.push(incoming);
-              hasNew = true;
+          const incomingRequests = data.requests || [];
+          state.friendRequests = incomingRequests.filter(req => 
+            !state.friends.some(f => f.id === req.id)
+          );
+          if (typeof window.renderFriendsList === 'function') window.renderFriendsList();
+        }
+      });
+    }
+
+    // 監聽別人同意了我的申請，自動把對方加進我的名冊
+    function listenFriendAccepted(myOwnerId) {
+      if (friendAcceptedUnsubscribe) friendAcceptedUnsubscribe();
+      const acceptedRef = doc(db, 'friend_accepted', myOwnerId);
+      friendAcceptedUnsubscribe = onSnapshot(acceptedRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          const newlyAccepted = data.list || [];
+          let added = false;
+          newlyAccepted.forEach(otherUser => {
+            if (!state.friends.some(f => f.id === otherUser.id)) {
+              state.friends.push(otherUser);
+              added = true;
             }
           });
-          if (hasNew) {
+          if (added) {
             window.saveGame();
             if (typeof window.renderFriendsList === 'function') window.renderFriendsList();
-            showToast('🎉 有新好友加入你的莊園名冊囉！');
+            showToast('🎉 對方已同意你的好友申請，正式成為好友！');
           }
         }
       });
     }
 
-    // 真實跨雲端加好友邏輯 (雙向通知)
-    window.cloudAddFriend = async function(targetId) {
+    // 發出好友申請（需要審核）
+    window.cloudSendFriendRequest = async function(targetId) {
       try {
         const targetRef = doc(db, 'public_profiles', targetId);
         const targetSnap = await getDoc(targetRef);
-        
-        let friendName = '親切的莊園主';
-        let friendBio = '悠閒莊園生活';
-        let friendHamsterCount = 3;
 
-        if (targetSnap.exists()) {
-          const tData = targetSnap.data();
-          friendName = tData.name || friendName;
-          friendBio = tData.bio || friendBio;
-          friendHamsterCount = tData.hamsterCount || friendHamsterCount;
+        if (!targetSnap.exists()) {
+          return showToast('找不到該莊園 ID，請確認是否輸入正確！');
         }
 
-        // 把對方存入自己的好友列表
-        const newFriendObj = {
-          id: targetId,
-          name: friendName,
-          hamsterCount: friendHamsterCount,
-          bio: friendBio,
-          lastGiftDate: 0
-        };
-        state.friends.push(newFriendObj);
-        window.saveGame();
+        const tData = targetSnap.data();
+        const targetName = tData.name || '莊園主';
 
-        // 同步寫入對方的「好友信箱」，讓對方也能看到你！
         const targetInboxRef = doc(db, 'friend_inbox', targetId);
-        const myProfile = {
-          id: state.owner.id,
-          name: state.owner.name,
-          hamsterCount: state.hamsters.length,
-          bio: state.owner.bio,
-          lastGiftDate: 0
-        };
-
         const targetInboxSnap = await getDoc(targetInboxRef);
         let curRequests = [];
         if (targetInboxSnap.exists()) {
           curRequests = targetInboxSnap.data().requests || [];
         }
-        if (!curRequests.some(r => r.id === state.owner.id)) {
-          curRequests.push(myProfile);
-          await setDoc(targetInboxRef, { requests: curRequests }, { merge: true });
+
+        if (curRequests.some(r => r.id === state.owner.id)) {
+          return showToast('已發送過申請，請等待對方審核同意！');
         }
 
-        showToast(`🎉 成功與【${friendName}】成為好友！`);
-        if (typeof window.renderFriendsList === 'function') window.renderFriendsList();
+        const myProfile = {
+          id: state.owner.id,
+          name: state.owner.name,
+          hamsterCount: state.hamsters.length,
+          bio: state.owner.bio,
+          requestedAt: Date.now()
+        };
+
+        curRequests.push(myProfile);
+        await setDoc(targetInboxRef, { requests: curRequests }, { merge: true });
+
+        showToast(`📬 已向【${targetName}】送出好友申請，等候對方審核！`);
       } catch (err) {
-        console.error("加好友失敗:", err);
-        showToast('連線至好友莊園失敗，請稍候再試！');
+        console.error("好友申請失敗:", err);
+        showToast('發送邀請失敗，請確認網路！');
+      }
+    };
+
+    // 同意好友申請（審核通過，雙向互通）
+    window.cloudAcceptFriendRequest = async function(applicantId) {
+      try {
+        const reqObj = state.friendRequests.find(r => r.id === applicantId);
+        if (!reqObj) return;
+
+        // 1. 加進自己的好友列表
+        if (!state.friends.some(f => f.id === applicantId)) {
+          state.friends.push({
+            id: reqObj.id,
+            name: reqObj.name,
+            hamsterCount: reqObj.hamsterCount || 1,
+            bio: reqObj.bio || '',
+            lastGiftDate: 0
+          });
+          window.saveGame();
+        }
+
+        // 2. 從待審核信箱移除
+        state.friendRequests = state.friendRequests.filter(r => r.id !== applicantId);
+        const myInboxRef = doc(db, 'friend_inbox', state.owner.id);
+        await setDoc(myInboxRef, { requests: state.friendRequests }, { merge: true });
+
+        // 3. 寫入對方的 friend_accepted 通知箱
+        const otherAcceptedRef = doc(db, 'friend_accepted', applicantId);
+        const acceptedSnap = await getDoc(otherAcceptedRef);
+        let curAccepted = [];
+        if (acceptedSnap.exists()) curAccepted = acceptedSnap.data().list || [];
+        curAccepted.push({
+          id: state.owner.id,
+          name: state.owner.name,
+          hamsterCount: state.hamsters.length,
+          bio: state.owner.bio,
+          lastGiftDate: 0
+        });
+        await setDoc(otherAcceptedRef, { list: curAccepted }, { merge: true });
+
+        showToast(`🎉 已同意申請，你與【${reqObj.name}】正式成為好友！`);
+        window.renderFriendsList();
+      } catch (e) {
+        console.error("同意好友失敗:", e);
+        showToast('處理申請失敗，請稍候重試！');
+      }
+    };
+
+    // 拒絕/忽略好友申請
+    window.cloudRejectFriendRequest = async function(applicantId) {
+      try {
+        state.friendRequests = state.friendRequests.filter(r => r.id !== applicantId);
+        const myInboxRef = doc(db, 'friend_inbox', state.owner.id);
+        await setDoc(myInboxRef, { requests: state.friendRequests }, { merge: true });
+        window.renderFriendsList();
+        showToast('已忽略該好友申請。');
+      } catch (e) {
+        console.error("拒絕邀請失敗:", e);
       }
     };
 
@@ -585,9 +655,10 @@
           poopList: state.poopList,
           postcards: state.postcards,
           owner: state.owner,
-          friends: state.friends
+          friends: state.friends,
+          friendRequests: state.friendRequests || []
         });
-        publishPublicProfile(currentUser.uid);
+        window.publishPublicProfile(currentUser.uid);
       } catch (err) {
         console.error("雲端存檔失敗:", err);
       }
@@ -614,7 +685,6 @@
 
     window.handleAuthLogout = async () => {
       await signOut(auth);
-      // 登出時清空記憶體，避免下一個註冊帳號受到污染
       resetToBrandNewState();
       renderHUD();
       renderHamsters();
