@@ -39,7 +39,7 @@ html, body {
   overflow: hidden;
 }
 
-/* 房間 1: 客廳 (厚鋪白楊木屑地板) */
+/* 房間 1: 客廳 */
 #room-living { background: #fbf8f3; }
 #room-living .floor {
   background: repeating-linear-gradient(45deg, #f2dec4 0px, #f2dec4 16px, #e7cca9 16px, #e7cca9 22px),
@@ -48,7 +48,7 @@ html, body {
   box-shadow: inset 0 12px 24px rgba(110, 80, 50, 0.12);
 }
 
-/* 房間 2: 活動室 (蓬鬆柔軟紙棉厚鋪) */
+/* 房間 2: 活動室 */
 #room-play { background: #f4faf8; }
 #room-play .floor {
   background: radial-gradient(circle at 50% 50%, #ffffff 2px, transparent 0) 0 0/16px 16px,
@@ -58,7 +58,7 @@ html, body {
   box-shadow: inset 0 12px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* 房間 3: 露天庭院 (綠意草地與野花草叢) */
+/* 房間 3: 露天庭院 */
 #room-garden { background: linear-gradient(180deg, #d8f3dc 0%, #b7e4c7 50%, #95d5b2 100%); }
 #room-garden .floor {
   background: repeating-linear-gradient(90deg, #74c69d 0px, #74c69d 40px, #52b788 40px, #52b788 44px);
@@ -104,7 +104,7 @@ html, body {
 }
 .wall-window div { background: rgba(255,255,255,0.45); border-radius: 3px; }
 
-/* 左右導覽箭頭 */
+/* 導覽按鈕 */
 .room-nav-btn {
   position: absolute;
   top: 45%;
@@ -226,7 +226,6 @@ html, body {
   touch-action: manipulation;
   animation: poopPop 0.2s ease-out;
 }
-/* 隱形觸控擴展區：讓手指感應範圍擴大至 44px x 44px，極好按中 */
 .poop-pellet::after {
   content: '';
   position: absolute;
@@ -237,7 +236,6 @@ html, body {
   height: 44px;
   background: transparent;
 }
-
 @keyframes poopPop { from { transform: scale(0); } to { transform: scale(1); } }
 
 .placed-furniture {
@@ -323,7 +321,7 @@ html, body {
   min-width: 90px;
 }
 
-/* 倉鼠層與實體 */
+/* 倉鼠層與動作 */
 .hamster-layer {
   position: absolute;
   inset: 0;
@@ -487,7 +485,7 @@ html, body {
   100% { opacity: 0; transform: translateY(-36px) scale(1.2); }
 }
 
-/* 遊戲專屬輕量 Toast 通知 (完全不中斷音樂) */
+/* 輕量 Toast 通知 */
 #toastBox {
   position: fixed;
   top: 14px;
@@ -511,54 +509,51 @@ html, body {
   opacity: 1;
 }
 
-/* 彈窗 Modal */
+/* 彈窗 Modal (加強叉叉按鈕置頂) */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(45, 35, 30, 0.5);
+  background: rgba(45, 35, 30, 0.55);
   backdrop-filter: blur(5px);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 100;
 }
-/* 彈窗卡片與右上角叉叉按鈕 */
 .modal-card {
-  position: relative; /* 讓右上角叉叉定位以卡片為基準 */
+  position: relative !important;
   background: #fdfaf6;
   padding: 24px 20px 20px 20px;
   border-radius: 22px;
   width: 90%;
   max-width: 360px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  max-height: 80vh;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  max-height: 82vh;
   overflow-y: auto;
 }
-
-/* 卡片右上角浮動叉叉按鈕 */
 .modal-close-x {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(74, 59, 50, 0.08);
-  border: none;
-  font-size: 16px;
-  line-height: 28px;
-  text-align: center;
-  color: var(--main-text);
-  cursor: pointer;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: background 0.2s ease;
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  background: rgba(74, 59, 50, 0.1) !important;
+  border: none !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  line-height: 30px !important;
+  text-align: center !important;
+  color: var(--main-text) !important;
+  cursor: pointer !important;
+  z-index: 120 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
 }
 .modal-close-x:active {
-  background: rgba(74, 59, 50, 0.2);
+  background: rgba(74, 59, 50, 0.25) !important;
 }
 
 .modal-title { font-size: 16px; color: var(--main-text); margin-bottom: 12px; text-align: center; }
@@ -612,7 +607,6 @@ html, body {
   background: #fff;
 }
 
-/* 登入牆遮罩 */
 #authGate {
   position: fixed;
   inset: 0;
@@ -626,7 +620,6 @@ html, body {
 }
 #authGate.unlocked { opacity: 0; pointer-events: none; }
 
-/* 試衣間舞台 */
 .fitting-stage {
   width: 140px;
   height: 140px;
@@ -640,7 +633,6 @@ html, body {
   position: relative;
 }
 
-/* MiniGame */
 #minigame-screen {
   position: fixed;
   inset: 0;
