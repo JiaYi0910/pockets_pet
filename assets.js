@@ -1056,6 +1056,59 @@ function renderHUD() {
   if (stockEl) stockEl.textContent = state.feedStock;
 }
 
+// === YouTube 背景音樂播放器控制 ===
+let bgmPlayer = null;
+let isBgmPlaying = false;
+
+// YouTube API 載入完成回呼函數
+window.onYouTubeIframeAPIReady = function() {
+  bgmPlayer = new YT.Player('yt-player', {
+    videoId: 'LBjUh4bYF8w', // Hampster Dance
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      loop: 1,
+      playlist: 'LBjUh4bYF8w', // 循環播放必填
+      playsinline: 1
+    },
+    events: {
+      onReady: (event) => {
+        event.target.setVolume(18); // 設定小音量 (18%)
+      }
+    }
+  });
+};
+
+// 音樂開關切換
+window.toggleBgm = function() {
+  if (!bgmPlayer || typeof bgmPlayer.getPlayerState !== 'function') return;
+  const btn = document.getElementById('btnBgmToggle');
+  
+  if (isBgmPlaying) {
+    bgmPlayer.pauseVideo();
+    isBgmPlaying = false;
+    if (btn) btn.textContent = '🔇';
+  } else {
+    bgmPlayer.playVideo();
+    isBgmPlaying = true;
+    if (btn) btn.textContent = '🎵';
+  }
+};
+
+// 進入遊戲時主動喚醒播放 (配合使用者點擊動作)
+const originalUnlockGame = window.unlockGame;
+window.unlockGame = function() {
+  if (typeof originalUnlockGame === 'function') originalUnlockGame();
+  if (bgmPlayer && typeof bgmPlayer.playVideo === 'function' && !isBgmPlaying) {
+    bgmPlayer.setVolume(18);
+    bgmPlayer.playVideo();
+    isBgmPlaying = true;
+    const btn = document.getElementById('btnBgmToggle');
+    if (btn) btn.textContent = '🎵';
+  }
+};
+
+
 renderFurniture();
 renderHamsters();
 renderPoops();
