@@ -331,7 +331,7 @@ window.removeFriend = function(friendId) {
   }
 };
 
-// 離線收益與自然繁衍 (鎖定時間戳，確保不重複洗牌)
+// 離線收益與自然繁衍 (合理繁育曲線 + 時間保底)
 window.processOfflineEarnings = function() {
   const now = Date.now();
   if (!state.lastActiveTime) {
@@ -350,32 +350,42 @@ window.processOfflineEarnings = function() {
   const earnedCoins = minutes * 5;
 
   let babyBorn = null;
+  let breedTip = '';
 
+  // 繁育條件：離線滿 10 分鐘以上，且家族數量未達 8 隻上限
   if (minutes >= 10 && state.hamsters.length >= 2 && state.hamsters.length < 8) {
-    const hasMale = state.hamsters.some(h => h.gender === '♂' && h.feedCount >= 20);
-    const hasFemale = state.hamsters.some(h => h.gender === '♀' && h.feedCount >= 20);
+    // 門檻調降至餵食 5 顆瓜子即成年
+    const matureMales = state.hamsters.filter(h => h.gender === '♂' && (h.feedCount || 0) >= 5);
+    const matureFemales = state.hamsters.filter(h => h.gender === '♀' && (h.feedCount || 0) >= 5);
 
-    if (hasMale && hasFemale && Math.random() < 0.15) {
-      const babyGender = Math.random() < 0.5 ? '♂' : '♀';
-      const spKeys = Object.keys(SPECIES);
-      const babySpecies = spKeys[Math.floor(Math.random() * spKeys.length)];
-      const babyName = `小${SPECIES[babySpecies].name[0]}`;
+    if (matureMales.length > 0 && matureFemales.length > 0) {
+      // 離線時間越長，繁衍機率越高 (10分鐘25% -> 60分鐘60% -> 長時間最高90%)
+      const breedChance = Math.min(0.90, 0.20 + (minutes / 120));
 
-      const newBabyObj = {
-        id: `h_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        name: babyName,
-        gender: babyGender,
-        species: babySpecies,
-        feedCount: 0,
-        cheekPouch: 0,
-        equippedHat: null,
-        room: 'living',
-        x: Math.random() * (window.innerWidth - 140) + 40,
-        y: window.innerHeight * 0.70
-      };
+      if (Math.random() < breedChance) {
+        const babyGender = Math.random() < 0.5 ? '♂' : '♀';
+        const spKeys = Object.keys(SPECIES);
+        const babySpecies = spKeys[Math.floor(Math.random() * spKeys.length)];
+        const babyName = `小${SPECIES[babySpecies].name[0]}`;
 
-      state.hamsters.push(newBabyObj);
-      babyBorn = `${babyName} (${babyGender}) - ${SPECIES[babySpecies].name}`;
+        const newBabyObj = {
+          id: `h_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+          name: babyName,
+          gender: babyGender,
+          species: babySpecies,
+          feedCount: 0,
+          cheekPouch: 0,
+          equippedHat: null,
+          room: 'living',
+          x: Math.random() * (window.innerWidth - 140) + 40,
+          y: window.innerHeight * 0.70
+        };
+
+        state.hamsters.push(newBabyObj);
+        babyBorn = `${babyName} (${babyGender}) - ${SPECIES[babySpecies].name}`;
+      }
+    } else {
+      breedTip = '💡 提示：需有成熟公母鼠各一隻（餵食滿 5 顆瓜子）才可繁育喔！';
     }
   }
 
@@ -392,6 +402,9 @@ window.processOfflineEarnings = function() {
   if (babyBorn) {
     babyNotify.style.display = 'block';
     document.getElementById('offlineBabyDesc').textContent = `誕生了可愛的【${babyBorn}】！`;
+  } else if (breedTip) {
+    babyNotify.style.display = 'block';
+    document.getElementById('offlineBabyDesc').textContent = breedTip;
   } else {
     babyNotify.style.display = 'none';
   }
